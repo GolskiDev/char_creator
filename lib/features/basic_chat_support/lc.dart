@@ -6,7 +6,7 @@ import '../../secrets.dart';
 class LC {
   final chat = ChatOpenAI(apiKey: chatGPTApiKey);
 
-  Future<String> responseStream(String prompt) {
+  Future<String> promptChat(String prompt) {
     final promptTemplate = ChatPromptTemplate.fromPromptMessages([
       HumanChatMessagePromptTemplate.fromTemplate(
         '{input}',
@@ -16,7 +16,7 @@ class LC {
 
     final chain = promptTemplate.pipe(chat).pipe(stringOutputParser);
 
-    final stream = chain.invoke({'input': prompt});
-    return stream;
+    final response = chain.invoke({'input': prompt});
+    return response;
   }
 }
