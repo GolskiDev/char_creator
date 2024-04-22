@@ -20,22 +20,40 @@ class ChatMessage {
 
 class ChatManager {
   final LC _lc = LC();
-  final StreamController<List<String>> _messagesController = StreamController<List<String>>();
-  List<String> _currentMessages = [];
+  final StreamController<List<ChatMessage>> _messagesController =
+      StreamController<List<ChatMessage>>();
+  List<ChatMessage> _currentMessages = [];
 
-  Stream<List<String>> messagesStream() {
-    return _messagesController.stream;  
+  final User user = User();
+  final Bot bot = Bot();
+
+  Stream<List<ChatMessage>> messagesStream() {
+    return _messagesController.stream;
   }
 
-  addMessage(String message){
+  addMessage(ChatMessage message) {
     _currentMessages.add(message);
     _messagesController.add(_currentMessages);
   }
 
-  submitUserMessage(String message) {
-    addMessage(message);
+  addUserMessage(String message) {
+    final chatMessage = ChatMessage(
+      message,
+      user,
+      DateTime.now(),
+    );
+    addMessage(chatMessage);
     _lc.promptChat(message).then((response) {
-      addMessage(response);
+      addBotMessage(response);
     });
+  }
+
+  addBotMessage(String message) {
+    final chatMessage = ChatMessage(
+      message,
+      bot,
+      DateTime.now(),
+    );
+    addMessage(chatMessage);
   }
 }
