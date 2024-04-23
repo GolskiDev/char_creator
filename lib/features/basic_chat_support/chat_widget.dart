@@ -23,6 +23,7 @@ class _ChatWidgetState extends State<ChatWidget>
     with AutomaticKeepAliveClientMixin<ChatWidget> {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return StreamBuilder<List<ChatMessage>>(
       stream: widget.messagesStream,
       builder: (context, snapshot) {
