@@ -5,10 +5,10 @@ import 'prompt_repository.dart';
 
 class PromptListWidget extends StatefulWidget {
   const PromptListWidget({
-    required this.onPromptSelected,
+    this.onPromptSelected,
     super.key,
   });
-  final Function(PromptModel prompt) onPromptSelected;
+  final Function(PromptModel prompt)? onPromptSelected;
 
   @override
   State<PromptListWidget> createState() => _PromptListWidgetState();
@@ -30,7 +30,7 @@ class _PromptListWidgetState extends State<PromptListWidget> {
               final prompt = prompts[index];
               return ListTile(
                 title: Text(prompt.prompt),
-                onTap: () => widget.onPromptSelected(prompt),
+                onTap: () => widget.onPromptSelected?.call(prompt),
               );
             },
           );

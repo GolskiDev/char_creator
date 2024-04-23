@@ -8,13 +8,23 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'chat_manager.dart';
 import 'chat_manager_provider.dart';
 
-class ChatWidget extends StatelessWidget {
-  const ChatWidget({super.key});
+class ChatWidget extends StatefulWidget {
+  const ChatWidget({
+    super.key,
+    required this.messagesStream,
+  });
+  final Stream<List<ChatMessage>> messagesStream;
 
+  @override
+  State<ChatWidget> createState() => _ChatWidgetState();
+}
+
+class _ChatWidgetState extends State<ChatWidget>
+    with AutomaticKeepAliveClientMixin<ChatWidget> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<ChatMessage>>(
-      stream: ChatManagerProvider.of(context)?.chatManager.messagesStream(),
+      stream: widget.messagesStream,
       builder: (context, snapshot) {
         final messages = snapshot.data?.reversed
                 .map(
@@ -50,4 +60,7 @@ class ChatWidget extends StatelessWidget {
     print('Message sent: ${message.text}');
     ChatManagerProvider.of(context)?.chatManager.addUserMessage(message.text);
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

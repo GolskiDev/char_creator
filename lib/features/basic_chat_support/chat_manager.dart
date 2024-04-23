@@ -31,6 +31,12 @@ class ChatManager {
     return _messagesController.stream;
   }
 
+  addSystemMessage(String message) {
+    _promptChat(message).then((response) {
+      addBotMessage(response);
+    });
+  }
+
   addMessage(ChatMessage message) {
     _currentMessages.add(message);
     _messagesController.add(_currentMessages);
@@ -55,5 +61,9 @@ class ChatManager {
       DateTime.now(),
     );
     addMessage(chatMessage);
+  }
+
+  Future<String> _promptChat(String message) {
+    return _lc.promptChat(message);
   }
 }
