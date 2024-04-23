@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'features/basic_chat_support/chat_widget.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(const MainApp());
 }
 
 class MainApp extends StatefulWidget {
-  MainApp({super.key});
+  const MainApp({super.key});
 
   @override
   State<MainApp> createState() => _MainAppState();
@@ -22,7 +22,7 @@ class _MainAppState extends State<MainApp> {
       home: Scaffold(
         body: ChatManagerProvider(
           chatManager: ChatManager(),
-          child: ChatWidget(),
+          child: const ChatWidget(),
         ),
       ),
     );
