@@ -1,12 +1,13 @@
 import 'dart:convert';
-import 'package:char_creator/features/json_view/components/json_universal_widget.dart';
+import 'package:char_creator/features/json_view/components/json_object_widget.dart';
 import 'package:flutter/material.dart';
+
+import 'components/json_object.dart';
 
 class JsonViewExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    String jsonString =
-        '''{"name":"John Doe","age":30,"isAlive":true,"abilities":["Super strength","Flight"],"attributes":{"strength":85,"agility":70,"intelligence":60}}''';
+    String jsonString = "{\"value\": \"Hi there\"}";
 
     Map<String, dynamic> jsonData = jsonDecode(jsonString);
 
@@ -14,14 +15,9 @@ class JsonViewExample extends StatelessWidget {
       appBar: AppBar(
         title: Text('Dynamic JSON Display'),
       ),
-      body: ListView(
-        children: jsonData.keys.map((key) {
-          return JsonUniversalWidet(
-            pathInJson: key,
-            value: jsonData[key],
-          );
-        }).toList(),
-      ),
+      body: JsonObjectWidget(
+          jsonObject: JsonObject.from(jsonData),
+        ),
     );
   }
 
