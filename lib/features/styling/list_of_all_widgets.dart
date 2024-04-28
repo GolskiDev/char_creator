@@ -3,6 +3,8 @@ import 'package:char_creator/features/basic_chat_support/chat_widget.dart';
 import 'package:char_creator/features/prompt_list/prompt_list_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../json_view/json_view_example.dart';
+
 class ListOfAllWidgets extends StatelessWidget {
   const ListOfAllWidgets({super.key});
 
@@ -14,6 +16,7 @@ class ListOfAllWidgets extends StatelessWidget {
       ChatWidget(
         messagesStream: chatManager?.messagesStream() ?? const Stream.empty(),
       ),
+      JsonViewExample(),
     ];
     return SingleChildScrollView(
       child: Padding(
