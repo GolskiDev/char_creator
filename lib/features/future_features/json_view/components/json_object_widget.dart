@@ -23,23 +23,22 @@ class JsonObjectWidget extends StatelessWidget {
     } else {
       body = const Text('Unsupported type');
     }
-    return Container(
-      padding: const EdgeInsets.all(4),
-      child: body,
+    return Card.outlined(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: body,
+      ),
     );
   }
 
   Column _handleList() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (jsonObject.title != null && jsonObject.title!.isNotEmpty)
           Text(jsonObject.title!),
         for (final JsonObject item in jsonObject.value)
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: JsonObjectWidget(jsonObject: item),
-          ),
+          JsonObjectWidget(jsonObject: item),
       ],
     );
   }

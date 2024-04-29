@@ -23,7 +23,7 @@ class ListOfAllWidgets extends StatelessWidget {
           if (snapshot.hasData) {
             final JsonObject jsonObject = JsonObject.from(snapshot.data!);
             return SingleChildScrollView(
-              child: JsonObjectWidget(jsonObject: jsonObject),
+              child: JsonObjectWidget(jsonObject: jsonObject.value.first),
             );
           } else {
             return const Center(child: CircularProgressIndicator());
