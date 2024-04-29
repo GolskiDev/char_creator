@@ -24,7 +24,7 @@ class JsonObjectWidget extends StatelessWidget {
       body = const Text('Unsupported type');
     }
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(4),
       child: body,
     );
   }
@@ -37,7 +37,7 @@ class JsonObjectWidget extends StatelessWidget {
           Text(jsonObject.title!),
         for (final JsonObject item in jsonObject.value)
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(4.0),
             child: JsonObjectWidget(jsonObject: item),
           ),
       ],
