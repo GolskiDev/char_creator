@@ -1,10 +1,10 @@
 import 'package:char_creator/features/basic_chat_support/chat_manager_provider.dart';
 import 'package:char_creator/features/basic_chat_support/chat_widget.dart';
+import 'package:char_creator/features/future_features/json_view/components/json_object.dart';
+import 'package:char_creator/features/future_features/json_view/components/json_object_widget.dart';
 import 'package:char_creator/features/prompt_list/prompt_list_widget.dart';
 import 'package:char_creator/utils/local_assets_json_loader.dart';
 import 'package:flutter/material.dart';
-
-import '../future_features/json_view/json_view_example.dart';
 
 class ListOfAllWidgets extends StatelessWidget {
   const ListOfAllWidgets({super.key});
@@ -21,8 +21,9 @@ class ListOfAllWidgets extends StatelessWidget {
         future: LocalAssetsJsonLoader.loadJson('assets/character.json'),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return JsonViewExample(
-              map: snapshot.data!,
+            final JsonObject jsonObject = JsonObject.from(snapshot.data!);
+            return SingleChildScrollView(
+              child: JsonObjectWidget(jsonObject: jsonObject),
             );
           } else {
             return const Center(child: CircularProgressIndicator());
