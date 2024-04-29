@@ -30,14 +30,18 @@ class JsonObjectWidget extends StatelessWidget {
   }
 
   Column _handleList() {
-    final listOfObjects = JsonObject.listFromList(jsonObject.value);
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      if (jsonObject.title != null && jsonObject.title!.isNotEmpty)
-        Text(jsonObject.title!),
-      ...listOfObjects.map((object) {
-        return JsonObjectWidget(jsonObject: object);
-      }),
-    ]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (jsonObject.title != null && jsonObject.title!.isNotEmpty)
+          Text(jsonObject.title!),
+        for (final JsonObject item in jsonObject.value)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: JsonObjectWidget(jsonObject: item),
+          ),
+      ],
+    );
   }
 
   Widget _handlePrimitiveValue() {

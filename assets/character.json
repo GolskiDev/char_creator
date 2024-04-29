@@ -1,0 +1,53 @@
+{
+  "character": {
+    "value": {
+      "name": "Thaldrin Ironheart",
+      "race": "Dwarf",
+      "class": "Fighter",
+      "level": 5,
+      "background": "Guild Artisan",
+      "alignment": "Lawful Good",
+      "strength": 16,
+      "dexterity": 12,
+      "constitution": 16,
+      "intelligence": 10,
+      "wisdom": 10,
+      "charisma": 8,
+      "hitpoints": 45,
+      "armorClass": 18,
+      "speed": 25,
+      "proficiencies": [
+        "Smith's Tools",
+        "Battleaxe",
+        "Handaxe",
+        "Throwing Hammer",
+        "Light Armor",
+        "Medium Armor",
+        "Shields"
+      ],
+      "languages": [
+        "Common",
+        "Dwarvish"
+      ],
+      "equipment": [
+        "Battleaxe",
+        "Chain Mail",
+        "Shield",
+        "Explorer's Pack",
+        "Smith's Tools",
+        "Insignia of his Guild",
+        "Traveler's Clothes"
+      ],
+      "featuresAndTraits": [
+        "Dwarven Resilience",
+        "Dwarven Combat Training",
+        "Tool Proficiency: Smith's Tools",
+        "Guild Membership (Guild Artisan)"
+      ],
+      "personalityTraits": "I always have a plan for what to do when things go wrong.",
+      "ideals": "Fairness. We all do the work, so we all share in the rewards.",
+      "bonds": "My guild is the most important thing in my life, even when they are far from me.",
+      "flaws": "I have a hard time trusting in my allies."
+    }
+  }
+}

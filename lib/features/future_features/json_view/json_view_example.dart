@@ -1,22 +1,20 @@
-import 'dart:convert';
 import 'package:char_creator/features/future_features/json_view/components/json_object_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'components/json_object.dart';
 
 class JsonViewExample extends StatelessWidget {
+  const JsonViewExample({super.key, required this.map});
+  final Map<String, dynamic> map;
+
   @override
   Widget build(BuildContext context) {
-    String jsonString = "{\"value\": \"Hi there\"}";
-
-    Map<String, dynamic> jsonData = jsonDecode(jsonString);
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Dynamic JSON Display'),
       ),
       body: JsonObjectWidget(
-        jsonObject: JsonObject.from(jsonData),
+        jsonObject: JsonObject.from(map),
       ),
     );
   }

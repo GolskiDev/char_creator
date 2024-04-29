@@ -1,5 +1,3 @@
-import 'package:collection/collection.dart';
-
 class JsonObject {
   final dynamic value;
   final String? title;
@@ -11,64 +9,29 @@ class JsonObject {
     this.key,
   });
 
-  factory JsonObject.from(something) {
-    if (something is String ||
-        something is int ||
-        something is double ||
-        something is bool) {
-      return JsonObject(value: something);
-    } else if (something is List<dynamic>) {
-      return JsonObject(
-        value: listFromList(something),
-      );
-    } else if (something is Map<String, dynamic>) {
-      final value = fromJson(map: something);
-      if (value is JsonObject) {
-        return value;
-      } else if (value is List<JsonObject>) {
-        return JsonObject(value: value);
-      } else {
-        throw Exception('Unsupported type');
+  factory JsonObject.from(dynamic value, {String? key}) {
+    if (value is List) {
+      return JsonObject.listFromList(value, key: key);
+    } else if (value is Map<String, dynamic>) {
+      if (value.containsKey('value')) {
+        return JsonObject.from(value['value'], key: key);
       }
+      return JsonObject.mapFromMap(value);
     } else {
-      throw Exception('Unsupported type');
+      return JsonObject(value: value, key: key);
     }
   }
 
-  static List<JsonObject> listFromList(List<dynamic> list) {
-    return list
-        .map((item) {
-          try {
-            return JsonObject.from(item);
-          } catch (e) {
-            return null;
-          }
-        })
-        .whereNotNull()
+  factory JsonObject.mapFromMap(Map<String, dynamic> map) {
+    final List<JsonObject> list = map.entries
+        .map((entry) => JsonObject.from(entry.value, key: entry.key))
         .toList();
+    return JsonObject(value: list);
   }
 
-  /// either JsonObject or List<JsonObject>
-  static dynamic fromJson({
-    required Map<String, dynamic> map,
-    String? sourceKey,
-  }) {
-    if (map.containsKey('value')) {
-      return JsonObject(
-        value: map['value'],
-        title: map['title'],
-        key: sourceKey,
-      );
-    }
-    return map.keys
-        .map((key) {
-          try {
-            return fromJson(map: map[key], sourceKey: key);
-          } catch (e) {
-            return null;
-          }
-        })
-        .whereNotNull()
-        .toList();
+  factory JsonObject.listFromList(List<dynamic> list, {String? key}) {
+    final List<JsonObject> listOfObjects =
+        list.map((value) => JsonObject.from(value)).toList();
+    return JsonObject(value: listOfObjects, key: key);
   }
 }
