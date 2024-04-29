@@ -111,4 +111,59 @@ void main() {
     expect(jsonObject.value[1].value, JsonObject.from(map['hello']).value);
     expect(jsonObject.value[1].key, 'hello');
   });
+
+  test('Should give proper keys', () {
+    final Map<String, dynamic> map = {
+      "character": {
+        "value": {
+          "name": "Thaldrin Ironheart",
+          "wisdom": 10,
+          "languages": ["Common", "Dwarvish"],
+          "equipment": [
+            "Battleaxe",
+          ],
+          "featuresAndTraits": [
+            "Dwarven Resilience",
+          ],
+        }
+      }
+    };
+    final JsonObject jsonObject = JsonObject.from(map);
+
+    expect(jsonObject.value, isA<List<JsonObject>>());
+    expect((jsonObject.value as List<JsonObject>).length, map.length);
+    expect(jsonObject.value[0].value, isA<List<JsonObject>>());
+    //expect proper key
+    expect(jsonObject.value[0].key, 'character');
+    expect(
+      (jsonObject.value[0].value as List<JsonObject>).length,
+      map['character']['value'].length,
+    );
+    expect(
+      jsonObject.value[0].value[0].value,
+      JsonObject.from(map['character']['value']['name']).value,
+    );
+    //expect proper key
+    expect(jsonObject.value[0].value[0].key, 'name');
+    expect(
+      jsonObject.value[0].value[1].value,
+      JsonObject.from(map['character']['value']['wisdom']).value,
+    );
+    //expect proper key
+    expect(jsonObject.value[0].value[1].key, 'wisdom');
+    expect(
+      jsonObject.value[0].value[2].value,
+      isA<List<JsonObject>>(),
+    );
+    //expect proper key
+    expect(jsonObject.value[0].value[2].key, 'languages');
+    expect(
+      (jsonObject.value[0].value[2].value as List<JsonObject>).length,
+      map['character']['value']['languages'].length,
+    );
+    expect(
+      jsonObject.value[0].value[2].value[0].value,
+      JsonObject.from(map['character']['value']['languages'][0]).value,
+    );
+  });
 }
