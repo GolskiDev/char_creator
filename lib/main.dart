@@ -1,6 +1,7 @@
 import 'package:char_creator/features/basic_chat_support/chat_manager.dart';
 import 'package:char_creator/features/basic_chat_support/chat_manager_provider.dart';
 import 'package:char_creator/features/styling/list_of_all_widgets.dart';
+import 'package:char_creator/features/styling/main_theme.dart';
 import 'package:flutter/material.dart';
 
 import 'features/basic_chat_support/chat_widget.dart';
@@ -22,7 +23,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(),
+      theme: mainTheme,
       home: Scaffold(
         body: ChatManagerProvider(
           chatManager: ChatManager(),
