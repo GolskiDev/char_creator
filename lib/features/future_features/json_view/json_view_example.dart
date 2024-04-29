@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:char_creator/features/json_view/components/json_object_widget.dart';
+import 'package:char_creator/features/future_features/json_view/components/json_object_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'components/json_object.dart';
@@ -16,8 +16,8 @@ class JsonViewExample extends StatelessWidget {
         title: Text('Dynamic JSON Display'),
       ),
       body: JsonObjectWidget(
-          jsonObject: JsonObject.from(jsonData),
-        ),
+        jsonObject: JsonObject.from(jsonData),
+      ),
     );
   }
 

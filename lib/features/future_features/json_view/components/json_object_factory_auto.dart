@@ -1,4 +1,4 @@
-import 'package:char_creator/features/json_view/components/json_object.dart';
+import 'package:char_creator/features/future_features/json_view/components/json_object.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
