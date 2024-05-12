@@ -1,9 +1,7 @@
 import 'package:char_creator/features/basic_chat_support/chat_manager_provider.dart';
 import 'package:char_creator/features/basic_chat_support/chat_widget.dart';
-import 'package:char_creator/features/future_features/json_view/components/json_object.dart';
-import 'package:char_creator/features/future_features/json_view/components/json_object_widget.dart';
+import 'package:char_creator/features/character/character_widget.dart';
 import 'package:char_creator/features/prompt_list/prompt_list_widget.dart';
-import 'package:char_creator/utils/local_assets_json_loader.dart';
 import 'package:flutter/material.dart';
 
 class ListOfAllWidgets extends StatelessWidget {
@@ -13,22 +11,10 @@ class ListOfAllWidgets extends StatelessWidget {
   Widget build(BuildContext context) {
     final chatManager = ChatManagerProvider.of(context)?.chatManager;
     final listOfWidgets = [
+      CharacterWidget(),
       PromptListWidget(),
       ChatWidget(
         messagesStream: chatManager?.messagesStream() ?? const Stream.empty(),
-      ),
-      FutureBuilder(
-        future: LocalAssetsJsonLoader.loadJson('assets/character.json'),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final JsonObject jsonObject = JsonObject.from(snapshot.data!);
-            return SingleChildScrollView(
-              child: JsonObjectWidget(jsonObject: jsonObject.value.first),
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
       ),
     ];
     return SingleChildScrollView(
