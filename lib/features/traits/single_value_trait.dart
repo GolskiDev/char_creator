@@ -1,7 +1,4 @@
-import 'dart:developer';
-
-import 'trait.dart';
-import 'trait_value.dart';
+part of 'trait.dart';
 
 class SingleValueTrait extends Trait {
   final TraitValue? selectedValue;
@@ -12,6 +9,26 @@ class SingleValueTrait extends Trait {
     this.options = const {},
     required super.traitKey,
   });
+
+  factory SingleValueTrait.fromTraitValueModels(
+    String traitKey,
+    List<TraitValueModel> traitValues,
+  ) {
+    final myTraitValues = traitValues.where((traitValueModel) {
+      return traitValueModel.traitKey == traitKey;
+    });
+    final selectedValue = myTraitValues.firstWhereOrNull(
+      (traitValueModel) => traitValueModel.isSelected,
+    )?.traitValue;
+    final options = myTraitValues.map((traitValueModel) {
+      return traitValueModel.traitValue;
+    }).toSet();
+    return SingleValueTrait(
+      selectedValue: selectedValue,
+      options: options,
+      traitKey: traitKey,
+    );
+  }
 
   SingleValueTrait _copyWith({
     TraitValue? Function()? selectedValue,

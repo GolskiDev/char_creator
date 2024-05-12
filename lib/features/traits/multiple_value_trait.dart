@@ -1,7 +1,4 @@
-import 'dart:developer';
-
-import 'trait.dart';
-import 'trait_value.dart';
+part of 'trait.dart';
 
 class MultipleValueTrait extends Trait {
   final Set<TraitValue> _selectedValues;
@@ -13,6 +10,28 @@ class MultipleValueTrait extends Trait {
     required super.traitKey,
   })  : _selectedValues = selectedValues,
         _options = options;
+
+  factory MultipleValueTrait.fromTraitValueModels(
+    String traitKey,
+    List<TraitValueModel> traitValues,
+  ) {
+    final myTraitValues = traitValues.where((traitValueModel) {
+      return traitValueModel.traitKey == traitKey;
+    });
+    final selectedValues = myTraitValues.where(
+      (traitValueModel) => traitValueModel.isSelected,
+    ).map((traitValueModel) {
+      return traitValueModel.traitValue;
+    }).toSet();
+    final options = myTraitValues.map((traitValueModel) {
+      return traitValueModel.traitValue;
+    }).toSet();
+    return MultipleValueTrait(
+      selectedValues: selectedValues,
+      options: options,
+      traitKey: traitKey,
+    );
+  }
 
   _copyWith({
     Set<TraitValue>? Function()? selectedValues,
