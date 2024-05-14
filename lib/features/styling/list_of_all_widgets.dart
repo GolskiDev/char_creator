@@ -4,6 +4,8 @@ import 'package:char_creator/features/character/character_widget.dart';
 import 'package:char_creator/features/prompt_list/prompt_list_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../character/character.dart';
+
 class ListOfAllWidgets extends StatelessWidget {
   const ListOfAllWidgets({super.key});
 
@@ -11,7 +13,12 @@ class ListOfAllWidgets extends StatelessWidget {
   Widget build(BuildContext context) {
     final chatManager = ChatManagerProvider.of(context)?.chatManager;
     final listOfWidgets = [
-      CharacterWidget(),
+      CharacterWidget(
+        character: Character(
+          id: '1',
+          name: 'Gandalf',
+        )
+      ),
       PromptListWidget(),
       ChatWidget(
         messagesStream: chatManager?.messagesStream() ?? const Stream.empty(),
