@@ -12,7 +12,6 @@ class Character {
   final List<String>? flaws;
   final String? appearance;
   final List<String>? alliesAndOrganizations;
-  final List<String>? additionalFeaturesAndTraits;
   final String? treasure;
   final String? characterHistory;
 
@@ -30,7 +29,6 @@ class Character {
     this.flaws,
     this.appearance,
     this.alliesAndOrganizations,
-    this.additionalFeaturesAndTraits,
     this.treasure,
     this.characterHistory,
   });
@@ -66,7 +64,6 @@ class Character {
       flaws: flaws ?? this.flaws,
       appearance: appearance ?? this.appearance,
       alliesAndOrganizations: alliesAndOrganizations ?? this.alliesAndOrganizations,
-      additionalFeaturesAndTraits: additionalFeaturesAndTraits ?? this.additionalFeaturesAndTraits,
       treasure: treasure ?? this.treasure,
       characterHistory: characterHistory ?? this.characterHistory,
     );
