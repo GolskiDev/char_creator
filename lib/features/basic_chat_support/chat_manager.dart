@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../uncategorized_use_cases.dart';
 import 'lc.dart';
 
 sealed class ChatSender {}
@@ -42,16 +43,23 @@ class ChatManager {
     _messagesController.add(_currentMessages);
   }
 
-  addUserMessage(String message) {
+  addUserMessage(String message) async {
     final chatMessage = ChatMessage(
       message,
       user,
       DateTime.now(),
     );
     addMessage(chatMessage);
-    _lc.promptChat(message).then((response) {
-      addBotMessage(response);
-    });
+    final response = await _lc.askChatForJsonWithInstructions(message);
+     final responseMessage = response['messege'];
+      if (responseMessage != null) {
+        addBotMessage(responseMessage);
+      }
+      final trait = response['trait'];
+      UncategorizedUseCases().updateCharacterBasedOnResponse(
+        responseMessage,
+        'name',
+      );
   }
 
   addBotMessage(String message) {

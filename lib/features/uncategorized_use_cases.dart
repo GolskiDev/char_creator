@@ -1,6 +1,28 @@
+import 'dart:convert';
+
+import 'package:char_creator/features/character/character_temp_data_source.dart';
+
 import 'character/character.dart';
 
 class UncategorizedUseCases {
+  updateCharacterBasedOnResponse(
+    String response,
+    String traitId,
+  ) {
+    final CharacterTempDataSource dataSource = CharacterTempDataSource();
+    final characterBeforeUpdate = dataSource.getAllCharacters().first;
+    final (traitId, traitValue) = getTraitIdAndValueFromJson(response);
+    final updatedCharacter = addToCharacter(traitId, traitValue, characterBeforeUpdate);
+    dataSource.updateCharacter(updatedCharacter);
+  }
+
+  getTraitIdAndValueFromJson(String json) {
+    final jsonMap = jsonDecode(json);
+    final traitId = jsonMap['traitId'];
+    final traitValue = jsonMap['traitValue'];
+    return (traitId, traitValue);
+  }
+
   Character addToCharacter(
       String traitId, String traitValue, Character character) {
     switch (traitId) {
@@ -26,8 +48,8 @@ class UncategorizedUseCases {
         return character.copyWith(equipment: [...equipment, traitValue]);
       case 'personalityTraits':
         final personalityTraits = character.personalityTraits ?? [];
-        return character.copyWith(
-            personalityTraits: [...personalityTraits, traitValue]);
+        return character
+            .copyWith(personalityTraits: [...personalityTraits, traitValue]);
       case 'ideals':
         final ideals = character.ideals ?? [];
         return character.copyWith(ideals: [...ideals, traitValue]);
