@@ -7,4 +7,11 @@ class ChatUtils {
       firstName: 'User',
     );
   }
+
+  static chatTypes.User get botUser {
+    return const chatTypes.User(
+      id: '2',
+      firstName: 'Bot',
+    );
+  }
 }

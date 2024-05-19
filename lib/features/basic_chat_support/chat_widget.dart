@@ -1,3 +1,4 @@
+import 'package:char_creator/features/basic_chat_support/chat_use_cases.dart';
 import 'package:char_creator/features/basic_chat_support/chat_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -22,7 +23,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 
-  void _onSendPressed(chatTypes.PartialText message) {
+  void _onSendPressed(chatTypes.PartialText message) async {
     final newMessage = chatTypes.TextMessage(
       author: ChatUtils.chatUser,
       id: messages.length.toString(),
@@ -30,6 +31,15 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
     setState(() {
       messages.insert(0, newMessage);
+    });
+    final response = await ChatUseCases.getChatResponse(message.text);
+    final botMessage = chatTypes.TextMessage(
+      author: ChatUtils.botUser,
+      id: messages.length.toString(),
+      text: response,
+    );
+    setState(() {
+      messages.insert(0, botMessage);
     });
   }
 }
