@@ -1,8 +1,10 @@
+import 'package:char_creator/features/basic_chat_support/chat_bot.dart';
 import 'package:char_creator/features/basic_chat_support/chat_use_cases.dart';
 import 'package:char_creator/features/basic_chat_support/chat_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as chatTypes;
+import 'package:langchain/langchain.dart';
 
 class ChatWidget extends StatefulWidget {
   const ChatWidget({super.key});
@@ -13,6 +15,9 @@ class ChatWidget extends StatefulWidget {
 
 class _ChatWidgetState extends State<ChatWidget> {
   List<chatTypes.Message> messages = [];
+  final ChatBot chatBot = ChatBotWithMemory(
+    ConversationBufferMemory(returnMessages: true),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +37,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     setState(() {
       messages.insert(0, newMessage);
     });
-    final response = await ChatUseCases.getChatResponse(message.text);
+    final response = await chatBot.sendUserMessage(message.text);
     final botMessage = chatTypes.TextMessage(
       author: ChatUtils.botUser,
       id: messages.length.toString(),
