@@ -34,3 +34,78 @@ class ChatBot {
     return response;
   }
 }
+
+class ChatBotWithMemory implements ChatBot {
+  final chat = ChatOpenAI(apiKey: chatGPTApiKey);
+  final ConversationBufferMemory memory;
+
+  ChatBotWithMemory(this.memory);
+
+  @override
+  Future<String> sendUserMessage(String prompt) async {
+    final promptTemplate = ChatPromptTemplate.fromPromptMessages([
+      const MessagesPlaceholder(variableName: 'history'),
+      HumanChatMessagePromptTemplate.fromTemplate(
+        '{input}',
+      ),
+    ]);
+
+    const stringOutputParser = StringOutputParser<ChatResult>();
+
+    final chain = Runnable.fromMap({
+          'input': Runnable.passthrough(),
+          'history': Runnable.mapInput(
+            (_) async {
+              final m = await memory.loadMemoryVariables();
+              return m['history'];
+            },
+          ),
+        }) |
+        promptTemplate |
+        chat |
+        stringOutputParser;
+
+    final response = await chain.invoke({'input': prompt}) as String;
+
+    await memory.saveContext(
+      inputValues: {'input': prompt},
+      outputValues: {'output': response},
+    );
+
+    return response;
+  }
+
+  @override
+  Future<String> sendSystemMessage(String prompt) async {
+    final promptTemplate = ChatPromptTemplate.fromPromptMessages([
+      const MessagesPlaceholder(variableName: 'history'),
+      SystemChatMessagePromptTemplate.fromTemplate(
+        '{input}',
+      ),
+    ]);
+
+    const stringOutputParser = StringOutputParser<ChatResult>();
+
+    final chain = Runnable.fromMap({
+          'input': Runnable.passthrough(),
+          'history': Runnable.mapInput(
+            (_) async {
+              final m = await memory.loadMemoryVariables();
+              return m['history'];
+            },
+          ),
+        }) |
+        promptTemplate |
+        chat |
+        stringOutputParser;
+
+    final response = await chain.invoke({'input': prompt}) as String;
+
+    await memory.saveContext(
+      inputValues: {'input': prompt},
+      outputValues: {'output': response},
+    );
+
+    return response;
+  }
+}
