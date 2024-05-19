@@ -1,3 +1,4 @@
+import 'package:char_creator/features/basic_chat_support/chat_widget.dart';
 import 'package:char_creator/features/character/character_widget.dart';
 import 'package:char_creator/features/prompt_list/prompt_list_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,9 @@ class ListOfAllWidgets extends StatelessWidget {
         name: 'Gandalf',
       )),
       PromptListWidget(),
+      Scaffold(
+        body: ChatWidget(),
+      )
     ];
     return SingleChildScrollView(
       child: Padding(
