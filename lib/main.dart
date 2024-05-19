@@ -1,3 +1,4 @@
+import 'package:char_creator/features/basic_chat_support/chat_widget.dart';
 import 'package:char_creator/features/styling/list_of_all_widgets.dart';
 import 'package:char_creator/features/styling/main_theme.dart';
 import 'package:flutter/material.dart';
@@ -39,15 +40,9 @@ class _PageViewWidgetState extends State<PageViewWidget> {
   Widget build(BuildContext context) {
     return PageView(
       controller: _pageController,
-      children: [],
-    );
-  }
-
-  goToChat() {
-    _pageController.animateToPage(
-      1,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
+      children: [
+        ChatWidget(),
+      ],
     );
   }
 }
