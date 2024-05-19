@@ -1,12 +1,6 @@
-import 'package:char_creator/features/basic_chat_support/chat_manager.dart';
-import 'package:char_creator/features/basic_chat_support/chat_manager_provider.dart';
 import 'package:char_creator/features/styling/list_of_all_widgets.dart';
 import 'package:char_creator/features/styling/main_theme.dart';
 import 'package:flutter/material.dart';
-
-import 'features/basic_chat_support/chat_widget.dart';
-import 'features/prompt_list/prompt_list_widget.dart';
-import 'features/prompt_list/prompt_model.dart';
 
 void main() {
   runApp(const MainApp());
@@ -25,10 +19,7 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       theme: mainTheme,
       home: Scaffold(
-        body: ChatManagerProvider(
-          chatManager: ChatManager(),
-          child: const ListOfAllWidgets(),
-        ),
+        body: ListOfAllWidgets(),
       ),
     );
   }
@@ -46,25 +37,10 @@ class _PageViewWidgetState extends State<PageViewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final chatManager = ChatManagerProvider.of(context)?.chatManager;
     return PageView(
       controller: _pageController,
-      children: [
-        PromptListWidget(
-          onPromptSelected: chatManager != null
-              ? (prompt) => _onPromptSelected(chatManager, prompt)
-              : null,
-        ),
-        ChatWidget(
-          messagesStream: chatManager?.messagesStream() ?? const Stream.empty(),
-        ),
-      ],
+      children: [],
     );
-  }
-
-  _onPromptSelected(ChatManager chatManager, PromptModel promptModel) {
-    chatManager.addSystemMessage(promptModel.prompt);
-    goToChat();
   }
 
   goToChat() {

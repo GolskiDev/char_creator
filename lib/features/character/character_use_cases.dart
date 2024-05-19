@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:char_creator/features/character/character_temp_data_source.dart';
 
-import 'character/character.dart';
+import 'character.dart';
 
 class UncategorizedUseCases {
   updateCharacterBasedOnResponse(
@@ -12,7 +12,8 @@ class UncategorizedUseCases {
     final CharacterTempDataSource dataSource = CharacterTempDataSource();
     final characterBeforeUpdate = dataSource.getAllCharacters().first;
     final (traitId, traitValue) = getTraitIdAndValueFromJson(response);
-    final updatedCharacter = addToCharacter(traitId, traitValue, characterBeforeUpdate);
+    final updatedCharacter =
+        addToCharacter(traitId, traitValue, characterBeforeUpdate);
     dataSource.updateCharacter(updatedCharacter);
   }
 
@@ -24,7 +25,10 @@ class UncategorizedUseCases {
   }
 
   Character addToCharacter(
-      String traitId, String traitValue, Character character) {
+    String traitId,
+    String traitValue,
+    Character character,
+  ) {
     switch (traitId) {
       case 'name':
         return character.copyWith(name: traitValue);

@@ -1,5 +1,3 @@
-import 'package:char_creator/features/basic_chat_support/chat_manager_provider.dart';
-import 'package:char_creator/features/basic_chat_support/chat_widget.dart';
 import 'package:char_creator/features/character/character_widget.dart';
 import 'package:char_creator/features/prompt_list/prompt_list_widget.dart';
 import 'package:flutter/material.dart';
@@ -11,18 +9,13 @@ class ListOfAllWidgets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chatManager = ChatManagerProvider.of(context)?.chatManager;
     final listOfWidgets = [
       CharacterWidget(
-        character: Character(
-          id: '1',
-          name: 'Gandalf',
-        )
-      ),
+          character: Character(
+        id: '1',
+        name: 'Gandalf',
+      )),
       PromptListWidget(),
-      ChatWidget(
-        messagesStream: chatManager?.messagesStream() ?? const Stream.empty(),
-      ),
     ];
     return SingleChildScrollView(
       child: Padding(
