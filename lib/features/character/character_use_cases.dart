@@ -1,34 +1,38 @@
-import 'dart:convert';
-
 import 'package:char_creator/features/character/character_temp_data_source.dart';
 
 import 'character.dart';
 
 class UncategorizedUseCases {
   updateCharacterBasedOnResponse(
-    String response,
-    String traitId,
-  ) {
-    final CharacterTempDataSource dataSource = CharacterTempDataSource();
-    final characterBeforeUpdate = dataSource.getAllCharacters().first;
-    final (traitId, traitValue) = getTraitIdAndValueFromJson(response);
-    final updatedCharacter =
-        addToCharacter(traitId, traitValue, characterBeforeUpdate);
-    dataSource.updateCharacter(updatedCharacter);
-  }
-
-  getTraitIdAndValueFromJson(String json) {
-    final jsonMap = jsonDecode(json);
-    final traitId = jsonMap['traitId'];
-    final traitValue = jsonMap['traitValue'];
-    return (traitId, traitValue);
+    Map<String, dynamic> response,
+    CharacterTempDataSource dataSource,
+  ) async {
+    try {
+      Character character =
+          (await dataSource.getAllCharactersStream().first).first;
+      final characterTraits = response['character'];
+      characterTraits.forEach((traitId, traitValue) {
+        character = addToCharacter(traitId, traitValue, character);
+      });
+      dataSource.updateCharacter(character);
+    } catch (e) {
+      print(e);
+      throw Exception('Error updating character based on response');
+    }
   }
 
   Character addToCharacter(
     String traitId,
-    String traitValue,
+    dynamic traitValue,
     Character character,
   ) {
+    // handle case traitVAlue is a list
+    if (traitValue is List) {
+      traitValue.forEach((trait) {
+        addToCharacter(traitId, trait, character);
+      });
+      return character;
+    }
     switch (traitId) {
       case 'name':
         return character.copyWith(name: traitValue);

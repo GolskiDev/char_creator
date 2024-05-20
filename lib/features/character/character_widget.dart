@@ -23,7 +23,16 @@ class CharacterWidget extends StatelessWidget {
             Text('Alignment: ${character.alignment ?? 'Unknown'}'),
             Text('Appearance: ${character.appearance ?? 'Unknown'}'),
             Text('History: ${character.characterHistory ?? 'Unknown'}'),
-            // Add more fields as needed
+            Text('Skills: ${character.skills?.join(', ') ?? 'Unknown'}'),
+            Text('Equipment: ${character.equipment?.join(', ') ?? 'Unknown'}'),
+            Text(
+                'Personality Traits: ${character.personalityTraits?.join(', ') ?? 'Unknown'}'),
+            Text('Ideals: ${character.ideals?.join(', ') ?? 'Unknown'}'),
+            Text('Bonds: ${character.bonds?.join(', ') ?? 'Unknown'}'),
+            Text('Flaws: ${character.flaws?.join(', ') ?? 'Unknown'}'),
+            Text(
+                'Allies and Organizations: ${character.alliesAndOrganizations?.join(', ') ?? 'Unknown'}'),
+            Text('Treasure: ${character.treasure ?? 'Unknown'}'),
           ],
         ),
       ),

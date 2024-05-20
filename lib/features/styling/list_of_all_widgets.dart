@@ -1,8 +1,9 @@
-import 'package:char_creator/features/basic_chat_support/chat_widget.dart';
+import 'package:char_creator/features/character/character_data_source_provider.dart';
 import 'package:char_creator/features/character/character_widget.dart';
 import 'package:char_creator/features/prompt_list/prompt_list_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../basic_chat_support/chat_widget.dart';
 import '../character/character.dart';
 
 class ListOfAllWidgets extends StatelessWidget {
@@ -11,13 +12,24 @@ class ListOfAllWidgets extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final listOfWidgets = [
-      CharacterWidget(
-          character: Character(
-        id: '1',
-        name: 'Gandalf',
-      )),
-      PromptListWidget(),
       Scaffold(
+        body: StreamBuilder<List<Character>>(
+            stream: CharacterDataSourceProvider.of(context)
+                ?.characterTempDataSource
+                .getAllCharactersStream(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final character = snapshot.data?.first;
+                if (character == null) {
+                  return const Text('No character found');
+                }
+                return CharacterWidget(character: character);
+              }
+              return const CircularProgressIndicator();
+            }),
+      ),
+      const PromptListWidget(),
+      const Scaffold(
         body: ChatWidget(),
       )
     ];

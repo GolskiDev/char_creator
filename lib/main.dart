@@ -1,4 +1,6 @@
 import 'package:char_creator/features/basic_chat_support/chat_widget.dart';
+import 'package:char_creator/features/character/character_data_source_provider.dart';
+import 'package:char_creator/features/character/character_temp_data_source.dart';
 import 'package:char_creator/features/styling/list_of_all_widgets.dart';
 import 'package:char_creator/features/styling/main_theme.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +21,11 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: mainTheme,
-      home: Scaffold(
-        body: ListOfAllWidgets(),
+      home: CharacterDataSourceProvider(
+        characterTempDataSource: CharacterTempDataSource(),
+        child: Scaffold(
+          body: ListOfAllWidgets(),
+        ),
       ),
     );
   }

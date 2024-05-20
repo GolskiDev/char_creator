@@ -14,4 +14,42 @@ class ChatUtils {
       firstName: 'Bot',
     );
   }
+
+  static String get extractJsonPrompt {
+    return '''
+Based on this:
+{input}
+
+Extract any of the following traits
+Here are ids for the traits you can extract:
+- name
+- race
+- characterClass
+- skills
+- equipment
+- alignment
+- personalityTraits
+- ideals
+- bonds
+- flaws
+- appearance
+- alliesAndOrganizations
+- treasure
+- characterHistory
+
+return as JSON in the format:
+{jsonFormat}       
+''';
+  }
+
+  static String get jsonFormat {
+    return '''
+\{
+  "character": \{
+    "traitId": "traitValue"
+    "traitId2": "traitValue2"
+  \}
+\}
+''';
+  }
 }
