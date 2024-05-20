@@ -12,6 +12,7 @@ dependencies:
   langchain_openai: ^0.6.1
   flutter:
     sdk: flutter
+  riverpod: ^2.5.1
 
 dev_dependencies:
   flutter_test:
