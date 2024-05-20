@@ -1,6 +1,5 @@
 import 'package:char_creator/features/character/character_data_source_provider.dart';
 import 'package:char_creator/features/character/character_widget.dart';
-import 'package:char_creator/features/prompt_list/prompt_list_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../basic_chat_support/chat_widget.dart';
@@ -28,7 +27,6 @@ class ListOfAllWidgets extends StatelessWidget {
               return const CircularProgressIndicator();
             }),
       ),
-      const PromptListWidget(),
       const Scaffold(
         body: ChatWidget(),
       )
@@ -37,24 +35,25 @@ class ListOfAllWidgets extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(40.0),
         child: Wrap(
-            spacing: 40,
-            runSpacing: 40,
-            children: listOfWidgets.map((widget) {
-              return Container(
-                constraints: BoxConstraints(
-                  maxWidth: 400,
+          spacing: 40,
+          runSpacing: 40,
+          children: listOfWidgets.map((widget) {
+            return Container(
+              constraints: BoxConstraints(
+                maxWidth: 400,
+              ),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                child: AspectRatio(
-                  aspectRatio: 1 / 2,
-                  child: widget,
-                ),
-              );
-            }).toList()),
+              ),
+              child: AspectRatio(
+                aspectRatio: 1 / 2,
+                child: widget,
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
