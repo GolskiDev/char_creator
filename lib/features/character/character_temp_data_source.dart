@@ -44,7 +44,7 @@ class CharacterTempDataSource {
   }
 
   Stream<List<Character>> getAllCharactersStream() {
-    Future.delayed(Duration.zero, () {
+    Future.delayed(Duration(milliseconds: 100), () {
       _updateStream();
     });
     return _streamController.stream;

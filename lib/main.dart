@@ -5,6 +5,10 @@ import 'package:char_creator/features/styling/list_of_all_widgets.dart';
 import 'package:char_creator/features/styling/main_theme.dart';
 import 'package:flutter/material.dart';
 
+import 'features/character/StreamBuilderWithState.dart';
+import 'features/character/character.dart';
+import 'features/character/character_widget.dart';
+
 void main() {
   runApp(const MainApp());
 }
@@ -24,7 +28,7 @@ class _MainAppState extends State<MainApp> {
       home: CharacterDataSourceProvider(
         characterTempDataSource: CharacterTempDataSource(),
         child: Scaffold(
-          body: ListOfAllWidgets(),
+          body: PageViewWidget(),
         ),
       ),
     );
@@ -43,9 +47,27 @@ class _PageViewWidgetState extends State<PageViewWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final characterStream = CharacterDataSourceProvider.of(context)
+        ?.characterTempDataSource
+        .getAllCharactersStream();
     return PageView(
       controller: _pageController,
       children: [
+        if (characterStream != null) ...[
+          StreamBuilderWithState<List<Character>>(
+            stream: characterStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final character = snapshot.data?.first;
+                if (character == null) {
+                  return Center(child: const Text('No character found'));
+                }
+                return CharacterWidget(character: character);
+              }
+              return Center(child: const CircularProgressIndicator());
+            },
+          ),
+        ],
         ChatWidget(),
       ],
     );

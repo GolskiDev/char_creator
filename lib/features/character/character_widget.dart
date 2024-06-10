@@ -4,7 +4,7 @@ import 'character.dart';
 class CharacterWidget extends StatelessWidget {
   final Character character;
 
-  CharacterWidget({required this.character});
+  CharacterWidget({required this.character, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class CharacterWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text(
               character.name ?? 'Unknown',
