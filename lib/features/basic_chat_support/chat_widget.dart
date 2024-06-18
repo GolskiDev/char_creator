@@ -2,13 +2,10 @@ import 'dart:convert';
 
 import 'package:char_creator/features/basic_chat_support/chat_bot.dart';
 import 'package:char_creator/features/basic_chat_support/chat_utils.dart';
-import 'package:char_creator/features/character/character_use_cases.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as chatTypes;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:langchain/langchain.dart';
-
-import '../character/character_data_source_provider.dart';
 
 class ChatWidget extends StatefulWidget {
   const ChatWidget({super.key});
@@ -25,8 +22,6 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final characterDataSource =
-        CharacterDataSourceProvider.of(context)?.characterTempDataSource;
     return Chat(
       messages: messages,
       onSendPressed: _onSendPressed,
@@ -38,13 +33,6 @@ class _ChatWidgetState extends State<ChatWidget> {
         final message = p1 as chatTypes.TextMessage;
         final prompt = message.text;
         final response = await chatBot.extractJson(prompt);
-        if (characterDataSource == null) {
-          return;
-        }
-        UncategorizedUseCases().updateCharacterBasedOnResponse(
-          response,
-          characterDataSource,
-        );
       },
     );
   }
