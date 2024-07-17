@@ -12,6 +12,7 @@ dependencies:
   langchain_openai: ^0.6.1
   flutter:
     sdk: flutter
+  shared_preferences: ^2.2.3
   riverpod: ^2.5.1
   flutter_riverpod: ^2.5.1
 
