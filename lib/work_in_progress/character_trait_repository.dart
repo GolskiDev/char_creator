@@ -43,4 +43,24 @@ class CharacterTraitRepository {
   }
 
   // Example: Implement more CRUD operations as needed
+  // Update an existing character trait
+  Future<void> updateTrait(CharacterTrait updatedTrait) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> traits = prefs.getStringList(_storageKey) ?? [];
+    final int index = traits.indexWhere(
+        (t) => CharacterTrait.fromJson(json.decode(t)).id == updatedTrait.id);
+    if (index != -1) {
+      traits[index] = _encodeTrait(updatedTrait);
+      await prefs.setStringList(_storageKey, traits);
+    }
+  }
+
+// Delete a character trait
+  Future<void> deleteTrait(String traitId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> traits = prefs.getStringList(_storageKey) ?? [];
+    traits.removeWhere(
+        (t) => CharacterTrait.fromJson(json.decode(t)).id == traitId);
+    await prefs.setStringList(_storageKey, traits);
+  }
 }
