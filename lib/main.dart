@@ -1,3 +1,4 @@
+import 'package:char_creator/work_in_progress/list_of_characters_traits.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,7 +14,7 @@ class MainApp extends ConsumerWidget {
     return const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Text('Hello, World!'),
+          child: ListOfCharacterTraitsWidget()
         ),
       ),
     );
