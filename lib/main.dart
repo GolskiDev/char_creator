@@ -1,4 +1,5 @@
 import 'package:char_creator/work_in_progress/character_trait.dart';
+import 'package:char_creator/work_in_progress/views/edit_trait_page.dart';
 import 'package:char_creator/work_in_progress/views/list_of_characters_traits.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,13 +33,22 @@ class TheApp extends StatelessWidget {
         child: ListOfTraitsWrapper(),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          CharacterTraitRepository().saveTrait(
-            SingleValueCharacterTrait(
-              id: 'race',
-              value: 'Human',
+        onPressed: () async {
+          final newValue = await Navigator.of(context).push<String>(
+            MaterialPageRoute<String>(
+              builder: (context) {
+                return const EditStringPage();
+              },
             ),
           );
+          if (newValue != null) {
+            CharacterTraitRepository().saveTrait(
+              SingleValueCharacterTrait(
+                id: "race",
+                value: newValue,
+              ),
+            );
+          }
         },
       ),
     );
