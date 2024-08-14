@@ -1,7 +1,7 @@
 abstract class CharacterTrait {
   final String id;
 
-  CharacterTrait({required this.id});
+  const CharacterTrait({required this.id});
 
   //json
   factory CharacterTrait.fromJson(Map<String, dynamic> json) {
@@ -18,10 +18,17 @@ abstract class CharacterTrait {
 class SingleValueCharacterTrait extends CharacterTrait {
   final String value;
 
-  SingleValueCharacterTrait({
+  const SingleValueCharacterTrait({
     required super.id,
     required this.value,
   });
+
+  SingleValueCharacterTrait copyWith({String? value}) {
+    return SingleValueCharacterTrait(
+      id: id,
+      value: value ?? this.value,
+    );
+  }
 
   factory SingleValueCharacterTrait.fromJson(Map<String, dynamic> json) {
     return SingleValueCharacterTrait(
@@ -41,7 +48,7 @@ class SingleValueCharacterTrait extends CharacterTrait {
 class MultipleValueCharacterTrait extends CharacterTrait {
   final List<String> values;
 
-  MultipleValueCharacterTrait({
+  const MultipleValueCharacterTrait({
     required super.id,
     required this.values,
   });

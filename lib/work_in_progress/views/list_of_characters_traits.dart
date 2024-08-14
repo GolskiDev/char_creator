@@ -3,23 +3,27 @@ import 'package:flutter/material.dart';
 
 import 'character_trait_page.dart';
 
-final exampleSingleTraits = [
+const exampleSingleTraits = [
   SingleValueCharacterTrait(id: "nickname", value: "Joshua"),
   SingleValueCharacterTrait(id: "race", value: "Human"),
 ];
 
 class ListOfCharacterTraitsWidget extends StatelessWidget {
-  const ListOfCharacterTraitsWidget({super.key});
+  const ListOfCharacterTraitsWidget({
+    super.key,
+    required this.traits,
+  });
+  final List<CharacterTrait> traits;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       itemBuilder: (context, index) => _characterTrait(
         context,
-        exampleSingleTraits[index],
+        traits.whereType<SingleValueCharacterTrait>().toList()[index],
       ),
       separatorBuilder: (context, index) => SizedBox(height: 12),
-      itemCount: exampleSingleTraits.length,
+      itemCount: traits.length,
     );
   }
 

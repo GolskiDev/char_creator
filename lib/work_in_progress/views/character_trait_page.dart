@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../character_trait.dart';
+import '../character_trait_repository.dart';
 
 class CharacterTraitPage extends HookConsumerWidget {
   const CharacterTraitPage({
@@ -14,6 +15,7 @@ class CharacterTraitPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isEdit = useState(false);
+    final textController = useTextEditingController(text: trait.value);
 
     final displayView = Scaffold(
       appBar: AppBar(
@@ -41,6 +43,7 @@ class CharacterTraitPage extends HookConsumerWidget {
             icon: const Icon(Icons.save),
             onPressed: () {
               isEdit.value = false;
+              _updateTrait(trait, textController.text);
             },
           ),
         ],
@@ -48,14 +51,17 @@ class CharacterTraitPage extends HookConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: TextField(
-          controller: TextEditingController(text: trait.value),
-          onChanged: (value) {
-
-          },
+          controller: textController,
         ),
       ),
     );
 
     return isEdit.value ? editView : displayView;
+  }
+
+  _updateTrait(SingleValueCharacterTrait trait, String newValue) async {
+    final CharacterTraitRepository repository = CharacterTraitRepository();
+    final updatedTrait = trait.copyWith(value: newValue);
+    repository.updateTrait(updatedTrait);
   }
 }
