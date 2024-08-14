@@ -1,4 +1,4 @@
-import 'package:char_creator/work_in_progress/list_of_characters_traits.dart';
+import 'package:char_creator/work_in_progress/views/list_of_characters_traits.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
