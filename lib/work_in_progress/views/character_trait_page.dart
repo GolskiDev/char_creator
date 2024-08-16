@@ -19,6 +19,13 @@ class CharacterTraitPage extends HookConsumerWidget {
         title: Text(trait.id),
         actions: [
           IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              CharacterTraitRepository().deleteTrait(trait.id);
+              Navigator.of(context).pop();
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
               final newValue = await Navigator.of(context).push<String>(
