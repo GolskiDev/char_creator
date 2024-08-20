@@ -3,11 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'character_trait_page.dart';
 
-const exampleSingleTraits = [
-  SingleValueCharacterTrait(id: "nickname", value: "Joshua"),
-  SingleValueCharacterTrait(id: "race", value: "Human"),
-];
-
 class ListOfCharacterTraitsWidget extends StatelessWidget {
   const ListOfCharacterTraitsWidget({
     super.key,

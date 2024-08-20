@@ -14,6 +14,8 @@ class CharacterTraitPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final characterTraitRepository =
+        ref.watch(characterTraitRepositoryProvider);
     final displayView = Scaffold(
       appBar: AppBar(
         title: Text(trait.id),
@@ -21,7 +23,7 @@ class CharacterTraitPage extends HookConsumerWidget {
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
-              CharacterTraitRepository().deleteTrait(trait.id);
+              characterTraitRepository.deleteTrait(trait.id);
               Navigator.of(context).pop();
             },
           ),
@@ -36,7 +38,7 @@ class CharacterTraitPage extends HookConsumerWidget {
                 ),
               );
               if (newValue != null) {
-                _updateTrait(trait, newValue);
+                _updateTrait(characterTraitRepository, trait, newValue);
               }
             },
           ),
@@ -51,8 +53,8 @@ class CharacterTraitPage extends HookConsumerWidget {
     return displayView;
   }
 
-  _updateTrait(SingleValueCharacterTrait trait, String newValue) async {
-    final CharacterTraitRepository repository = CharacterTraitRepository();
+  _updateTrait(CharacterTraitRepository repository,
+      SingleValueCharacterTrait trait, String newValue) async {
     final updatedTrait = trait.copyWith(value: newValue);
     repository.updateTrait(updatedTrait);
   }

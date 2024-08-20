@@ -15,19 +15,23 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const MaterialApp(
-      home: TheApp(),
+    return const ProviderScope(
+      child: MaterialApp(
+        home: TheApp(),
+      ),
     );
   }
 }
 
-class TheApp extends StatelessWidget {
+class TheApp extends ConsumerWidget {
   const TheApp({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final characterTraitRepository =
+        ref.watch(characterTraitRepositoryProvider);
     return Scaffold(
       body: Center(
         child: ListOfTraitsWrapper(),
@@ -42,7 +46,7 @@ class TheApp extends StatelessWidget {
             ),
           );
           if (newValue != null) {
-            CharacterTraitRepository().saveTrait(
+            characterTraitRepository.saveTrait(
               SingleValueCharacterTrait(
                 id: "race",
                 value: newValue,
@@ -55,23 +59,22 @@ class TheApp extends StatelessWidget {
   }
 }
 
-class ListOfTraitsWrapper extends StatelessWidget {
+class ListOfTraitsWrapper extends ConsumerWidget {
   const ListOfTraitsWrapper({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: CharacterTraitRepository().getAllTraits(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final characterTraitRepository =
+        ref.watch(characterTraitRepositoryProvider);
+    return StreamBuilder(
+      stream: characterTraitRepository.stream,
       builder: (context, snapshot) {
-        final data = snapshot.data;
-        if (snapshot.connectionState != ConnectionState.done) {
+        if (!snapshot.hasData) {
           return const CircularProgressIndicator();
         }
-        if (data == null) {
-          return const Text('No traits found');
-        }
+        final data = snapshot.data as List<CharacterTrait>;
         return ListOfCharacterTraitsWidget(
           traits: data,
         );
