@@ -8,21 +8,21 @@ class ListOfCharacterTraitsWidget extends StatelessWidget {
     super.key,
     required this.traits,
   });
-  final List<CharacterTrait> traits;
+  final List<Identifiable> traits;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       itemBuilder: (context, index) => _characterTrait(
         context,
-        traits.whereType<SingleValueCharacterTrait>().toList()[index],
+        traits.whereType<Note>().toList()[index],
       ),
       separatorBuilder: (context, index) => SizedBox(height: 12),
       itemCount: traits.length,
     );
   }
 
-  _characterTrait(BuildContext context, SingleValueCharacterTrait trait) {
+  _characterTrait(BuildContext context, Note trait) {
     return Card(
       child: InkWell(
         onTap: () {

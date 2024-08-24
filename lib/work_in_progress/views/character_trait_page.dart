@@ -10,7 +10,7 @@ class CharacterTraitPage extends HookConsumerWidget {
     required this.trait,
     super.key,
   });
-  final SingleValueCharacterTrait trait;
+  final Note trait;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,7 +54,7 @@ class CharacterTraitPage extends HookConsumerWidget {
   }
 
   _updateTrait(CharacterTraitRepository repository,
-      SingleValueCharacterTrait trait, String newValue) async {
+      Note trait, String newValue) async {
     final updatedTrait = trait.copyWith(value: newValue);
     repository.updateTrait(updatedTrait);
   }

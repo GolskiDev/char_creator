@@ -47,7 +47,7 @@ class TheApp extends ConsumerWidget {
           );
           if (newValue != null) {
             characterTraitRepository.saveTrait(
-              SingleValueCharacterTrait(
+              Note(
                 id: "race",
                 value: newValue,
               ),
@@ -74,7 +74,7 @@ class ListOfTraitsWrapper extends ConsumerWidget {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
         }
-        final data = snapshot.data as List<CharacterTrait>;
+        final data = snapshot.data as List<Identifiable>;
         return ListOfCharacterTraitsWidget(
           traits: data,
         );
