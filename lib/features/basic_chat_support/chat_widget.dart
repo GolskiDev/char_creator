@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:html';
 
 import 'package:char_creator/features/basic_chat_support/chat_bot.dart';
 import 'package:char_creator/features/basic_chat_support/chat_utils.dart';
@@ -21,11 +21,48 @@ class _ChatWidgetState extends State<ChatWidget> {
   );
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    document.onContextMenu.listen((event) => event.preventDefault());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Chat(
       messages: messages,
       onSendPressed: _onSendPressed,
       user: ChatUtils.chatUser,
+      textMessageBuilder: (p0, {required messageWidth, required showName}) {
+        return Container(
+          padding: EdgeInsets.all(8),
+          child: SelectableText(
+            p0.text,
+            contextMenuBuilder: (context, editableTextState) {
+              return ListView(
+                children: [
+                  ListTile(
+                    title: Text('Copy'),
+                    onTap: () {
+                      // editableTextState?.copy();
+                      // Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    title: Text('Translate'),
+                    onTap: () async {
+                      // final response = await chatBot.extractJson(p0.text);
+                      // final translation = jsonDecode(response)['translation'];
+                      // editableTextState?.insertText(translation);
+                      // Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+            },
+          )
+        );
+      },
       onMessageLongPress: (context, p1) async {
         if (p1.author.id == ChatUtils.chatUser.id) {
           return;

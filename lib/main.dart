@@ -1,3 +1,4 @@
+import 'package:char_creator/features/basic_chat_support/chat_widget.dart';
 import 'package:char_creator/work_in_progress/character_trait.dart';
 import 'package:char_creator/work_in_progress/views/edit_trait_page.dart';
 import 'package:char_creator/work_in_progress/views/list_of_characters_traits.dart';
@@ -34,7 +35,7 @@ class TheApp extends ConsumerWidget {
         ref.watch(characterTraitRepositoryProvider);
     return Scaffold(
       body: Center(
-        child: ListOfTraitsWrapper(),
+        child: ChatWidget(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
