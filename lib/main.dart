@@ -19,7 +19,17 @@ class MainApp extends ConsumerWidget {
     return const ProviderScope(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: ChatPage(),
+        home: Row(
+          children: [
+            Expanded(
+              child: ListOfTraitsPage(),
+            ),
+            Expanded(
+              flex: 2,
+              child: ChatPage(),
+            ),
+          ],
+        ),
       ),
     );
   }
