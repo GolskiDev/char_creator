@@ -18,6 +18,7 @@ class MainApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return const ProviderScope(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: ChatPage(),
       ),
     );

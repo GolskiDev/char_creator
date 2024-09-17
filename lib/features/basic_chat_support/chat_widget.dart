@@ -45,12 +45,7 @@ class ChatWidget extends HookWidget {
       textMessageBuilder: (p0, {required messageWidth, required showName}) {
         return Container(
           padding: EdgeInsets.all(8),
-          child: SelectionArea(
-            child: Text(p0.text),
-            onSelectionChanged: (value) {
-              onSelectionChanged?.call(value?.plainText);
-            },
-          ),
+          child: Text(p0.text),
         );
       },
       onMessageLongPress: (context, p1) async {
