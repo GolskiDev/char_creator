@@ -20,32 +20,31 @@ class ChatPage extends HookConsumerWidget {
         ? "Chat"
         : selectedText.value!;
 
-    return SelectionArea(
-      onSelectionChanged: (text) {
-        selectedText.value = text?.plainText;
-      },
-      focusNode: focusNode,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          actions: [
-            if (selectedText.value != null && selectedText.value!.isNotEmpty)
-              IconButton(
-                icon: const Icon(Icons.add),
-                tooltip: "Add trait",
-                onPressed: () {
-                  characterTraitRepository.saveTrait(
-                    Note(
-                      id: selectedText.value!,
-                      value: selectedText.value!,
-                    ),
-                  );
-                  focusNode.unfocus();
-                },
-              ),
-          ],
-        ),
-        body: Center(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          if (selectedText.value != null && selectedText.value!.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.add),
+              iconSize: 40,
+              tooltip: "Add trait",
+              onPressed: () async {
+                final trait = Note(
+                  id: selectedText.value!,
+                  value: selectedText.value!,
+                );
+                await characterTraitRepository.saveTrait(trait);
+                focusNode.unfocus();
+              },
+            ),
+        ],
+      ),
+      body: SelectionArea(
+        onSelectionChanged: (value) {
+          selectedText.value = value?.plainText;
+        },
+        child: Center(
           child: ChatWidget(
             onSelectionChanged: (text) {
               selectedText.value = text;

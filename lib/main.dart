@@ -22,10 +22,11 @@ class MainApp extends ConsumerWidget {
         home: Row(
           children: [
             Expanded(
+              flex: 2,
               child: ListOfTraitsPage(),
             ),
             Expanded(
-              flex: 2,
+              flex: 5,
               child: ChatPage(),
             ),
           ],
@@ -45,7 +46,7 @@ class ListOfTraitsPage extends ConsumerWidget {
     final characterTraitRepository =
         ref.watch(characterTraitRepositoryProvider);
     return Scaffold(
-      body: Center(
+      body: const Center(
         child: ListOfTraitsWrapper(),
       ),
       floatingActionButton: FloatingActionButton(
