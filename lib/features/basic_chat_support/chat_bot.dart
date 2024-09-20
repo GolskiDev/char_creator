@@ -2,6 +2,7 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 
 import '../../secrets.dart';
+import '../../work_in_progress/character_trait.dart';
 import 'chat_utils.dart';
 
 class ChatBot {
@@ -58,12 +59,14 @@ class ChatBotWithMemory implements ChatBot {
 
   @override
   Future<String> sendUserMessage(String prompt) async {
-    final promptTemplate = ChatPromptTemplate.fromPromptMessages([
-      const MessagesPlaceholder(variableName: 'history'),
-      HumanChatMessagePromptTemplate.fromTemplate(
-        '{input}',
-      ),
-    ]);
+    final promptTemplate = ChatPromptTemplate.fromPromptMessages(
+      [
+        const MessagesPlaceholder(variableName: 'history'),
+        HumanChatMessagePromptTemplate.fromTemplate(
+          '{input}',
+        ),
+      ],
+    );
 
     const stringOutputParser = StringOutputParser<ChatResult>();
 
@@ -84,6 +87,50 @@ class ChatBotWithMemory implements ChatBot {
 
     await memory.saveContext(
       inputValues: {'input': prompt},
+      outputValues: {'output': response},
+    );
+
+    return response;
+  }
+
+  @override
+  Future<String> sendUserMessageWithContext(
+    String prompt,
+    List<Note> someContext,
+  ) async {
+    final promptTemplate = ChatPromptTemplate.fromPromptMessages(
+      [
+        const MessagesPlaceholder(variableName: 'history'),
+        HumanChatMessagePromptTemplate.fromTemplate(
+          '{input}',
+        ),
+      ],
+    );
+
+    const stringOutputParser = StringOutputParser<ChatResult>();
+
+    final chain = Runnable.fromMap({
+          'input': Runnable.passthrough(),
+          'history': Runnable.mapInput(
+            (_) async {
+              final m = await memory.loadMemoryVariables();
+              return m['history'];
+            },
+          ),
+        }) |
+        promptTemplate |
+        chat |
+        stringOutputParser;
+
+    final inputWithContext =
+        "$prompt context: ${someContext.map((note) => note.value).join("\n")}";
+
+    final response = await chain.invoke({
+      'input': inputWithContext,
+    }) as String;
+
+    await memory.saveContext(
+      inputValues: {'input': inputWithContext},
       outputValues: {'output': response},
     );
 

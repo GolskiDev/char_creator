@@ -1,12 +1,14 @@
 import 'package:char_creator/features/basic_chat_support/chat_bot.dart';
 import 'package:char_creator/features/basic_chat_support/chat_utils.dart';
+import 'package:char_creator/work_in_progress/views/list_of_characters_traits.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as chatTypes;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:langchain/langchain.dart';
 
-class ChatWidget extends HookWidget {
+class ChatWidget extends HookConsumerWidget {
   const ChatWidget({
     this.onSelectionChanged,
     super.key,
@@ -16,7 +18,8 @@ class ChatWidget extends HookWidget {
   )? onSelectionChanged;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final someContext = ref.watch(selectedNotesProvider);
     final messages = useState<List<chatTypes.Message>>([]);
     final chatBot = useMemoized(() => ChatBotWithMemory(
           ConversationBufferMemory(returnMessages: true),
@@ -29,7 +32,10 @@ class ChatWidget extends HookWidget {
         text: message.text,
       );
       messages.value = [newMessage, ...messages.value];
-      final response = await chatBot.sendUserMessage(message.text);
+      final response = await chatBot.sendUserMessageWithContext(
+        message.text,
+        someContext,
+      );
       final botMessage = chatTypes.TextMessage(
         author: ChatUtils.botUser,
         id: messages.value.length.toString(),
