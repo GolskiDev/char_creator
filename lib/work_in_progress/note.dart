@@ -1,16 +1,12 @@
-abstract class Identifiable {
+import 'identifiable.dart';
+
+class Note implements Identifiable {
+  @override
   final String id;
-
-  const Identifiable({required this.id});
-
-  Map<String, dynamic> toJson();
-}
-
-class Note extends Identifiable {
   final String value;
 
   const Note({
-    required super.id,
+    required this.id,
     required this.value,
   });
 

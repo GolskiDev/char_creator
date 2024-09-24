@@ -4,6 +4,7 @@ import 'package:char_creator/work_in_progress/views/list_of_characters_traits.da
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'work_in_progress/identifiable.dart';
 import 'work_in_progress/note_repository.dart';
 import 'work_in_progress/views/chat_page.dart';
 
