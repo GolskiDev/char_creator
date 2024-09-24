@@ -1,10 +1,10 @@
-import 'package:char_creator/work_in_progress/character_trait.dart';
+import 'package:char_creator/work_in_progress/note.dart';
 import 'package:char_creator/work_in_progress/views/edit_trait_page.dart';
 import 'package:char_creator/work_in_progress/views/list_of_characters_traits.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'work_in_progress/character_trait_repository.dart';
+import 'work_in_progress/note_repository.dart';
 import 'work_in_progress/views/chat_page.dart';
 
 void main() {

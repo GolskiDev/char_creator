@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../character_trait.dart';
-import '../character_trait_repository.dart';
+import '../note.dart';
+import '../note_repository.dart';
 import 'edit_trait_page.dart';
 
 class CharacterTraitPage extends HookConsumerWidget {
@@ -53,8 +53,8 @@ class CharacterTraitPage extends HookConsumerWidget {
     return displayView;
   }
 
-  _updateTrait(CharacterTraitRepository repository,
-      Note trait, String newValue) async {
+  _updateTrait(
+      CharacterTraitRepository repository, Note trait, String newValue) async {
     final updatedTrait = trait.copyWith(value: newValue);
     repository.updateTrait(updatedTrait);
   }

@@ -1,10 +1,10 @@
-import 'package:char_creator/work_in_progress/character_trait_repository.dart';
+import 'package:char_creator/work_in_progress/note_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../features/basic_chat_support/chat_widget.dart';
-import '../character_trait.dart';
+import '../note.dart';
 
 class ChatPage extends HookConsumerWidget {
   const ChatPage({super.key});
