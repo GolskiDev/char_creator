@@ -51,21 +51,24 @@ class ListOfTraitsPage extends ConsumerWidget {
         child: ListOfTraitsWrapper(),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final newValue = await Navigator.of(context).push<String>(
+        onPressed: () {
+          Navigator.of(context).push<String>(
             MaterialPageRoute<String>(
               builder: (context) {
-                return const EditStringPage();
+                return TraitFormPage(
+                  onSavePressed: (formState) {
+                    if (formState.value.isNotEmpty) {
+                      characterTraitRepository.saveTrait(
+                        Note.create(
+                          value: formState.value,
+                        ),
+                      );
+                    }
+                  },
+                );
               },
             ),
           );
-          if (newValue != null) {
-            characterTraitRepository.saveTrait(
-              Note.create(
-                value: newValue,
-              ),
-            );
-          }
         },
       ),
     );

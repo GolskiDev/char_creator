@@ -33,7 +33,12 @@ class CharacterTraitPage extends HookConsumerWidget {
               final newValue = await Navigator.of(context).push<String>(
                 MaterialPageRoute<String>(
                   builder: (context) {
-                    return EditStringPage(initialValue: trait.value);
+                    return TraitFormPage(
+                      initialValue: TraitFormState(
+                        value: trait.value,
+                        tags: [],
+                      ),
+                    );
                   },
                 ),
               );
