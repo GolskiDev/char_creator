@@ -1,21 +1,30 @@
 class TagAssociacionModel {
-  final int id;
-  final int tagId;
-  final int associacionId;
+  final String tagId;
+  final String associacionId;
 
-  TagAssociacionModel({
-    required this.id,
+  const TagAssociacionModel({
     required this.tagId,
     required this.associacionId,
   });
 
+  //equality
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is TagAssociacionModel &&
+        other.tagId == tagId &&
+        other.associacionId == associacionId;
+  }
+
+  @override
+  int get hashCode => tagId.hashCode ^ associacionId.hashCode;
+
   TagAssociacionModel copyWith({
-    int? id,
-    int? tagId,
-    int? associacionId,
+    String? tagId,
+    String? associacionId,
   }) {
     return TagAssociacionModel(
-      id: id ?? this.id,
       tagId: tagId ?? this.tagId,
       associacionId: associacionId ?? this.associacionId,
     );
@@ -23,7 +32,6 @@ class TagAssociacionModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'tagId': tagId,
       'associacionId': associacionId,
     };
@@ -31,7 +39,6 @@ class TagAssociacionModel {
 
   factory TagAssociacionModel.fromJson(Map<String, dynamic> map) {
     return TagAssociacionModel(
-      id: map['id'],
       tagId: map['tagId'],
       associacionId: map['associacionId'],
     );

@@ -61,8 +61,7 @@ class ListOfTraitsPage extends ConsumerWidget {
           );
           if (newValue != null) {
             characterTraitRepository.saveTrait(
-              Note(
-                id: "race",
+              Note.create(
                 value: newValue,
               ),
             );

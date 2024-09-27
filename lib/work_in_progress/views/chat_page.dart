@@ -30,8 +30,7 @@ class ChatPage extends HookConsumerWidget {
               iconSize: 40,
               tooltip: "Add trait",
               onPressed: () async {
-                final trait = Note(
-                  id: selectedText.value!,
+                final trait = Note.create(
                   value: selectedText.value!,
                 );
                 await characterTraitRepository.saveTrait(trait);

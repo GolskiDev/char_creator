@@ -5,10 +5,11 @@ import '../identifiable.dart';
 import 'tag.dart';
 import 'tag_repository_shared_prefs.dart';
 
-final tagsOfObjectProvider = FutureProvider.family<List<Tag>, Identifiable>(
+final tagsOfObjectProvider = FutureProvider.family<Set<Tag>, Identifiable>(
   (ref, object) async {
     final tagRepository = await ref.watch(tagRepositoryProvider.future);
     final tags = tagRepository.getTagsForObject(object);
+    return tags;
   },
 );
 

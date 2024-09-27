@@ -5,20 +5,29 @@ class Note implements Identifiable {
   final String id;
   final String value;
 
-  const Note({
+  const Note._({
     required this.id,
     required this.value,
   });
 
+  factory Note.create({
+    required String value,
+  }) {
+    return Note._(
+      id: IdGenerator.generateId(Note),
+      value: value,
+    );
+  }
+
   Note copyWith({String? value}) {
-    return Note(
+    return Note._(
       id: id,
       value: value ?? this.value,
     );
   }
 
   factory Note.fromJson(Map<String, dynamic> json) {
-    return Note(
+    return Note._(
       id: json['id'],
       value: json['value'],
     );
