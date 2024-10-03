@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'work_in_progress/identifiable.dart';
 import 'work_in_progress/note_repository.dart';
+import 'work_in_progress/tags/tag_providers.dart';
 import 'work_in_progress/views/chat_page.dart';
 
 void main() {
@@ -54,19 +55,17 @@ class ListOfTraitsPage extends ConsumerWidget {
         onPressed: () {
           Navigator.of(context).push<String>(
             MaterialPageRoute<String>(
-              builder: (context) {
-                return TraitFormPage(
-                  onSavePressed: (formState) {
-                    if (formState.value.isNotEmpty) {
-                      characterTraitRepository.saveTrait(
-                        Note.create(
-                          value: formState.value,
-                        ),
-                      );
-                    }
-                  },
-                );
-              },
+              builder: (context) => TraitFormPage(
+                onSavePressed: (formState) {
+                  if (formState.value.isNotEmpty) {
+                    characterTraitRepository.saveTrait(
+                      Note.create(
+                        value: formState.value,
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
           );
         },

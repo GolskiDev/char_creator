@@ -1,12 +1,10 @@
 import 'package:char_creator/work_in_progress/identifiable.dart';
 
-class Tag implements Identifiable {
-  @override
-  final String id;
+class Tag extends Identifiable {
   final String name;
 
-  const Tag._({
-    required this.id,
+  Tag._({
+    required super.id,
     required this.name,
   });
 

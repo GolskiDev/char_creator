@@ -20,12 +20,7 @@ class TraitFormPage extends HookConsumerWidget {
     final textController =
         useTextEditingController(text: initialValue?.value ?? '');
 
-    final allTagsAsync = ref.watch(tagsProvider);
-    final allTags = allTagsAsync.when<List<Tag>>(
-      data: (tags) => tags,
-      loading: () => [],
-      error: (error, stackTrace) => [],
-    );
+    final allTags = ref.watch(tagsProvider).asData?.value ?? [];
 
     final formState = useState(
       TraitFormState(
@@ -68,7 +63,7 @@ class TraitFormPage extends HookConsumerWidget {
             child: TagSelector(
               tags: allTags,
               selectedTags: formState.value.tags,
-              onTagPressed: (context, ref, tag) {
+              onTagPressed: (tag) {
                 onTagPressed(
                   formState,
                   tag,

@@ -1,12 +1,10 @@
 import 'identifiable.dart';
 
-class Note implements Identifiable {
-  @override
-  final String id;
+class Note extends Identifiable {
   final String value;
 
   const Note._({
-    required this.id,
+    required super.id,
     required this.value,
   });
 

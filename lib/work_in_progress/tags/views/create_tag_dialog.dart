@@ -10,6 +10,7 @@ class CreateTagDialog extends HookConsumerWidget {
     const titleText = "Add New Tag";
     const submitText = 'Save';
     return Dialog(
+      alignment: Alignment.center,
       shape: const RoundedRectangleBorder(),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -20,7 +21,7 @@ class CreateTagDialog extends HookConsumerWidget {
           ),
           FilledButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, textController.text);
             },
             child: const Text(submitText),
           ),

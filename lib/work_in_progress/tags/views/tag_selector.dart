@@ -9,8 +9,6 @@ class TagSelector extends HookConsumerWidget {
   final List<Tag> tags;
   final List<Tag>? selectedTags;
   final Function(
-    BuildContext context,
-    WidgetRef ref,
     Tag tag,
   )? onTagPressed;
 
@@ -33,7 +31,7 @@ class TagSelector extends HookConsumerWidget {
             label: Text(tag.name),
             selected: isSelected,
             onSelected: (_) {
-              onTagPressed?.call(context, ref, tag);
+              onTagPressed?.call(tag);
             },
           );
         },
@@ -52,8 +50,6 @@ class TagSelector extends HookConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     Function(
-      BuildContext context,
-      WidgetRef ref,
       Tag tag,
     )? onTagPressed,
   ) {
@@ -61,24 +57,20 @@ class TagSelector extends HookConsumerWidget {
       avatar: const Icon(Icons.add),
       label: const Text('Add Tag'),
       onPressed: () {
-        final futureTagName = showDialog(
+        final futureTagName = showDialog<String?>(
           context: context,
           builder: (context) => const CreateTagDialog(),
         );
         futureTagName.then(
           (value) async {
-            if (value) {
+            if (value != null && value.isNotEmpty) {
               final tagRepository =
                   await ref.read(tagRepositoryProvider.future);
               final newTag = Tag.create(
-                  name: value,
-                );
-              await tagRepository.addTag(
-                newTag 
+                name: value,
               );
+              await tagRepository.addTag(newTag);
               onTagPressed?.call(
-                context,
-                ref,
                 newTag,
               );
             }
