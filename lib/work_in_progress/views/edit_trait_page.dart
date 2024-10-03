@@ -68,7 +68,7 @@ class TraitFormPage extends HookConsumerWidget {
             child: TagSelector(
               tags: allTags,
               selectedTags: formState.value.tags,
-              onTagPressed: (tag) {
+              onTagPressed: (context, ref, tag) {
                 onTagPressed(
                   formState,
                   tag,
