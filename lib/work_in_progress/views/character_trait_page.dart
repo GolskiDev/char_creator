@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../note.dart';
 import '../note_repository.dart';
+import '../tags/tag_providers.dart';
 import 'edit_trait_page.dart';
 
 class CharacterTraitPage extends HookConsumerWidget {
@@ -16,6 +17,7 @@ class CharacterTraitPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final characterTraitRepository =
         ref.watch(characterTraitRepositoryProvider);
+
     final displayView = Scaffold(
       appBar: AppBar(
         title: Text(trait.id),
@@ -30,21 +32,36 @@ class CharacterTraitPage extends HookConsumerWidget {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
-              final newValue = await Navigator.of(context).push<String>(
-                MaterialPageRoute<String>(
+              final tags = await ref.read(tagsOfObjectProvider(trait).future);
+              if (!context.mounted) return;
+
+              Navigator.of(context).push(
+                MaterialPageRoute(
                   builder: (context) {
                     return TraitFormPage(
                       initialValue: TraitFormState(
                         value: trait.value,
-                        tags: [],
+                        tags: tags.toList(),
                       ),
+                      onSavePressed: (context, ref, formState) async {
+                        if (formState.value.isNotEmpty) {
+                          final newNote = Note.create(value: formState.value);
+                          await characterTraitRepository.updateTrait(
+                            newNote,
+                          );
+
+                          final tagRepository =
+                              await ref.read(tagRepositoryProvider.future);
+                          await tagRepository.addTagsToObject(
+                            trait,
+                            formState.tags,
+                          );
+                        }
+                      },
                     );
                   },
                 ),
               );
-              if (newValue != null) {
-                _updateTrait(characterTraitRepository, trait, newValue);
-              }
             },
           ),
         ],
@@ -56,11 +73,5 @@ class CharacterTraitPage extends HookConsumerWidget {
     );
 
     return displayView;
-  }
-
-  _updateTrait(
-      CharacterTraitRepository repository, Note trait, String newValue) async {
-    final updatedTrait = trait.copyWith(value: newValue);
-    repository.updateTrait(updatedTrait);
   }
 }

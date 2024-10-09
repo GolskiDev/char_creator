@@ -136,4 +136,16 @@ class TagRepositorySharedPrefs implements ITagRepository {
     final tags = (await getAllTags()).toList();
     _controller.add(tags);
   }
+
+  @override
+  Future<void> addTagsToObject(
+    Identifiable object,
+    Iterable<Tag> tags,
+  ) {
+    return Future.wait(
+      tags.map(
+        (tag) => addTagToObject(object, tag),
+      ),
+    );
+  }
 }

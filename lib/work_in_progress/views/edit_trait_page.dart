@@ -6,6 +6,26 @@ import '../tags/tag.dart';
 import '../tags/tag_providers.dart';
 import '../tags/views/tag_selector.dart';
 
+class TraitFormState {
+  final String value;
+  final List<Tag> tags;
+
+  const TraitFormState({
+    required this.value,
+    required this.tags,
+  });
+
+  TraitFormState copyWith({
+    String? value,
+    List<Tag>? tags,
+  }) {
+    return TraitFormState(
+      value: value ?? this.value,
+      tags: tags ?? this.tags,
+    );
+  }
+}
+
 class TraitFormPage extends HookConsumerWidget {
   const TraitFormPage({
     this.initialValue,
@@ -13,7 +33,9 @@ class TraitFormPage extends HookConsumerWidget {
     super.key,
   });
   final TraitFormState? initialValue;
-  final Function(TraitFormState currentState)? onSavePressed;
+  final Function(
+          BuildContext context, WidgetRef ref, TraitFormState currentState)?
+      onSavePressed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,10 +45,11 @@ class TraitFormPage extends HookConsumerWidget {
     final allTags = ref.watch(tagsProvider).asData?.value ?? [];
 
     final formState = useState(
-      TraitFormState(
-        value: initialValue?.value ?? '',
-        tags: [],
-      ),
+      initialValue ??
+          const TraitFormState(
+            value: '',
+            tags: [],
+          ),
     );
 
     return Scaffold(
@@ -36,9 +59,12 @@ class TraitFormPage extends HookConsumerWidget {
           if (onSavePressed != null)
             IconButton(
               icon: const Icon(Icons.save),
-              onPressed: () {
-                onSavePressed!.call(formState.value);
-                Navigator.of(context).pop();
+              onPressed: () async {
+                formState.value = formState.value.copyWith(
+                  value: textController.text,
+                );
+                await onSavePressed!.call(context, ref, formState.value);
+                if (context.mounted) Navigator.of(context).pop();
               },
             )
         ],
@@ -87,25 +113,5 @@ class TraitFormPage extends HookConsumerWidget {
       tags.add(tag);
     }
     formState.value = formState.value.copyWith(tags: tags);
-  }
-}
-
-class TraitFormState {
-  final String value;
-  final List<Tag> tags;
-
-  const TraitFormState({
-    required this.value,
-    required this.tags,
-  });
-
-  TraitFormState copyWith({
-    String? value,
-    List<Tag>? tags,
-  }) {
-    return TraitFormState(
-      value: value ?? this.value,
-      tags: tags ?? this.tags,
-    );
   }
 }

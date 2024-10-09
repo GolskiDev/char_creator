@@ -56,13 +56,20 @@ class ListOfTraitsPage extends ConsumerWidget {
           Navigator.of(context).push<String>(
             MaterialPageRoute<String>(
               builder: (context) => TraitFormPage(
-                onSavePressed: (formState) {
+                onSavePressed: (context, ref, formState) async {
                   if (formState.value.isNotEmpty) {
-                    characterTraitRepository.saveTrait(
-                      Note.create(
-                        value: formState.value,
-                      ),
-                    );
+                    final newNote = Note.create(value: formState.value);
+                    await characterTraitRepository.saveTrait(newNote);
+
+                    if (formState.tags.isNotEmpty) {
+                      final tagRepository =
+                          await ref.read(tagRepositoryProvider.future);
+
+                      await tagRepository.addTagsToObject(
+                        newNote,
+                        formState.tags,
+                      );
+                    }
                   }
                 },
               ),
