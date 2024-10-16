@@ -1,6 +1,6 @@
 import 'package:char_creator/work_in_progress/notes/note.dart';
 import 'package:char_creator/work_in_progress/views/edit_note_page.dart';
-import 'package:char_creator/work_in_progress/views/list_of_notes_widgettt.dart';
+import 'package:char_creator/work_in_progress/views/list_of_notes_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

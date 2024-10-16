@@ -1,6 +1,6 @@
 import 'package:char_creator/features/basic_chat_support/chat_bot.dart';
 import 'package:char_creator/features/basic_chat_support/chat_utils.dart';
-import 'package:char_creator/work_in_progress/views/list_of_notes_widgettt.dart';
+import 'package:char_creator/work_in_progress/views/list_of_notes_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as chatTypes;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
