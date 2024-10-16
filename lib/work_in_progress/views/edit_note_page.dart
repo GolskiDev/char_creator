@@ -26,8 +26,8 @@ class TraitFormState {
   }
 }
 
-class TraitFormPage extends HookConsumerWidget {
-  const TraitFormPage({
+class NoteFormPage extends HookConsumerWidget {
+  const NoteFormPage({
     this.initialValue,
     this.onSavePressed,
     super.key,

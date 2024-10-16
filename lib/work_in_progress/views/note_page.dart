@@ -38,7 +38,7 @@ class NotePage extends HookConsumerWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) {
-                    return TraitFormPage(
+                    return NoteFormPage(
                       initialValue: TraitFormState(
                         value: trait.value,
                         tags: tags.toList(),
