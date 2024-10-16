@@ -1,11 +1,11 @@
-import 'package:char_creator/work_in_progress/note.dart';
-import 'package:char_creator/work_in_progress/views/edit_trait_page.dart';
-import 'package:char_creator/work_in_progress/views/list_of_characters_traits.dart';
+import 'package:char_creator/work_in_progress/notes/note.dart';
+import 'package:char_creator/work_in_progress/views/edit_note_page.dart';
+import 'package:char_creator/work_in_progress/views/list_of_notes_widgettt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'work_in_progress/identifiable.dart';
-import 'work_in_progress/note_repository.dart';
+import 'work_in_progress/notes/note_repository.dart';
 import 'work_in_progress/tags/tag_providers.dart';
 import 'work_in_progress/views/chat_page.dart';
 
@@ -97,7 +97,7 @@ class ListOfTraitsWrapper extends ConsumerWidget {
           return const CircularProgressIndicator();
         }
         final data = snapshot.data as List<Identifiable>;
-        return ListOfCharacterTraitsWidget(
+        return ListOfNotesWidget(
           traits: data,
         );
       },

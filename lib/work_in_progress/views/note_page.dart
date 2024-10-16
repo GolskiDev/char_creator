@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../note.dart';
-import '../note_repository.dart';
+import '../notes/note.dart';
+import '../notes/note_repository.dart';
 import '../tags/tag_providers.dart';
-import 'edit_trait_page.dart';
+import 'edit_note_page.dart';
 
-class CharacterTraitPage extends HookConsumerWidget {
-  const CharacterTraitPage({
+class NotePage extends HookConsumerWidget {
+  const NotePage({
     required this.trait,
     super.key,
   });

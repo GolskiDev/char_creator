@@ -6,19 +6,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'note.dart';
 
-final characterTraitRepositoryProvider = Provider<CharacterTraitRepository>(
-  (ref) => CharacterTraitRepository(),
+final characterTraitRepositoryProvider = Provider<NoteRepository>(
+  (ref) => NoteRepository(),
 );
 
-class CharacterTraitRepository {
+class NoteRepository {
   static const String _storageKey = 'characterTraits';
 
   Stream<List<Note>> get stream => _controller.stream;
 
   final StreamController<List<Note>> _controller;
 
-  CharacterTraitRepository()
-      : _controller = StreamController<List<Note>>.broadcast() {
+  NoteRepository() : _controller = StreamController<List<Note>>.broadcast() {
     _controller.onListen = _refreshStream;
   }
 

@@ -1,16 +1,16 @@
-import 'package:char_creator/work_in_progress/note.dart';
+import 'package:char_creator/work_in_progress/notes/note.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../identifiable.dart';
-import 'character_trait_page.dart';
+import 'note_page.dart';
 
 final selectedNotesProvider = StateProvider<List<Note>>(
   (ref) => [],
 );
 
-final class ListOfCharacterTraitsWidget extends HookConsumerWidget {
-  const ListOfCharacterTraitsWidget({
+final class ListOfNotesWidget extends HookConsumerWidget {
+  const ListOfNotesWidget({
     super.key,
     this.onTraitPressed,
     required this.traits,
@@ -44,7 +44,7 @@ final class ListOfCharacterTraitsWidget extends HookConsumerWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => CharacterTraitPage(trait: note),
+              builder: (context) => NotePage(trait: note),
             ),
           );
         },
