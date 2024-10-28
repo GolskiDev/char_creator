@@ -1,4 +1,5 @@
 import 'package:char_creator/work_in_progress/character/character_repository.dart';
+import 'package:char_creator/work_in_progress/character/character_use_cases.dart';
 import 'package:char_creator/work_in_progress/character/field.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -16,20 +17,7 @@ class CreateCharacterWidget extends HookConsumerWidget {
             const Text('Create a new character'),
             FilledButton(
               onPressed: () {
-                ref.read(characterRepositoryProvider).saveCharacter(
-                      Character.create(
-                        fields: [
-                          const Field(
-                            name: 'Name',
-                            notes: [],
-                          ),
-                          const Field(
-                            name: 'Class',
-                            notes: [],
-                          ),
-                        ],
-                      ),
-                    );
+                CharacterUseCases.createNewCharacter(ref);
               },
               child: const Icon(Icons.add),
             ),

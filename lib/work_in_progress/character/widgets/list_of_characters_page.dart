@@ -1,4 +1,5 @@
 import 'package:char_creator/work_in_progress/character/character.dart';
+import 'package:char_creator/work_in_progress/character/character_use_cases.dart';
 import 'package:char_creator/work_in_progress/character/widgets/create_character_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,11 +20,15 @@ class ListOfCharactersPage extends HookConsumerWidget {
         body = const Center(
           child: Text('An error occurred'),
         );
-      case AsyncData(:final value):
-        if (value.isEmpty) {
+      case AsyncData(value: final characters):
+        if (characters.isEmpty) {
           body = const CreateCharacterWidget();
         } else {
-          body = _listOfCharacters(value);
+          body = _listOfCharacters(
+            context,
+            ref,
+            characters,
+          );
         }
       default:
         body = const Center(
@@ -39,18 +44,43 @@ class ListOfCharactersPage extends HookConsumerWidget {
     );
   }
 
-  Widget _listOfCharacters(List<Character> characters) {
-    return ListView.builder(
-      itemCount: characters.length,
-      itemBuilder: (context, index) {
-        final character = characters[index];
-        final characterName = character.fields.firstWhere((field) => field.name == 'Name').notes.firstOrNull?.value ?? 'New Character';
-        return ListTile(
-          title: Text(characterName),
-          onTap: () {
-            context.go('/characters/${character.id}');
+  Widget _listOfCharacters(
+    BuildContext context,
+    WidgetRef ref,
+    List<Character> characters,
+  ) {
+    return ListView(
+      children: [
+        ...characters.map(
+          (character) {
+            final characterName = character.fields
+                    .firstWhere((field) => field.name == 'Name')
+                    .notes
+                    .firstOrNull
+                    ?.value ??
+                'New Character';
+            return ListTile(
+              title: Text(characterName),
+              onTap: () {
+                context.go('/characters/${character.id}');
+              },
+            );
           },
-        );
+        ),
+        _addCharacterWidget(context, ref),
+      ],
+    );
+  }
+
+  _addCharacterWidget(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    return ListTile(
+      title: const Text('Create new character'),
+      trailing: const Icon(Icons.add),
+      onTap: () {
+        CharacterUseCases.createNewCharacter(ref);
       },
     );
   }
