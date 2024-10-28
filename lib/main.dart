@@ -1,4 +1,4 @@
-import 'package:char_creator/work_in_progress/character/create_character_widget.dart';
+import 'package:char_creator/work_in_progress/character/widgets/list_of_characters_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,7 +21,7 @@ class MainApp extends ConsumerWidget {
             Expanded(
               flex: 2,
               child: Scaffold(
-                body: CreateCharacterWidget(),
+                body: ListOfCharactersPage(),
               ),
             ),
             Expanded(
