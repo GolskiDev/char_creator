@@ -1,10 +1,10 @@
 import 'package:char_creator/work_in_progress/character/character.dart';
 import 'package:char_creator/work_in_progress/character/widgets/create_character_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../character_providers.dart';
-import 'character_page.dart';
 
 class ListOfCharactersPage extends HookConsumerWidget {
   const ListOfCharactersPage({super.key});
@@ -48,13 +48,7 @@ class ListOfCharactersPage extends HookConsumerWidget {
         return ListTile(
           title: Text(characterName),
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => CharacterPage(
-                  characterId: character.id,
-                ),
-              ),
-            );
+            context.go('/characters/${character.id}');
           },
         );
       },

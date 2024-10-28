@@ -1,8 +1,7 @@
-import 'package:char_creator/work_in_progress/character/widgets/list_of_characters_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'work_in_progress/views/chat_page.dart';
+import 'work_in_progress/navigation.dart';
 
 void main() {
   runApp(const MainApp());
@@ -13,23 +12,10 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const ProviderScope(
-      child: MaterialApp(
+    return ProviderScope(
+      child: MaterialApp.router(
+        routerConfig: Navigation().goRouter,
         debugShowCheckedModeBanner: false,
-        home: Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Scaffold(
-                body: ListOfCharactersPage(),
-              ),
-            ),
-            Expanded(
-              flex: 5,
-              child: ChatPage(),
-            ),
-          ],
-        ),
       ),
     );
   }

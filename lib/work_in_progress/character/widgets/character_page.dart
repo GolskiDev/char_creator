@@ -5,13 +5,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:collection/collection.dart';
 
 import '../../notes/note.dart';
+import '../../views/chat_page.dart';
 import '../../views/edit_note_page.dart';
 import '../character.dart';
 import '../character_repository.dart';
 import '../field.dart';
 
 class CharacterPage extends HookConsumerWidget {
-  const CharacterPage({super.key, required this.characterId});
+  const CharacterPage({
+    super.key,
+    required this.characterId,
+  });
 
   final String characterId;
 
@@ -31,7 +35,15 @@ class CharacterPage extends HookConsumerWidget {
         final character = characters.firstWhereOrNull(
           (character) => character.id == characterId,
         );
-        return _characterPage(context, ref, character);
+        if (character == null) {
+          return const Scaffold(
+            body: Center(
+              child: Text('Character not found'),
+            ),
+          );
+        } else {
+          return _characterPage(context, ref, character);
+        }
       default:
         return const Scaffold(
           body: Center(
@@ -41,12 +53,20 @@ class CharacterPage extends HookConsumerWidget {
     }
   }
 
-  Widget _characterPage(context, ref, character) {
+  Widget _characterPage(
+    BuildContext context,
+    WidgetRef ref,
+    Character character,
+  ) {
     return Scaffold(
+      appBar: AppBar(),
       floatingActionButton: _floatingActionButton(
         context,
         ref,
         character,
+      ),
+      endDrawer: ChatPage(
+        character: character,
       ),
       body: ListView.builder(
         itemCount: character.fields.length,
@@ -64,7 +84,11 @@ class CharacterPage extends HookConsumerWidget {
   }
 
   Widget _characterField(
-      BuildContext context, WidgetRef ref, Character character, Field field) {
+    BuildContext context,
+    WidgetRef ref,
+    Character character,
+    Field field,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
