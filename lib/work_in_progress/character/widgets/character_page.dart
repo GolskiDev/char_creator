@@ -140,7 +140,17 @@ class CharacterPage extends HookConsumerWidget {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: field.notes.map((note) => _noteCard(note)).toList(),
+              children: field.notes
+                  .map(
+                    (note) => _noteCard(
+                      context,
+                      ref,
+                      character,
+                      field,
+                      note,
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ),
@@ -149,16 +159,68 @@ class CharacterPage extends HookConsumerWidget {
     );
   }
 
-  Widget _noteCard(Note note) {
+  Widget _noteCard(
+    BuildContext context,
+    WidgetRef ref,
+    Character character,
+    Field field,
+    Note note,
+  ) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(note.id),
-            Text(note.value),
-          ],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => NoteFormPage(
+                initialValue: TraitFormState(
+                  value: note.value,
+                  tags: [],
+                ),
+                onSavePressed: (context, ref, updatedNote) {
+                  final updatedField = field.copyWith(
+                    notes: field.notes
+                        .map((n) => n == note
+                            ? Note.create(value: updatedNote.value)
+                            : n)
+                        .toList(),
+                  );
+                  final updatedFields = character.fields
+                      .map((f) => f == field ? updatedField : f)
+                      .toList();
+                  final updatedCharacter = character.copyWith(
+                    fields: updatedFields,
+                  );
+                  ref.read(characterRepositoryProvider).updateCharacter(
+                        updatedCharacter,
+                      );
+                },
+                onDeletePressed: (context, ref) {
+                  final updatedField = field.copyWith(
+                    notes: field.notes.where((n) => n != note).toList(),
+                  );
+                  final updatedFields = character.fields
+                      .map((f) => f == field ? updatedField : f)
+                      .toList();
+                  final updatedCharacter = character.copyWith(
+                    fields: updatedFields,
+                  );
+                  ref.read(characterRepositoryProvider).updateCharacter(
+                        updatedCharacter,
+                      );
+                },
+              ),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(note.value),
+            ],
+          ),
         ),
       ),
     );
