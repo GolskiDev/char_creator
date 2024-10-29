@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../basic_chat_support/chat_widget.dart';
-
 class ListOfAllWidgets extends StatelessWidget {
   const ListOfAllWidgets({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final listOfWidgets = [
-      const Scaffold(
-        body: ChatWidget(),
-      )
-    ];
+    final listOfWidgets = [];
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(40.0),

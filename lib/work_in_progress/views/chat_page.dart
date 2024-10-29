@@ -73,6 +73,7 @@ class ChatPage extends HookConsumerWidget {
         },
         child: Center(
           child: ChatWidget(
+            characterId: character.id,
             onSelectionChanged: (text) {
               selectedText.value = text;
             },
