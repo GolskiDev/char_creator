@@ -11,18 +11,20 @@ class Navigation {
         builder: (context, state) => const ListOfCharactersPage(),
         routes: [
           GoRoute(
-            path: "/characters/:id",
-            redirect: (context, state) {
-              final id = state.pathParameters['id'];
-              if(id == null) {
-                return "/characters";
-              }
-            },
-            builder: (context, state) {
-              final String id = state.pathParameters['id']!;
-              return CharacterPage(characterId: id,);
-            }
-          ),
+              path: "/characters/:id",
+              redirect: (context, state) {
+                final id = state.pathParameters['id'];
+                if (id == null) {
+                  return "/characters";
+                }
+                return null;
+              },
+              builder: (context, state) {
+                final String id = state.pathParameters['id']!;
+                return CharacterPage(
+                  characterId: id,
+                );
+              }),
         ],
       )
     ],

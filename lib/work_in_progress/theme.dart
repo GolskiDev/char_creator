@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Colors2 {
   final richBrown = const Color(0xFF6D4C41);
@@ -10,6 +11,7 @@ class Colors2 {
 }
 
 class AppTheme {
+  get font => GoogleFonts.crimsonText();
   get themeData => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -19,5 +21,6 @@ class AppTheme {
           tertiary: Colors2().mutedOliveGreen,
           surface: Colors2().beige3,
         ),
+        fontFamily: font.fontFamily,
       );
 }

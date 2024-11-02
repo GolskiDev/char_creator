@@ -38,7 +38,10 @@ class ListOfCharactersPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Characters'),
+        title: Text(
+          'Characters',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
       ),
       body: body,
     );
