@@ -93,7 +93,6 @@ class ChatBotWithMemory implements ChatBot {
     return response;
   }
 
-  @override
   Future<String> sendUserMessageWithContext(
     String prompt,
     List<Note> someContext,
