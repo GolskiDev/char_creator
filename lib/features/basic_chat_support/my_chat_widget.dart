@@ -120,23 +120,43 @@ class MyChatWidget extends HookConsumerWidget {
           },
         ).toList();
 
+    final controller = useTextEditingController();
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
-          child: ListView(
-            shrinkWrap: true,
-            reverse: true,
-            children: buildMessages(context),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ListView(
+              shrinkWrap: true,
+              reverse: true,
+              children: buildMessages(context),
+            ),
           ),
         ),
-        Card.outlined(
+        SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onSubmitted: (text) {
-                _onSendPressed(text);
-              },
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: controller,
+                onSubmitted: (text) {
+                  _onSendPressed(text);
+                  controller.clear();
+                },
+                decoration: InputDecoration(
+                  hintText: 'You can type here',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.send),
+                    onPressed: () {
+                      _onSendPressed(controller.text);
+                      controller.clear();
+                    },
+                  ),
+                ),
+              ),
             ),
           ),
         ),
