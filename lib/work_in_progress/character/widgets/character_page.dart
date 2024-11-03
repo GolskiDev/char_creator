@@ -70,6 +70,13 @@ class CharacterPage extends HookConsumerWidget {
       },
     ).toList();
     return DragTarget<Note>(
+      onWillAcceptWithDetails: (details) {
+        // check if the note is coming from the same field
+        final fromField = character.fields.firstWhereOrNull(
+          (f) => f.notes.contains(details.data),
+        );
+        return fromField != null && fromField != field;
+      },
       onAcceptWithDetails: (details) {
         // move note from one field to another
         final note = details.data;
