@@ -1,11 +1,10 @@
-import 'package:char_creator/work_in_progress/character/character_providers.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:collection/collection.dart';
 
 import '../../notes/note.dart';
-import '../../views/chat_page.dart';
 import '../../views/edit_note_page.dart';
 import '../character.dart';
 import '../character_repository.dart';
@@ -14,50 +13,13 @@ import '../field.dart';
 class CharacterPage extends HookConsumerWidget {
   const CharacterPage({
     super.key,
-    required this.characterId,
+    required this.character,
   });
 
-  final String characterId;
+  final Character character;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final charactersAsync = ref.watch(
-      charactersProvider,
-    );
-    switch (charactersAsync) {
-      case AsyncError():
-        return const Scaffold(
-          body: Center(
-            child: Text('An error occurred'),
-          ),
-        );
-      case AsyncData(value: final List<Character> characters):
-        final character = characters.firstWhereOrNull(
-          (character) => character.id == characterId,
-        );
-        if (character == null) {
-          return const Scaffold(
-            body: Center(
-              child: Text('Character not found'),
-            ),
-          );
-        } else {
-          return _characterPage(context, ref, character);
-        }
-      default:
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-    }
-  }
-
-  Widget _characterPage(
-    BuildContext context,
-    WidgetRef ref,
-    Character character,
-  ) {
     final characterFieldWidgets = character.fields
         .map(
           (field) => _characterField(
@@ -69,14 +31,20 @@ class CharacterPage extends HookConsumerWidget {
         )
         .toList();
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.chat,
+            ),
+            onPressed: () => context.go('/characters/${character.id}/chat'),
+          ),
+        ],
+      ),
       floatingActionButton: _floatingActionButton(
         context,
         ref,
         character,
-      ),
-      endDrawer: ChatPage(
-        character: character,
       ),
       body: ListView(
         children: characterFieldWidgets,
