@@ -1,3 +1,4 @@
+import 'package:char_creator/work_in_progress/character/character_providers.dart';
 import 'package:char_creator/work_in_progress/character/character_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -7,12 +8,13 @@ import '../../features/basic_chat_support/my_chat_widget.dart';
 import '../character/character.dart';
 import '../character/field.dart';
 import '../character/widgets/selectable_list_of_fields.dart';
+import '../default_async_id_page_builder.dart';
 import '../notes/note.dart';
 
 class ChatPage extends HookConsumerWidget {
-  final Character character;
+  final String characterId;
   const ChatPage({
-    required this.character,
+    required this.characterId,
     super.key,
   });
 
@@ -21,6 +23,14 @@ class ChatPage extends HookConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
+    final characterAsync = ref.watch(characterByIdProvider(characterId));
+    if (characterAsync.asData?.value == null) {
+      return DefaultAsyncIdPageBuilder<Character>(
+        asyncValue: characterAsync,
+      );
+    }
+    final character = characterAsync.asData!.value!;
+
     final selectedText = useState<String?>(null);
     final focusNode = useFocusNode();
 
@@ -47,6 +57,7 @@ class ChatPage extends HookConsumerWidget {
                   selectedText,
                   ref,
                   focusNode,
+                  character,
                 );
               },
             ),
@@ -105,8 +116,12 @@ class ChatPage extends HookConsumerWidget {
     );
   }
 
-  Future<void> _createNoteFromSeleciton(ValueNotifier<String?> selectedText,
-      WidgetRef ref, FocusNode focusNode) async {
+  Future<void> _createNoteFromSeleciton(
+    ValueNotifier<String?> selectedText,
+    WidgetRef ref,
+    FocusNode focusNode,
+    Character character,
+  ) async {
     final trait = Note.create(
       value: selectedText.value!,
     );

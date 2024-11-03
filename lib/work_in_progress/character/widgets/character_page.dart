@@ -3,22 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../default_async_id_page_builder.dart';
 import '../../notes/note.dart';
 import '../../views/edit_note_page.dart';
 import '../character.dart';
+import '../character_providers.dart';
 import '../character_repository.dart';
 import '../field.dart';
 
 class CharacterPage extends HookConsumerWidget {
   const CharacterPage({
     super.key,
-    required this.character,
+    required this.characterId,
   });
 
-  final Character character;
+  final String characterId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final characterAsync = ref.watch(characterByIdProvider(characterId));
+    if (characterAsync.asData?.value == null) {
+      return DefaultAsyncIdPageBuilder<Character>(
+        asyncValue: characterAsync,
+      );
+    }
+    final character = characterAsync.asData!.value!;
+
     final characterFieldWidgets = character.fields
         .map(
           (field) => _characterField(
