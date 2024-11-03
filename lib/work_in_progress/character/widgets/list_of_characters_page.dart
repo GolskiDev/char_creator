@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../character_providers.dart';
+import 'character_card.dart';
 
 class ListOfCharactersPage extends HookConsumerWidget {
   const ListOfCharactersPage({super.key});
@@ -52,26 +53,43 @@ class ListOfCharactersPage extends HookConsumerWidget {
     WidgetRef ref,
     List<Character> characters,
   ) {
-    return ListView(
-      children: [
-        ...characters.map(
-          (character) {
-            final characterName = character.fields
-                    .firstWhere((field) => field.name == 'Name')
-                    .notes
-                    .firstOrNull
-                    ?.value ??
-                'New Character';
-            return ListTile(
-              title: Text(characterName),
-              onTap: () {
-                context.go('/characters/${character.id}');
-              },
-            );
-          },
+    Widget itemBuilder({
+      required BuildContext context,
+      required Widget child,
+      required Function() onTap,
+    }) {
+      final borderRadius = BorderRadius.circular(8);
+      return Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: borderRadius,
         ),
-        _addCharacterWidget(context, ref),
-      ],
+        child: InkWell(
+          borderRadius: borderRadius,
+          onTap: onTap,
+          child: child,
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: GridView.count(
+        crossAxisCount: 2,
+        children: [
+          ...characters.map(
+            (character) => itemBuilder(
+              context: context,
+              child: CharacterCard(character: character),
+              onTap: () => _onCharacterTap(context, ref, character),
+            ),
+          ),
+          itemBuilder(
+            context: context,
+            child: _addCharacterWidget(context, ref),
+            onTap: () => CharacterUseCases.createNewCharacter(ref),
+          ),
+        ],
+      ),
     );
   }
 
@@ -79,12 +97,30 @@ class ListOfCharactersPage extends HookConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    return ListTile(
-      title: const Text('Create new character'),
-      trailing: const Icon(Icons.add),
-      onTap: () {
-        CharacterUseCases.createNewCharacter(ref);
-      },
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Create new character',
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const Icon(Icons.add),
+        ],
+      ),
     );
+  }
+
+  _onCharacterTap(
+    BuildContext context,
+    WidgetRef ref,
+    Character character,
+  ) {
+    context.go('/characters/${character.id}');
   }
 }
