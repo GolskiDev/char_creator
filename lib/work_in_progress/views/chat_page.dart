@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../features/basic_chat_support/chat_widget.dart';
+import '../../features/basic_chat_support/my_chat_widget.dart';
 import '../character/character.dart';
 import '../character/field.dart';
 import '../notes/note.dart';
@@ -72,11 +73,8 @@ class ChatPage extends HookConsumerWidget {
           selectedText.value = value?.plainText;
         },
         child: Center(
-          child: ChatWidget(
+          child: MyChatWidget(
             characterId: character.id,
-            onSelectionChanged: (text) {
-              selectedText.value = text;
-            },
           ),
         ),
       ),

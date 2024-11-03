@@ -14,13 +14,9 @@ import 'chat_history_repository.dart';
 class ChatWidget extends HookConsumerWidget {
   const ChatWidget({
     required this.characterId,
-    this.onSelectionChanged,
     super.key,
   });
   final String characterId;
-  final void Function(
-    String? selection,
-  )? onSelectionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -78,16 +74,11 @@ class ChatWidget extends HookConsumerWidget {
       textMessageBuilder: (p0, {required messageWidth, required showName}) {
         return Container(
           padding: EdgeInsets.all(8),
-          child: Text(p0.text),
+          child: Text(
+            p0.text,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
         );
-      },
-      onMessageLongPress: (context, p1) async {
-        if (p1.author.id == ChatUtils.chatUser.id) {
-          return;
-        }
-        final message = p1 as chatTypes.TextMessage;
-        final prompt = message.text;
-        final response = await chatBot.extractJson(prompt);
       },
     );
   }
