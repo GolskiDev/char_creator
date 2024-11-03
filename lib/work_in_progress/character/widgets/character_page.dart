@@ -269,7 +269,6 @@ class CharacterPage extends HookConsumerWidget {
         builder: (context) => NoteFormPage(
           initialValue: TraitFormState(
             value: note.value,
-            tags: [],
           ),
           onSavePressed: (context, ref, updatedNote) {
             final updatedField = field.copyWith(
