@@ -9,7 +9,7 @@ import 'default_async_id_page_builder.dart';
 import 'views/chat_page.dart';
 
 class Navigation {
-  final goRouter = GoRouter(
+  static final goRouter = GoRouter(
     routes: [
       GoRoute(
         path: "/",

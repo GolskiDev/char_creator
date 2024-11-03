@@ -32,6 +32,7 @@ class CharacterPage extends HookConsumerWidget {
         .toList();
     return Scaffold(
       appBar: AppBar(
+        title: const Text("Character Details"),
         actions: [
           IconButton(
             icon: const Icon(
@@ -113,45 +114,28 @@ class CharacterPage extends HookConsumerWidget {
       builder: (context, candidateItems, rejectedItems) {
         final fieldName = Text(
           field.name,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleLarge,
         );
-        final newNoteButton = IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => NoteFormPage(
-                  onSavePressed: (context, ref, note) {
-                    final updatedField = field.copyWith(
-                      notes: [...field.notes, Note.create(value: note.value)],
-                    );
-                    final updatedFields = character.fields
-                        .map((f) => f == field ? updatedField : f)
-                        .toList();
-                    final updatedCharacter = character.copyWith(
-                      fields: updatedFields,
-                    );
-                    ref.read(characterRepositoryProvider).updateCharacter(
-                          updatedCharacter,
-                        );
-                  },
-                ),
-              ),
-            );
-          },
-        );
-        final listOfFields = ScrollConfiguration(
-          behavior: const ScrollBehavior().copyWith(
-            dragDevices: {
-              PointerDeviceKind.touch,
-              PointerDeviceKind.mouse,
-            },
+        final newNoteChip = IconButton(
+          visualDensity: VisualDensity.compact,
+          icon: const Icon(Icons.add),
+          onPressed: () => _addNewNote(
+            context,
+            field,
+            character,
           ),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: notesWidgets,
-            ),
+        );
+        final listOfNotes = SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [...notesWidgets, newNoteChip]
+                .map(
+                  (e) => Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4),
+                    child: e,
+                  ),
+                )
+                .toList(),
           ),
         );
         if (candidateItems.isNotEmpty) {
@@ -167,17 +151,10 @@ class CharacterPage extends HookConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         fieldName,
-                        Visibility(
-                          visible: false,
-                          maintainSize: true,
-                          maintainAnimation: true,
-                          maintainState: true,
-                          child: newNoteButton,
-                        ),
                       ],
                     ),
                   ),
-                  listOfFields,
+                  listOfNotes,
                 ],
               ),
               Positioned(
@@ -210,14 +187,36 @@ class CharacterPage extends HookConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   fieldName,
-                  newNoteButton,
                 ],
               ),
             ),
-            listOfFields,
+            listOfNotes,
           ],
         );
       },
+    );
+  }
+
+  void _addNewNote(BuildContext context, Field field, Character character) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => NoteFormPage(
+          onSavePressed: (context, ref, note) {
+            final updatedField = field.copyWith(
+              notes: [...field.notes, Note.create(value: note.value)],
+            );
+            final updatedFields = character.fields
+                .map((f) => f == field ? updatedField : f)
+                .toList();
+            final updatedCharacter = character.copyWith(
+              fields: updatedFields,
+            );
+            ref.read(characterRepositoryProvider).updateCharacter(
+                  updatedCharacter,
+                );
+          },
+        ),
+      ),
     );
   }
 
@@ -228,25 +227,18 @@ class CharacterPage extends HookConsumerWidget {
     Field field,
     Note note,
   ) {
-    final child = Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: () {
-          _onNotePressed(
-            context,
-            note,
-            field,
-            character,
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(note.value),
-            ],
-          ),
+    final child = Material(
+      color: Colors.transparent,
+      child: ActionChip.elevated(
+        label: Text(
+          note.value,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        onPressed: () => _onNotePressed(
+          context,
+          note,
+          field,
+          character,
         ),
       ),
     );
@@ -318,10 +310,10 @@ class CharacterPage extends HookConsumerWidget {
           builder: (context) {
             final controller = TextEditingController();
             return AlertDialog(
-              title: Text('Add Field'),
+              title: const Text('Add Field'),
               content: TextField(
                 controller: controller,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Field Name',
                 ),
               ),
@@ -330,7 +322,7 @@ class CharacterPage extends HookConsumerWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -347,14 +339,14 @@ class CharacterPage extends HookConsumerWidget {
                         .updateCharacter(updatedCharacter);
                     Navigator.of(context).pop();
                   },
-                  child: Text('Add'),
+                  child: const Text('Add'),
                 ),
               ],
             );
           },
         );
       },
-      child: Icon(Icons.add),
+      child: const Icon(Icons.add),
     );
   }
 }

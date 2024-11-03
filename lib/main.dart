@@ -13,10 +13,11 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final goRouter = Navigation.goRouter;
     return ProviderScope(
       child: MaterialApp.router(
         theme: AppTheme().themeData,
-        routerConfig: Navigation().goRouter,
+        routerConfig: goRouter,
         debugShowCheckedModeBanner: false,
       ),
     );
