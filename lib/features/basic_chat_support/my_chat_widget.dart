@@ -1,10 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:langchain/langchain.dart';
 
+import '../../work_in_progress/notes/note.dart';
 import 'chat_bot.dart';
 import 'chat_history_repository.dart';
 
@@ -25,9 +25,11 @@ class MyMessage {
 class MyChatWidget extends HookConsumerWidget {
   const MyChatWidget({
     required this.characterId,
+    this.additionalContext,
     super.key,
   });
   final String characterId;
+  final List<Note>? additionalContext;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,8 +64,9 @@ class MyChatWidget extends HookConsumerWidget {
       messages.value = [newMessage, ...messages.value];
       ref.read(myChatHistoryProviderByCharacterId(characterId).notifier).state =
           messages.value;
-      final response = await chatBot.sendUserMessage(
+      final response = await chatBot.sendUserMessageWithContext(
         text,
+        additionalContext ?? [],
       );
       final botMessage = MyMessage(
         author: MyMessageType.bot,
