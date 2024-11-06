@@ -24,95 +24,95 @@ class ChatPage extends HookConsumerWidget {
     WidgetRef ref,
   ) {
     final characterAsync = ref.watch(characterByIdProvider(characterId));
-    if (characterAsync.asData?.value == null) {
-      return DefaultAsyncIdPageBuilder<Character>(
-        asyncValue: characterAsync,
-      );
-    }
-    final character = characterAsync.asData!.value!;
 
-    final selectedText = useState<String?>(null);
-    final focusNode = useFocusNode();
+    return DefaultAsyncIdPageBuilder<Character>(
+      asyncValue: characterAsync,
+      pageBuilder: (context, character) {
+        final selectedText = useState<String?>(null);
+        final focusNode = useFocusNode();
 
-    final idsOfNotesForChatContext = useState<List<String>>([]);
-    final notesForChatContext =
-        character.fields.expand((field) => field.notes).toList().where(
-              (note) => idsOfNotesForChatContext.value.contains(note.id),
-            );
-
-    final title = selectedText.value == "" || selectedText.value == null
-        ? "Chat"
-        : selectedText.value!;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          if (selectedText.value != null && selectedText.value!.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.add),
-              tooltip: "Add To Character",
-              onPressed: () async {
-                await _createNoteFromSeleciton(
-                  selectedText,
-                  ref,
-                  focusNode,
-                  character,
+        final idsOfNotesForChatContext = useState<List<String>>([]);
+        final notesForChatContext =
+            character.fields.expand((field) => field.notes).toList().where(
+                  (note) => idsOfNotesForChatContext.value.contains(note.id),
                 );
-              },
-            ),
-        ],
-      ),
-      endDrawer: Drawer(
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Text(
-                  "Context for Chat",
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
+
+        final title = selectedText.value == "" || selectedText.value == null
+            ? "Chat"
+            : selectedText.value!;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(title),
+            actions: [
+              if (selectedText.value != null && selectedText.value!.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  tooltip: "Add To Character",
+                  onPressed: () async {
+                    await _createNoteFromSeleciton(
+                      selectedText,
+                      ref,
+                      focusNode,
+                      character,
+                    );
+                  },
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: SelectableListOfFields(
-                    character: character,
-                    selectedNotesIds: idsOfNotesForChatContext.value,
-                    onNotePressed: (pressedNote) {
-                      if (idsOfNotesForChatContext.value
-                          .contains(pressedNote.id)) {
-                        idsOfNotesForChatContext.value = List.from(
-                          idsOfNotesForChatContext.value
-                            ..removeWhere((id) => id == pressedNote.id),
-                        );
-                      } else {
-                        idsOfNotesForChatContext.value = List.from(
-                          idsOfNotesForChatContext.value..add(pressedNote.id),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
             ],
           ),
-        ),
-      ),
-      body: SelectionArea(
-        onSelectionChanged: (value) {
-          selectedText.value = value?.plainText;
-        },
-        child: Center(
-          child: MyChatWidget(
-            characterId: character.id,
-            additionalContext: notesForChatContext.toList(),
+          endDrawer: Drawer(
+            child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Text(
+                      "Context for Chat",
+                      style: Theme.of(context).textTheme.titleLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: SelectableListOfFields(
+                        character: character,
+                        selectedNotesIds: idsOfNotesForChatContext.value,
+                        onNotePressed: (pressedNote) {
+                          if (idsOfNotesForChatContext.value
+                              .contains(pressedNote.id)) {
+                            idsOfNotesForChatContext.value = List.from(
+                              idsOfNotesForChatContext.value
+                                ..removeWhere((id) => id == pressedNote.id),
+                            );
+                          } else {
+                            idsOfNotesForChatContext.value = List.from(
+                              idsOfNotesForChatContext.value
+                                ..add(pressedNote.id),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+          body: SelectionArea(
+            onSelectionChanged: (value) {
+              selectedText.value = value?.plainText;
+            },
+            child: Center(
+              child: MyChatWidget(
+                characterId: character.id,
+                additionalContext: notesForChatContext.toList(),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

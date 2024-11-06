@@ -21,6 +21,7 @@ class DefaultAsyncIdPageBuilder<T> extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return asyncValue.when(
+      skipLoadingOnReload: true,
       data: (data) {
         if (data == null) {
           return Scaffold(

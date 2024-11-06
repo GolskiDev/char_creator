@@ -22,43 +22,42 @@ class CharacterPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final characterAsync = ref.watch(characterByIdProvider(characterId));
-    if (characterAsync.asData?.value == null) {
-      return DefaultAsyncIdPageBuilder<Character>(
-        asyncValue: characterAsync,
-      );
-    }
-    final character = characterAsync.asData!.value!;
 
-    final characterFieldWidgets = character.fields
-        .map(
-          (field) => _characterField(
+    return DefaultAsyncIdPageBuilder<Character>(
+      asyncValue: characterAsync,
+      pageBuilder: (context, character) {
+        final characterFieldWidgets = character.fields
+            .map(
+              (field) => _characterField(
+                context,
+                ref,
+                character,
+                field,
+              ),
+            )
+            .toList();
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Character Details"),
+            actions: [
+              IconButton(
+                icon: const Icon(
+                  Icons.chat,
+                ),
+                onPressed: () => context.go('/characters/${character.id}/chat'),
+              ),
+            ],
+          ),
+          floatingActionButton: _floatingActionButton(
             context,
             ref,
             character,
-            field,
           ),
-        )
-        .toList();
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Character Details"),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.chat,
-            ),
-            onPressed: () => context.go('/characters/${character.id}/chat'),
+          body: ListView(
+            children: characterFieldWidgets,
           ),
-        ],
-      ),
-      floatingActionButton: _floatingActionButton(
-        context,
-        ref,
-        character,
-      ),
-      body: ListView(
-        children: characterFieldWidgets,
-      ),
+        );
+      },
     );
   }
 
