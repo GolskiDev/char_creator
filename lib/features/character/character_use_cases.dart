@@ -39,22 +39,52 @@ class CharacterUseCases {
     );
   }
 
-  Future<void> addNoteToField({
+  Future<void> addOrUpdateNoteInField({
     required Character character,
     required Field field,
     required Note note,
   }) async {
-    final updatedField = field.copyWith(
-      notes: [...field.notes, note],
+    final isNoteInTheField = field.notes.any((n) => n.id == note.id);
+
+    final Field updatedField;
+    if (isNoteInTheField) {
+      final updatedNotes =
+          field.notes.map((n) => n == note ? note : n).toList();
+      updatedField = field.copyWith(notes: updatedNotes);
+    } else {
+      final updatedNotes = [...field.notes, note];
+      updatedField = field.copyWith(notes: updatedNotes);
+    }
+
+    final updatedCharacter = character.copyWith(
+      fields:
+          character.fields.map((f) => f == field ? updatedField : f).toList(),
     );
 
-    final updatedFields = character.fields
-        .map((f) => f.name == field.name ? updatedField : f)
-        .toList();
+    return _characterRepository.updateCharacter(updatedCharacter);
+  }
 
-    return _characterRepository.updateCharacter(
-      character.copyWith(fields: updatedFields),
+  Future<void> deleteNoteInField({
+    required Character character,
+    required Field field,
+    required Note note,
+  }) {
+    final isNoteInTheField = field.notes.any((n) => n.id == note.id);
+
+    if (!isNoteInTheField) {
+      throw Exception('Note not found in field');
+    }
+
+    final updatedNotes = field.notes.where((n) => n != note).toList();
+
+    final updatedField = field.copyWith(notes: updatedNotes);
+
+    final updatedCharacter = character.copyWith(
+      fields:
+          character.fields.map((f) => f == field ? updatedField : f).toList(),
     );
+
+    return _characterRepository.updateCharacter(updatedCharacter);
   }
 
   Future<void> moveNoteBetweenFields({
@@ -97,5 +127,18 @@ class CharacterUseCases {
     return _characterRepository.updateCharacter(
       character.copyWith(fields: updatedFields),
     );
+  }
+
+  Future<void> addNewFieldToCharacter({
+    required Character character,
+    required Field field,
+  }) async {
+    try {
+      final updatedFields = [...character.fields, field];
+      final updatedCharacter = character.copyWith(fields: updatedFields);
+      await _characterRepository.updateCharacter(updatedCharacter);
+    } catch (e) {
+      return;
+    }
   }
 }

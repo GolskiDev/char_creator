@@ -4,13 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../common/widgets/default_async_id_page_builder.dart';
-import '../features/character/character_use_cases.dart';
-import '../features/notes/note.dart';
-import 'edit_note_page.dart';
 import '../features/character/character.dart';
 import '../features/character/character_providers.dart';
-import '../features/character/character_repository.dart';
+import '../features/character/character_use_cases.dart';
 import '../features/character/field.dart';
+import '../features/notes/note.dart';
+import 'edit_note_page.dart';
 
 class CharacterPage extends HookConsumerWidget {
   const CharacterPage({
@@ -187,19 +186,13 @@ class CharacterPage extends HookConsumerWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => NoteFormPage(
-          onSavePressed: (context, ref, note) {
-            final updatedField = field.copyWith(
-              notes: [...field.notes, Note.create(value: note.value)],
+          onSavePressed: (context, ref, noteFormState) {
+            final characterUseCases = ref.read(characterUseCasesProvider);
+            characterUseCases.addOrUpdateNoteInField(
+              character: character,
+              field: field,
+              note: Note.create(value: noteFormState.value),
             );
-            final updatedFields = character.fields
-                .map((f) => f == field ? updatedField : f)
-                .toList();
-            final updatedCharacter = character.copyWith(
-              fields: updatedFields,
-            );
-            ref.read(characterRepositoryProvider).updateCharacter(
-                  updatedCharacter,
-                );
           },
         ),
       ),
@@ -248,36 +241,21 @@ class CharacterPage extends HookConsumerWidget {
           initialValue: TraitFormState(
             value: note.value,
           ),
-          onSavePressed: (context, ref, updatedNote) {
-            final updatedField = field.copyWith(
-              notes: field.notes
-                  .map((n) =>
-                      n == note ? Note.create(value: updatedNote.value) : n)
-                  .toList(),
+          onSavePressed: (context, ref, updatedNote) async {
+            final characterUseCases = ref.read(characterUseCasesProvider);
+            await characterUseCases.addOrUpdateNoteInField(
+              character: character,
+              field: field,
+              note: note.copyWith(value: updatedNote.value),
             );
-            final updatedFields = character.fields
-                .map((f) => f == field ? updatedField : f)
-                .toList();
-            final updatedCharacter = character.copyWith(
-              fields: updatedFields,
-            );
-            ref.read(characterRepositoryProvider).updateCharacter(
-                  updatedCharacter,
-                );
           },
-          onDeletePressed: (context, ref) {
-            final updatedField = field.copyWith(
-              notes: field.notes.where((n) => n != note).toList(),
+          onDeletePressed: (context, ref) async {
+            final characterUseCases = ref.read(characterUseCasesProvider);
+            await characterUseCases.deleteNoteInField(
+              character: character,
+              field: field,
+              note: note,
             );
-            final updatedFields = character.fields
-                .map((f) => f == field ? updatedField : f)
-                .toList();
-            final updatedCharacter = character.copyWith(
-              fields: updatedFields,
-            );
-            ref.read(characterRepositoryProvider).updateCharacter(
-                  updatedCharacter,
-                );
           },
         ),
       ),
@@ -311,19 +289,19 @@ class CharacterPage extends HookConsumerWidget {
                   child: const Text('Cancel'),
                 ),
                 TextButton(
-                  onPressed: () {
-                    final newField = Field.create(
-                      name: controller.text,
-                      notes: [],
+                  onPressed: () async {
+                    final characterUseCases =
+                        ref.read(characterUseCasesProvider);
+                    await characterUseCases.addNewFieldToCharacter(
+                      character: character,
+                      field: Field.create(
+                        name: controller.text,
+                        notes: [],
+                      ),
                     );
-                    final updatedFields = [...character.fields, newField];
-                    final updatedCharacter = character.copyWith(
-                      fields: updatedFields,
-                    );
-                    ref
-                        .read(characterRepositoryProvider)
-                        .updateCharacter(updatedCharacter);
-                    Navigator.of(context).pop();
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
                   },
                   child: const Text('Add'),
                 ),
