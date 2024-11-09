@@ -86,7 +86,10 @@ class ListOfCharactersPage extends HookConsumerWidget {
           itemBuilder(
             context: context,
             child: _addCharacterWidget(context, ref),
-            onTap: () => CharacterUseCases.createNewCharacter(ref),
+            onTap: () {
+              final characterUseCases = ref.read(characterUseCasesProvider);
+              characterUseCases.createNewCharacter();
+            },
           ),
         ],
       ),

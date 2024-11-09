@@ -16,7 +16,8 @@ class CreateCharacterWidget extends HookConsumerWidget {
           ),
           FilledButton(
             onPressed: () {
-              CharacterUseCases.createNewCharacter(ref);
+              final characterUseCases = ref.read(characterUseCasesProvider);
+              characterUseCases.createNewCharacter();
             },
             child: const Icon(Icons.add),
           ),
