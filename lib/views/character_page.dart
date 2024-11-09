@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../default_async_id_page_builder.dart';
-import '../../notes/note.dart';
-import '../../views/edit_note_page.dart';
-import '../character.dart';
-import '../character_providers.dart';
-import '../character_repository.dart';
-import '../field.dart';
+import '../common/widgets/default_async_id_page_builder.dart';
+import '../features/notes/note.dart';
+import 'edit_note_page.dart';
+import '../features/character/character.dart';
+import '../features/character/character_providers.dart';
+import '../features/character/character_repository.dart';
+import '../features/character/field.dart';
 
 class CharacterPage extends HookConsumerWidget {
   const CharacterPage({

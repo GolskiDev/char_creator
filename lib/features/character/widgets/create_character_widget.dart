@@ -1,4 +1,4 @@
-import 'package:char_creator/work_in_progress/character/character_use_cases.dart';
+import 'package:char_creator/features/character/character_use_cases.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

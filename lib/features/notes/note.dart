@@ -1,4 +1,4 @@
-import '../identifiable.dart';
+import '../../common/interfaces/identifiable.dart';
 
 class Note extends Identifiable {
   final String value;

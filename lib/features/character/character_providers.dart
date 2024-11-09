@@ -1,4 +1,4 @@
-import 'package:char_creator/work_in_progress/character/character_repository.dart';
+import 'package:char_creator/features/character/character_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

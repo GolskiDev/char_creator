@@ -2,7 +2,7 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 
 import '../../secrets.dart';
-import '../../work_in_progress/notes/note.dart';
+import '../notes/note.dart';
 import 'chat_utils.dart';
 
 class ChatBot {

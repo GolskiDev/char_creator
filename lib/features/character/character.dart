@@ -1,4 +1,4 @@
-import '../identifiable.dart';
+import '../../common/interfaces/identifiable.dart';
 import 'field.dart';
 
 class Character implements Identifiable {

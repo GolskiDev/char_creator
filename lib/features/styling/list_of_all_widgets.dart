@@ -12,22 +12,24 @@ class ListOfAllWidgets extends StatelessWidget {
         child: Wrap(
           spacing: 40,
           runSpacing: 40,
-          children: listOfWidgets.map((widget) {
-            return Container(
-              constraints: const BoxConstraints(
-                maxWidth: 400,
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.secondary,
+          children: listOfWidgets.map(
+            (widget) {
+              return Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 400,
                 ),
-              ),
-              child: AspectRatio(
-                aspectRatio: 1 / 2,
-                child: widget,
-              ),
-            );
-          }).toList(),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+                child: AspectRatio(
+                  aspectRatio: 1 / 2,
+                  child: widget,
+                ),
+              );
+            },
+          ).toList(),
         ),
       ),
     );

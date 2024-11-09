@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'work_in_progress/navigation.dart';
-import 'work_in_progress/theme.dart';
+import 'navigation.dart';
+import 'theme.dart';
 
 void main() {
   runApp(const MainApp());

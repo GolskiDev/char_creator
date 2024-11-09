@@ -1,6 +1,6 @@
-import 'package:char_creator/work_in_progress/character/character.dart';
-import 'package:char_creator/work_in_progress/character/field.dart';
-import 'package:char_creator/work_in_progress/notes/note.dart';
+import 'package:char_creator/features/character/character.dart';
+import 'package:char_creator/features/character/field.dart';
+import 'package:char_creator/features/notes/note.dart';
 import 'package:test/test.dart';
 
 void main() {

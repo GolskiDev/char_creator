@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:langchain/langchain.dart';
 
-import '../../work_in_progress/notes/note.dart';
+import '../notes/note.dart';
 import 'chat_bot.dart';
 import 'chat_history_repository.dart';
 

@@ -1,6 +1,5 @@
 import 'package:char_creator/features/basic_chat_support/chat_bot.dart';
 import 'package:char_creator/features/basic_chat_support/chat_utils.dart';
-import 'package:char_creator/work_in_progress/views/list_of_notes_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as chatTypes;
@@ -9,7 +8,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:langchain/langchain.dart';
 
+import '../notes/note.dart';
 import 'chat_history_repository.dart';
+
+final selectedNotesProvider = StateProvider<List<Note>>(
+  (ref) => [],
+);
 
 class ChatWidget extends HookConsumerWidget {
   const ChatWidget({
