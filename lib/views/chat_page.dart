@@ -1,15 +1,14 @@
 import 'package:char_creator/features/character/character_providers.dart';
-import 'package:char_creator/features/character/character_repository.dart';
 import 'package:char_creator/features/character/character_use_cases.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../common/widgets/default_async_id_page_builder.dart';
 import '../features/basic_chat_support/my_chat_widget.dart';
 import '../features/character/character.dart';
 import '../features/character/field.dart';
 import '../features/character/widgets/selectable_list_of_fields.dart';
-import '../common/widgets/default_async_id_page_builder.dart';
 import '../features/notes/note.dart';
 
 class ChatPage extends HookConsumerWidget {
