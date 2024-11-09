@@ -9,11 +9,22 @@ class Character implements Identifiable {
   String get id => _id;
   List<Field> get fields => List.unmodifiable(_fields);
 
-  const Character._({
+  Character._({
     required String id,
     required List<Field> fields,
   })  : _id = id,
-        _fields = fields;
+        _fields = fields {
+    fieldValidator(fields);
+  }
+
+  bool fieldValidator(Iterable<Field> fields) {
+    final fieldNames = fields.map((field) => field.name);
+    final uniqueFieldNames = fieldNames.toSet();
+    if (fieldNames.length != uniqueFieldNames.length) {
+      throw Exception('Fields must have unique names');
+    }
+    return true;
+  }
 
   factory Character.create({
     required List<Field> fields,
