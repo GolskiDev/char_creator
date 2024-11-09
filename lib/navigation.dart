@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import 'views/character_page.dart';
-import 'features/character/widgets/list_of_characters_page.dart';
+import 'views/list_of_characters_page.dart';
 import 'views/chat_page.dart';
 
 class Navigation {

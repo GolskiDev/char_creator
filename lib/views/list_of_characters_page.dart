@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../character_providers.dart';
-import 'character_card.dart';
+import '../features/character/character_providers.dart';
+import '../features/character/widgets/character_card.dart';
 
 class ListOfCharactersPage extends HookConsumerWidget {
   const ListOfCharactersPage({super.key});

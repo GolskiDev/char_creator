@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../common/widgets/default_async_id_page_builder.dart';
+import '../features/character/character_use_cases.dart';
 import '../features/notes/note.dart';
 import 'edit_note_page.dart';
 import '../features/character/character.dart';
@@ -87,37 +88,14 @@ class CharacterPage extends HookConsumerWidget {
         return fromField != null && fromField != field;
       },
       onAcceptWithDetails: (details) {
-        // move note from one field to another
         final note = details.data;
-        // check Where the note is coming from
-        final fromField = character.fields.firstWhereOrNull(
-          (f) => f.notes.contains(note),
-        );
-        // check Where the note is going to
-        final toField = character.fields.firstWhereOrNull(
-          (f) => f == field,
-        );
-        if (fromField != null && toField != null) {
-          final updatedFromField = fromField.copyWith(
-            notes: fromField.notes.where((n) => n != note).toList(),
-          );
-          final updatedToField = toField.copyWith(
-            notes: [...toField.notes, note],
-          );
-          final updatedFields = character.fields
-              .map((f) => f == fromField
-                  ? updatedFromField
-                  : f == toField
-                      ? updatedToField
-                      : f)
-              .toList();
-          final updatedCharacter = character.copyWith(
-            fields: updatedFields,
-          );
-          ref.read(characterRepositoryProvider).updateCharacter(
-                updatedCharacter,
-              );
-        }
+        final toField = field;
+
+        ref.read(characterUseCasesProvider).moveNoteBetweenFields(
+              character: character,
+              targetField: toField,
+              note: note,
+            );
       },
       builder: (context, candidateItems, rejectedItems) {
         final fieldName = Text(
