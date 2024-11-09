@@ -11,11 +11,11 @@ class Colors2 {
 }
 
 class AppTheme {
-  get font => GoogleFonts.crimsonText();
+  TextStyle get font => GoogleFonts.crimsonText();
   get themeData => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          dynamicSchemeVariant: DynamicSchemeVariant.content,
+          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
           seedColor: Colors2().burgundy,
           secondary: Colors2().burntOrange,
           tertiary: Colors2().mutedOliveGreen,
