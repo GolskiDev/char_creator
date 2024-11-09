@@ -1,5 +1,6 @@
 import 'package:char_creator/features/character/character_providers.dart';
 import 'package:char_creator/features/character/character_repository.dart';
+import 'package:char_creator/features/character/character_use_cases.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -80,18 +81,10 @@ class ChatPage extends HookConsumerWidget {
                         character: character,
                         selectedNotesIds: idsOfNotesForChatContext.value,
                         onNotePressed: (pressedNote) {
-                          if (idsOfNotesForChatContext.value
-                              .contains(pressedNote.id)) {
-                            idsOfNotesForChatContext.value = List.from(
-                              idsOfNotesForChatContext.value
-                                ..removeWhere((id) => id == pressedNote.id),
-                            );
-                          } else {
-                            idsOfNotesForChatContext.value = List.from(
-                              idsOfNotesForChatContext.value
-                                ..add(pressedNote.id),
-                            );
-                          }
+                          _onCharacterNotePressed(
+                            idsOfNotes: idsOfNotesForChatContext,
+                            pressedNote: pressedNote,
+                          );
                         },
                       ),
                     ),
@@ -116,36 +109,54 @@ class ChatPage extends HookConsumerWidget {
     );
   }
 
+  void _onCharacterNotePressed({
+    required ValueNotifier<List<String>> idsOfNotes,
+    required Note pressedNote,
+  }) {
+    if (idsOfNotes.value.contains(pressedNote.id)) {
+      idsOfNotes.value = List.from(
+        idsOfNotes.value..removeWhere((id) => id == pressedNote.id),
+      );
+    } else {
+      idsOfNotes.value = List.from(
+        idsOfNotes.value..add(pressedNote.id),
+      );
+    }
+  }
+
   Future<void> _createNoteFromSeleciton(
     ValueNotifier<String?> selectedText,
     WidgetRef ref,
     FocusNode focusNode,
     Character character,
   ) async {
-    final trait = Note.create(
+    final characterUseCases = ref.read(characterUseCasesProvider);
+
+    final note = Note.create(
       value: selectedText.value!,
     );
-    final characterRepository = ref.read(characterRepositoryProvider);
-    final otherField = character.fields.firstWhere(
+    final isOtherFieldInCharacter = character.fields.any(
       (field) => field.name == "Other",
-      orElse: () => Field.create(
+    );
+
+    if (!isOtherFieldInCharacter) {
+      final otherField = Field.create(
         name: "Other",
-        notes: [],
-      ),
-    );
-    final updatedField = otherField.copyWith(
-      notes: [
-        ...otherField.notes,
-        trait,
-      ],
-    );
-    final updatedCharacter = character.copyWith(
-      fields: [
-        ...character.fields.where((field) => field.name != "Other"),
-        updatedField,
-      ],
-    );
-    await characterRepository.updateCharacter(updatedCharacter);
+        notes: [note],
+      );
+      await characterUseCases.addNewFieldToCharacter(
+        character: character,
+        field: otherField,
+      );
+    } else {
+      await characterUseCases.addOrUpdateNoteInField(
+        character: character,
+        field: character.fields.firstWhere(
+          (field) => field.name == "Other",
+        ),
+        note: note,
+      );
+    }
     focusNode.unfocus();
   }
 }
