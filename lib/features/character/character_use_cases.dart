@@ -26,16 +26,34 @@ class CharacterUseCases {
     return _characterRepository.saveCharacter(
       Character.create(
         fields: [
-          const Field(
+          Field.create(
             name: 'Name',
             notes: [],
           ),
-          const Field(
+          Field.create(
             name: 'Class',
             notes: [],
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> addNoteToField({
+    required Character character,
+    required Field field,
+    required Note note,
+  }) async {
+    final updatedField = field.copyWith(
+      notes: [...field.notes, note],
+    );
+
+    final updatedFields = character.fields
+        .map((f) => f.name == field.name ? updatedField : f)
+        .toList();
+
+    return _characterRepository.updateCharacter(
+      character.copyWith(fields: updatedFields),
     );
   }
 

@@ -312,7 +312,7 @@ class CharacterPage extends HookConsumerWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    final newField = Field(
+                    final newField = Field.create(
                       name: controller.text,
                       notes: [],
                     );

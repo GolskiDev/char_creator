@@ -128,7 +128,7 @@ class ChatPage extends HookConsumerWidget {
     final characterRepository = ref.read(characterRepositoryProvider);
     final otherField = character.fields.firstWhere(
       (field) => field.name == "Other",
-      orElse: () => const Field(
+      orElse: () => Field.create(
         name: "Other",
         notes: [],
       ),

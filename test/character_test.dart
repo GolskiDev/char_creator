@@ -8,8 +8,10 @@ void main() {
     'You cannot create character with two fields with the same name',
     () {
       // Given
-      final field1 = Field(name: 'name', notes: [Note.create(value: "John")]);
-      final field2 = Field(name: 'name', notes: [Note.create(value: "Doe")]);
+      final field1 =
+          Field.create(name: 'name', notes: [Note.create(value: "John")]);
+      final field2 =
+          Field.create(name: 'name', notes: [Note.create(value: "Doe")]);
       final fields = [field1, field2];
 
       createCharacter() => Character.create(fields: fields);
@@ -27,15 +29,16 @@ void main() {
     'You cannot use copyWith to create character with two fields with different names',
     () {
       // Given
-      final field1 = Field(name: 'name', notes: [Note.create(value: "John")]);
+      final field1 =
+          Field.create(name: 'name', notes: [Note.create(value: "John")]);
       final fields = [field1];
 
       // When
       final character = Character.create(fields: fields);
       updateChracater() => character.copyWith(
             fields: [
-              Field(name: 'name', notes: [Note.create(value: "John")]),
-              Field(name: 'name', notes: [Note.create(value: "Doe")]),
+              Field.create(name: 'name', notes: [Note.create(value: "John")]),
+              Field.create(name: 'name', notes: [Note.create(value: "Doe")]),
             ],
           );
 
