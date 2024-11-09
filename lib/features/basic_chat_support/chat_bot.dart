@@ -3,7 +3,6 @@ import 'package:langchain_openai/langchain_openai.dart';
 
 import '../../secrets.dart';
 import '../notes/note.dart';
-import 'chat_utils.dart';
 
 class ChatBot {
   final chat = ChatOpenAI(apiKey: chatGPTApiKey);
@@ -33,20 +32,6 @@ class ChatBot {
     final chain = promptTemplate.pipe(chat).pipe(stringOutputParser);
 
     final response = chain.invoke({'input': prompt});
-    return response;
-  }
-
-  Future<Map<String, dynamic>> extractJson(String prompt) async {
-    final promptTemplate = ChatPromptTemplate.fromPromptMessages([
-      HumanChatMessagePromptTemplate.fromTemplate(
-        ChatUtils.extractJsonPrompt,
-      ),
-    ]);
-    final jsonOutputParser = JsonOutputParser<ChatResult>();
-
-    final chain = promptTemplate.pipe(chat).pipe(jsonOutputParser);
-
-    final response = await chain.invoke({'input': prompt});
     return response;
   }
 }
@@ -168,28 +153,5 @@ class ChatBotWithMemory implements ChatBot {
     );
 
     return response;
-  }
-
-  @override
-  Future<Map<String, dynamic>> extractJson(String prompt) async {
-    try {
-      final promptTemplate = ChatPromptTemplate.fromPromptMessages([
-        HumanChatMessagePromptTemplate.fromTemplate(
-          ChatUtils.extractJsonPrompt,
-        ),
-      ]);
-      final jsonOutputParser = JsonOutputParser<ChatResult>();
-
-      final chain = promptTemplate.pipe(chat).pipe(jsonOutputParser);
-
-      final response = await chain.invoke({
-        'input': prompt,
-        'jsonFormat': ChatUtils.jsonFormat,
-      });
-      return response;
-    } catch (e) {
-      print(e);
-      throw e;
-    }
   }
 }
