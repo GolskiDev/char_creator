@@ -188,13 +188,12 @@ class CharacterPage extends HookConsumerWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => NoteFormPage(
-          onSavePressed: (context, ref, noteFormState) {
-            final characterUseCases = ref.read(characterUseCasesProvider);
-            characterUseCases.addOrUpdateNoteInField(
-              character: character,
-              field: field,
+          onSavePressed: (context, ref, noteFormState) async{
+            final updatedCharacter = character.addOrUpdateNoteInField(
+              fieldName: field.name,
               note: Note.create(value: noteFormState.value),
             );
+            await ref.read(characterRepositoryProvider).updateCharacter(updatedCharacter);
           },
         ),
       ),
@@ -244,12 +243,11 @@ class CharacterPage extends HookConsumerWidget {
             value: note.value,
           ),
           onSavePressed: (context, ref, updatedNote) async {
-            final characterUseCases = ref.read(characterUseCasesProvider);
-            await characterUseCases.addOrUpdateNoteInField(
-              character: character,
-              field: field,
+            final updatedCharacter = character.addOrUpdateNoteInField(
+              fieldName: field.name,
               note: note.copyWith(value: updatedNote.value),
             );
+            await ref.read(characterRepositoryProvider).updateCharacter(updatedCharacter);
           },
           onDeletePressed: (context, ref) async {
             final characterUseCases = ref.read(characterUseCasesProvider);

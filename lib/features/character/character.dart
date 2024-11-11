@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 
 import '../../common/interfaces/identifiable.dart';
+import '../notes/note.dart';
 import 'field.dart';
 
 class Character implements Identifiable {
@@ -56,13 +57,14 @@ class Character implements Identifiable {
       throw NoteNotFoundException(movedNoteId);
     }
 
-    final movedNote = fromField.notes.firstWhere((note) => note.id == movedNoteId);
+    final movedNote =
+        fromField.notes.firstWhere((note) => note.id == movedNoteId);
 
     final targetField = fields.firstWhereOrNull(
       (field) => field.name == targetFieldName,
     );
 
-    if(targetField == null) {
+    if (targetField == null) {
       throw TargetFieldNotFoundException(targetFieldName);
     }
 
@@ -81,19 +83,43 @@ class Character implements Identifiable {
       notes: [...targetField.notes, movedNote],
     );
 
-    final updatedFields = fields
-        .map((f) {
-          if (f == fromField) {
-            return updatedFromField;
-          } else if (f == targetField) {
-            return updatedToField;
-          } else {
-            return f;
-          }
-        })
-        .toList();
+    final updatedFields = fields.map((f) {
+      if (f == fromField) {
+        return updatedFromField;
+      } else if (f == targetField) {
+        return updatedToField;
+      } else {
+        return f;
+      }
+    }).toList();
 
     return copyWith(fields: updatedFields);
+  }
+
+  Character addOrUpdateNoteInField({
+    required String fieldName,
+    required Note note,
+  }) {
+    final field = fields.firstWhereOrNull((f) => f.name == fieldName);
+    if (field == null) {
+      throw TargetFieldNotFoundException(fieldName);
+    }
+
+    final isNoteInTheField = field.notes.any((n) => n.id == note.id);
+
+    final Field updatedField;
+    if (isNoteInTheField) {
+      final updatedNotes =
+          field.notes.map((n) => n == note ? note : n).toList();
+      updatedField = field.copyWith(notes: updatedNotes);
+    } else {
+      final updatedNotes = [...field.notes, note];
+      updatedField = field.copyWith(notes: updatedNotes);
+    }
+
+    return copyWith(
+      fields: fields.map((f) => f == field ? updatedField : f).toList(),
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -132,6 +158,5 @@ class TargetFieldNotFoundException extends CharacterException {
 }
 
 class DuplicateFieldNameException extends CharacterException {
-  DuplicateFieldNameException()
-      : super('Fields must have unique names');
+  DuplicateFieldNameException() : super('Fields must have unique names');
 }

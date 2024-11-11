@@ -58,31 +58,6 @@ class CharacterUseCases {
     );
   }
 
-  Future<void> addOrUpdateNoteInField({
-    required Character character,
-    required Field field,
-    required Note note,
-  }) async {
-    final isNoteInTheField = field.notes.any((n) => n.id == note.id);
-
-    final Field updatedField;
-    if (isNoteInTheField) {
-      final updatedNotes =
-          field.notes.map((n) => n == note ? note : n).toList();
-      updatedField = field.copyWith(notes: updatedNotes);
-    } else {
-      final updatedNotes = [...field.notes, note];
-      updatedField = field.copyWith(notes: updatedNotes);
-    }
-
-    final updatedCharacter = character.copyWith(
-      fields:
-          character.fields.map((f) => f == field ? updatedField : f).toList(),
-    );
-
-    await _characterRepository.updateCharacter(updatedCharacter);
-  }
-
   Future<void> deleteNoteInField({
     required Character character,
     required Field field,
