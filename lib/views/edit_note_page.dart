@@ -29,8 +29,10 @@ class NoteFormPage extends HookConsumerWidget {
   });
   final TraitFormState? initialValue;
   final Function(
-          BuildContext context, WidgetRef ref, TraitFormState currentState)?
-      onSavePressed;
+    BuildContext context,
+    WidgetRef ref,
+    TraitFormState currentState,
+  )? onSavePressed;
   final Function(BuildContext context, WidgetRef ref)? onDeletePressed;
 
   @override
@@ -40,42 +42,58 @@ class NoteFormPage extends HookConsumerWidget {
 
     final formKey = useState(GlobalKey<FormState>());
 
-    final formValidates = formKey.value.currentState?.validate();
+    final formValidates = useState<bool>(() {
+      try {
+        if (initialValue?.value == null) {
+          return false;
+        }
+        Note.create(value: initialValue!.value);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }());
 
-    final currentTraitState = TraitFormState(
-      value: textController.text,
+    final currentTraitState = useState(
+      TraitFormState(
+        value: textController.text,
+      ),
     );
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Trait Value'),
         actions: [
+          if (onDeletePressed != null)
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () async {
+                await onDeletePressed!.call(context, ref);
+                if (context.mounted) Navigator.of(context).pop();
+              },
+            ),
           if (onSavePressed != null)
-            if (onDeletePressed != null)
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () async {
-                  await onDeletePressed!.call(context, ref);
-                  if (context.mounted) Navigator.of(context).pop();
-                },
-              ),
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: formValidates == true
-                ? () async {
-                    await onSavePressed!.call(
-                      context,
-                      ref,
-                      currentTraitState,
-                    );
-                    if (context.mounted) Navigator.of(context).pop();
-                  }
-                : null,
-          ),
+            IconButton(
+              icon: const Icon(Icons.save),
+              onPressed: formValidates.value
+                  ? () async {
+                      await onSavePressed!.call(
+                        context,
+                        ref,
+                        currentTraitState.value,
+                      );
+                      if (context.mounted) Navigator.of(context).pop();
+                    }
+                  : null,
+            ),
         ],
       ),
       body: Form(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         key: formKey.value,
+        onChanged: () {
+          formValidates.value = formKey.value.currentState!.validate();
+        },
         child: Column(
           children: [
             Padding(
@@ -89,6 +107,10 @@ class NoteFormPage extends HookConsumerWidget {
                     return e.message;
                   }
                   return null;
+                },
+                onChanged: (value) {
+                  currentTraitState.value =
+                      currentTraitState.value.copyWith(value: value);
                 },
               ),
             ),
