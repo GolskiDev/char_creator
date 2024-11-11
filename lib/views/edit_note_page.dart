@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../features/notes/note.dart';
+
 class TraitFormState {
   final String value;
 
@@ -36,16 +38,17 @@ class NoteFormPage extends HookConsumerWidget {
     final textController =
         useTextEditingController(text: initialValue?.value ?? '');
 
-    final formState = useState(
-      initialValue ??
-          const TraitFormState(
-            value: '',
-          ),
+    final formKey = useState(GlobalKey<FormState>());
+
+    final formValidates = formKey.value.currentState?.validate();
+
+    final currentTraitState = TraitFormState(
+      value: textController.text,
     );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Trait Value'),
+        title: const Text('Edit Trait Value'),
         actions: [
           if (onSavePressed != null)
             if (onDeletePressed != null)
@@ -58,25 +61,39 @@ class NoteFormPage extends HookConsumerWidget {
               ),
           IconButton(
             icon: const Icon(Icons.save),
-            onPressed: () async {
-              formState.value = formState.value.copyWith(
-                value: textController.text,
-              );
-              await onSavePressed!.call(context, ref, formState.value);
-              if (context.mounted) Navigator.of(context).pop();
-            },
+            onPressed: formValidates == true
+                ? () async {
+                    await onSavePressed!.call(
+                      context,
+                      ref,
+                      currentTraitState,
+                    );
+                    if (context.mounted) Navigator.of(context).pop();
+                  }
+                : null,
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: textController,
+      body: Form(
+        key: formKey.value,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: textController,
+                validator: (value) {
+                  try {
+                    Note.validateValue(value);
+                  } on ArgumentError catch (e) {
+                    return e.message;
+                  }
+                  return null;
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

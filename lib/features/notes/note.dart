@@ -17,6 +17,21 @@ class Note extends Identifiable {
     );
   }
 
+  static validateValue(String? value) {
+    if (value == null) {
+      throw ArgumentError(
+        'Value cannot be null',
+      );
+    }
+    if (value.isEmpty) {
+      throw ArgumentError.value(
+        value,
+        null,
+        'Value cannot be empty',
+      );
+    }
+  }
+
   Note copyWith({String? value}) {
     return Note._(
       id: id,
