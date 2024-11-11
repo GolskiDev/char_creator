@@ -1,3 +1,4 @@
+import 'package:char_creator/features/character/character_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -86,15 +87,16 @@ class CharacterPage extends HookConsumerWidget {
         );
         return fromField != null && fromField != field;
       },
-      onAcceptWithDetails: (details) {
+      onAcceptWithDetails: (details) async {
         final note = details.data;
         final toField = field;
 
-        ref.read(characterUseCasesProvider).moveNoteBetweenFields(
-              character: character,
-              targetField: toField,
-              note: note,
-            );
+        final updatedCharacter = character.moveNoteBetweenFields(
+          targetFieldName: toField.name,
+          movedNoteId: note.id,
+        );
+
+        await ref.read(characterRepositoryProvider).updateCharacter(updatedCharacter);
       },
       builder: (context, candidateItems, rejectedItems) {
         final fieldName = Text(

@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../notes/note.dart';
@@ -34,6 +33,26 @@ class CharacterUseCases {
             name: 'Class',
             notes: [],
           ),
+          Field.create(
+            name: 'Race',
+            notes: [],
+          ),
+          Field.create(
+            name: 'Skills',
+            notes: [],
+          ),
+          Field.create(
+            name: 'Background',
+            notes: [],
+          ),
+          Field.create(
+            name: 'Equipment',
+            notes: [],
+          ),
+          Field.create(
+            name: 'Spells',
+            notes: [],
+          ),
         ],
       ),
     );
@@ -61,14 +80,14 @@ class CharacterUseCases {
           character.fields.map((f) => f == field ? updatedField : f).toList(),
     );
 
-    return _characterRepository.updateCharacter(updatedCharacter);
+    await _characterRepository.updateCharacter(updatedCharacter);
   }
 
   Future<void> deleteNoteInField({
     required Character character,
     required Field field,
     required Note note,
-  }) {
+  }) async {
     final isNoteInTheField = field.notes.any((n) => n.id == note.id);
 
     if (!isNoteInTheField) {
@@ -84,49 +103,7 @@ class CharacterUseCases {
           character.fields.map((f) => f == field ? updatedField : f).toList(),
     );
 
-    return _characterRepository.updateCharacter(updatedCharacter);
-  }
-
-  Future<void> moveNoteBetweenFields({
-    required Character character,
-    required Field targetField,
-    required Note note,
-  }) async {
-    //
-
-    final fromField = character.fields.firstWhereOrNull(
-      (field) => field.notes.any((note) => note.id == note.id),
-    );
-
-    if (fromField == null) {
-      throw Exception('Note not found in any field');
-    }
-
-    //checkIfToFieldExists
-    if (!character.fields.any((field) => field.name == targetField.name)) {
-      throw Exception('Target Field does not exist in character');
-    }
-
-    final fromFieldIndex = character.fields.indexOf(fromField);
-    final toFieldIndex = character.fields.indexOf(targetField);
-
-    if (fromFieldIndex == toFieldIndex) {
-      return;
-    }
-
-    final fromFieldNotes = fromField.notes.toList();
-    final toFieldNotes = targetField.notes.toList();
-
-    fromFieldNotes.remove(note);
-    toFieldNotes.add(note);
-
-    final updatedFields = character.fields.toList();
-    updatedFields[fromFieldIndex] = fromField.copyWith(notes: fromFieldNotes);
-    updatedFields[toFieldIndex] = targetField.copyWith(notes: toFieldNotes);
-
-    return _characterRepository.updateCharacter(
-      character.copyWith(fields: updatedFields),
-    );
+    await _characterRepository.updateCharacter(updatedCharacter);
   }
 
   Future<void> addNewFieldToCharacter({
