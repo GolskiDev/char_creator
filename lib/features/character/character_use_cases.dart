@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../notes/note.dart';
 import 'character.dart';
 import 'character_repository.dart';
 import 'field.dart';
@@ -56,18 +55,5 @@ class CharacterUseCases {
         ],
       ),
     );
-  }
-
-  Future<void> addNewFieldToCharacter({
-    required Character character,
-    required Field field,
-  }) async {
-    try {
-      final updatedFields = [...character.fields, field];
-      final updatedCharacter = character.copyWith(fields: updatedFields);
-      await _characterRepository.updateCharacter(updatedCharacter);
-    } catch (e) {
-      return;
-    }
   }
 }

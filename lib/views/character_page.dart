@@ -7,7 +7,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../common/widgets/default_async_id_page_builder.dart';
 import '../features/character/character.dart';
 import '../features/character/character_providers.dart';
-import '../features/character/character_use_cases.dart';
 import '../features/character/field.dart';
 import '../features/notes/note.dart';
 import 'edit_note_page.dart';
@@ -96,7 +95,9 @@ class CharacterPage extends HookConsumerWidget {
           movedNoteId: note.id,
         );
 
-        await ref.read(characterRepositoryProvider).updateCharacter(updatedCharacter);
+        await ref
+            .read(characterRepositoryProvider)
+            .updateCharacter(updatedCharacter);
       },
       builder: (context, candidateItems, rejectedItems) {
         final fieldName = Text(
@@ -188,12 +189,14 @@ class CharacterPage extends HookConsumerWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => NoteFormPage(
-          onSavePressed: (context, ref, noteFormState) async{
+          onSavePressed: (context, ref, noteFormState) async {
             final updatedCharacter = character.addOrUpdateNoteInField(
               fieldName: field.name,
               note: Note.create(value: noteFormState.value),
             );
-            await ref.read(characterRepositoryProvider).updateCharacter(updatedCharacter);
+            await ref
+                .read(characterRepositoryProvider)
+                .updateCharacter(updatedCharacter);
           },
         ),
       ),
@@ -247,7 +250,9 @@ class CharacterPage extends HookConsumerWidget {
               fieldName: field.name,
               note: note.copyWith(value: updatedNote.value),
             );
-            await ref.read(characterRepositoryProvider).updateCharacter(updatedCharacter);
+            await ref
+                .read(characterRepositoryProvider)
+                .updateCharacter(updatedCharacter);
           },
           onDeletePressed: (context, ref) async {
             final updatedcharacter = character.deleteNoteInField(
@@ -255,8 +260,8 @@ class CharacterPage extends HookConsumerWidget {
               note: note,
             );
             ref.read(characterRepositoryProvider).updateCharacter(
-              updatedcharacter,
-            );
+                  updatedcharacter,
+                );
           },
         ),
       ),
@@ -291,15 +296,15 @@ class CharacterPage extends HookConsumerWidget {
                 ),
                 TextButton(
                   onPressed: () async {
-                    final characterUseCases =
-                        ref.read(characterUseCasesProvider);
-                    await characterUseCases.addNewFieldToCharacter(
-                      character: character,
+                    final updatedCharacter = character.addNewField(
                       field: Field.create(
                         name: controller.text,
                         notes: [],
                       ),
                     );
+                    await ref
+                        .read(characterRepositoryProvider)
+                        .updateCharacter(updatedCharacter);
                     if (context.mounted) {
                       Navigator.of(context).pop();
                     }

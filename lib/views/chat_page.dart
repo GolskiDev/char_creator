@@ -1,5 +1,4 @@
 import 'package:char_creator/features/character/character_providers.dart';
-import 'package:char_creator/features/character/character_use_cases.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -130,8 +129,6 @@ class ChatPage extends HookConsumerWidget {
     FocusNode focusNode,
     Character character,
   ) async {
-    final characterUseCases = ref.read(characterUseCasesProvider);
-
     final note = Note.create(
       value: selectedText.value!,
     );
@@ -144,18 +141,21 @@ class ChatPage extends HookConsumerWidget {
         name: "Other",
         notes: [note],
       );
-      await characterUseCases.addNewFieldToCharacter(
-        character: character,
+      final updatedCharacter = character.addNewField(
         field: otherField,
       );
+      await ref
+          .read(characterRepositoryProvider)
+          .updateCharacter(updatedCharacter);
     } else {
-      
       final updatedCharacter = character.addOrUpdateNoteInField(
         fieldName: "Other",
         note: note,
       );
 
-      await ref.read(characterRepositoryProvider).updateCharacter(updatedCharacter);
+      await ref
+          .read(characterRepositoryProvider)
+          .updateCharacter(updatedCharacter);
     }
     focusNode.unfocus();
   }

@@ -45,6 +45,16 @@ class Character implements Identifiable {
     );
   }
 
+  //Field Related
+  Character addNewField({
+    required Field field,
+  }) {
+    final updatedFields = [...fields, field];
+    final updatedCharacter = copyWith(fields: updatedFields);
+    return updatedCharacter;
+  }
+
+  // Note Related
   Character moveNoteBetweenFields({
     required String targetFieldName,
     required String movedNoteId,
