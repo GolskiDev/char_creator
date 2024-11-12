@@ -250,11 +250,12 @@ class CharacterPage extends HookConsumerWidget {
             await ref.read(characterRepositoryProvider).updateCharacter(updatedCharacter);
           },
           onDeletePressed: (context, ref) async {
-            final characterUseCases = ref.read(characterUseCasesProvider);
-            await characterUseCases.deleteNoteInField(
-              character: character,
+            final updatedcharacter = character.deleteNoteInField(
               field: field,
               note: note,
+            );
+            ref.read(characterRepositoryProvider).updateCharacter(
+              updatedcharacter,
             );
           },
         ),

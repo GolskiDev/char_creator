@@ -122,6 +122,27 @@ class Character implements Identifiable {
     );
   }
 
+  Character deleteNoteInField({
+    required Field field,
+    required Note note,
+  }) {
+    final isNoteInTheField = field.notes.any((n) => n.id == note.id);
+
+    if (!isNoteInTheField) {
+      throw NoteNotFoundException(note.id);
+    }
+
+    final updatedNotes = field.notes.where((n) => n != note).toList();
+
+    final updatedField = field.copyWith(notes: updatedNotes);
+
+    final updatedCharacter = copyWith(
+      fields: fields.map((f) => f == field ? updatedField : f).toList(),
+    );
+
+    return updatedCharacter;
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': _id,
