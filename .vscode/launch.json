@@ -4,10 +4,17 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "char_creator",
             "request": "launch",
             "type": "dart"
+        },
+        {
+            "name": "char_creator (debug web)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--web-browser-flag=--disable-web-security"]
         },
         {
             "name": "char_creator (profile mode)",

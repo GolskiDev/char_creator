@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'character.dart';
+import 'character_providers.dart';
 import 'character_repository.dart';
 import 'field.dart';
 

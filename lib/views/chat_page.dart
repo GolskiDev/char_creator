@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../common/widgets/default_async_id_page_builder.dart';
 import '../features/basic_chat_support/my_chat_widget.dart';
 import '../features/character/character.dart';
-import '../features/character/character_repository.dart';
 import '../features/character/field.dart';
 import '../features/character/widgets/selectable_list_of_fields.dart';
 import '../features/notes/note.dart';

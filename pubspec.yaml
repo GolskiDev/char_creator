@@ -20,7 +20,8 @@ dependencies:
   uuid: 
   collection: 
   go_router: 
-  google_fonts: 
+  google_fonts:
+  http:
 
 dev_dependencies:
   flutter_test:
