@@ -1,3 +1,4 @@
+// In cases where the server returns response
 sealed class RestError implements Exception {
   final String? message;
 
@@ -23,4 +24,8 @@ class NotFoundError extends RestError {
 
 class InternalServerError extends RestError {
   InternalServerError(super.message);
+}
+
+class RequestTimeoutError extends RestError {
+  RequestTimeoutError(super.message);
 }
