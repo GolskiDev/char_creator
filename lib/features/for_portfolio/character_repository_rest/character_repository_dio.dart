@@ -94,17 +94,17 @@ class CharacterRepositoryDio implements CharacterRepository {
 
   @override
   Future<void> deleteCharacter(String characterId) async {
-    try{
+    try {
       final response = await dio.delete(
-      '/characters/$characterId',
-    );
+        '/characters/$characterId',
+      );
 
-    if (response.statusCode == 204) {
-      _refreshStream();
-      return;
-    } else {
-      throw Exception('Failed to delete character');
-    }
+      if (response.statusCode == 204) {
+        _refreshStream();
+        return;
+      } else {
+        throw Exception('Failed to delete character');
+      }
     } on DioException catch (e) {
       throw _mapToRestError(e);
     }
@@ -114,16 +114,17 @@ class CharacterRepositoryDio implements CharacterRepository {
     try {
       final characters = await getAllCharacters();
       _controller.add(characters);
-      return; 
+      return;
     } on DioException catch (e) {
-      _controller.addError(e);
+      _controller.addError(_mapToRestError(e));
     }
   }
 
   RestError _mapToRestError(DioException e) {
-    if (e.response?.statusCode == 400) {
-      return BadRequestError(e.response?.statusMessage ?? 'Bad request');
-    }
-    return UnexpectedError(e.message);
+    return switch (e.response?.statusCode) {
+      400 => BadRequestError(e.response?.statusMessage ?? 'Bad request'),
+      404 => NotFoundError(e.response?.statusMessage ?? 'Not found'),
+      _ => UnexpectedError(e.message),
+    };
   }
 }

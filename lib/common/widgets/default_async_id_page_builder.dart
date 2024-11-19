@@ -1,51 +1,101 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../features/for_portfolio/character_repository_rest/rest_errors.dart';
+
 class DefaultAsyncIdPageBuilder<T> extends HookConsumerWidget {
   const DefaultAsyncIdPageBuilder({
     required this.asyncValue,
-    this.onError = defaultOnError,
-    this.onNull = defaultOnError,
+    this.onError,
+    this.onNull,
     this.pageBuilder,
     super.key,
   });
   final AsyncValue<T?> asyncValue;
-  final Widget onError;
-  final Widget onNull;
+  final Widget? onError;
+  final Widget? onNull;
   final Widget Function(BuildContext context, T value)? pageBuilder;
-
-  static const defaultOnError = Center(
-    child: Text("An error occurred"),
-  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return asyncValue.when(
-      skipLoadingOnReload: true,
-      data: (data) {
-        if (data == null) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: onNull,
-          );
-        }
+    switch (asyncValue) {
+      case AsyncValue(value: final T data):
         if (pageBuilder != null) {
           return pageBuilder!(context, data);
         }
+      case AsyncValue(
+          value: null,
+          isLoading: false,
+          hasError: false,
+        ):
+        if (onNull != null) {
+          return onNull!;
+        }
         return Scaffold(
           appBar: AppBar(),
-          body: onError,
+          body: notFoundErrorBuilder(),
         );
-      },
-      loading: () => Scaffold(
-        appBar: AppBar(),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+      case AsyncValue(isLoading: true):
+        return Scaffold(
+          appBar: AppBar(),
+          body: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      case AsyncError(
+          error: final Object error,
+          stackTrace: final StackTrace? stackTrace
+        ):
+        return Scaffold(
+          appBar: AppBar(),
+          body: defaultErrorBuilder(error, stackTrace),
+        );
+    }
+    return Scaffold(
+      appBar: AppBar(),
+      body: defaultErrorBuilder(null, null),
+    );
+  }
+
+  Widget defaultErrorBuilder(Object? error, StackTrace? stackTrace) {
+    return switch (error) {
+      RestError _ => _restErrorBuilder(error),
+      _ => onError ?? unexpectedErrorBuilder(),
+    };
+  }
+
+  Widget _restErrorBuilder(RestError error) {
+    return switch (error) {
+      NotFoundError _ => notFoundErrorBuilder(),
+      UnexpectedError _ => unexpectedErrorBuilder(),
+      BadRequestError _ => unexpectedErrorBuilder(),
+    };
+  }
+
+  Widget unexpectedErrorBuilder() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.error),
+          SizedBox(height: 8),
+          Text('Something unexpected happened. Please try again later.'),
+        ],
       ),
-      error: (error, stackTrace) => Scaffold(
-        appBar: AppBar(),
-        body: onError,
+    );
+  }
+
+  Widget notFoundErrorBuilder() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.search_off),
+          SizedBox(height: 8),
+          Text('We couldn\'t find the data you are looking for.'),
+        ],
       ),
     );
   }

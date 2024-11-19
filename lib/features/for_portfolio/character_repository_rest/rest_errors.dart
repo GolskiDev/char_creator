@@ -1,4 +1,4 @@
-abstract class RestError implements Exception {
+sealed class RestError implements Exception {
   final String? message;
 
   RestError(this.message);
@@ -10,9 +10,13 @@ abstract class RestError implements Exception {
 }
 
 class UnexpectedError extends RestError {
-  UnexpectedError(String? message) : super(message);
+  UnexpectedError(super.message);
 }
 
 class BadRequestError extends RestError {
-  BadRequestError(String message) : super(message);
+  BadRequestError(super.message);
+}
+
+class NotFoundError extends RestError {
+  NotFoundError(super.message);
 }
