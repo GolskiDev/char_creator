@@ -124,6 +124,7 @@ class CharacterRepositoryDio implements CharacterRepository {
     return switch (e.response?.statusCode) {
       400 => BadRequestError(e.response?.statusMessage ?? 'Bad request'),
       404 => NotFoundError(e.response?.statusMessage ?? 'Not found'),
+      500 => InternalServerError(e.response?.statusMessage ?? 'Internal server error'),
       _ => UnexpectedError(e.message),
     };
   }

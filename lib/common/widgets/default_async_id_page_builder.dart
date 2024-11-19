@@ -68,7 +68,7 @@ class DefaultAsyncIdPageBuilder<T> extends HookConsumerWidget {
     return switch (error) {
       NotFoundError _ => notFoundErrorBuilder(),
       BadRequestError _ => unexpectedErrorBuilder(),
-      ServerError _ => serverErrorBuilder(),
+      InternalServerError _ => serverErrorBuilder(),
       UnexpectedError _ => unexpectedErrorBuilder(),
     };
   }
