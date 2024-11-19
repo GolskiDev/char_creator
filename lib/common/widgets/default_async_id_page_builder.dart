@@ -67,8 +67,9 @@ class DefaultAsyncIdPageBuilder<T> extends HookConsumerWidget {
   Widget _restErrorBuilder(RestError error) {
     return switch (error) {
       NotFoundError _ => notFoundErrorBuilder(),
-      UnexpectedError _ => unexpectedErrorBuilder(),
       BadRequestError _ => unexpectedErrorBuilder(),
+      ServerError _ => serverErrorBuilder(),
+      UnexpectedError _ => unexpectedErrorBuilder(),
     };
   }
 
@@ -95,6 +96,20 @@ class DefaultAsyncIdPageBuilder<T> extends HookConsumerWidget {
           Icon(Icons.search_off),
           SizedBox(height: 8),
           Text('We couldn\'t find the data you are looking for.'),
+        ],
+      ),
+    );
+  }
+
+  Widget serverErrorBuilder() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.error),
+          SizedBox(height: 8),
+          Text('Something went wrong on our side. Please try again later.'),
         ],
       ),
     );

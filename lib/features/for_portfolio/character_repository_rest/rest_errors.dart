@@ -20,3 +20,7 @@ class BadRequestError extends RestError {
 class NotFoundError extends RestError {
   NotFoundError(super.message);
 }
+
+class ServerError extends RestError {
+  ServerError(super.message);
+}
