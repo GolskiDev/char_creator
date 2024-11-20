@@ -1,6 +1,7 @@
 import 'package:char_creator/features/character/character_repository.dart';
 import 'package:char_creator/features/for_portfolio/character_repository_rest/character_repository_dio.dart';
 import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'character.dart';
@@ -18,7 +19,11 @@ final characterByIdProvider =
 });
 
 final characterRepositoryProvider = Provider<CharacterRepository>(
-  (ref) => CharacterRepositoryDio(
-    baseUrl: 'http://localhost:5000',
-  ),
+  (ref) {
+    final dio = Dio();
+    return CharacterRepositoryDio(
+      baseUrl: 'http://localhost:5000',
+      dio: dio,
+    );
+  },
 );

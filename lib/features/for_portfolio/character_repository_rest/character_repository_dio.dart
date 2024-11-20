@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:char_creator/features/character/character.dart';
+import 'package:char_creator/features/for_portfolio/character_repository_rest/retry_inteceptor.dart';
 import 'package:dio/dio.dart';
 
 import '../../character/character_repository.dart';
@@ -14,13 +15,16 @@ class CharacterRepositoryDio implements CharacterRepository {
 
   CharacterRepositoryDio({
     required this.baseUrl,
-  })  : dio = Dio(
-          BaseOptions(
-            baseUrl: baseUrl,
-          ),
-        ),
-        _controller = StreamController<List<Character>>.broadcast() {
+    required this.dio,
+  }) : _controller = StreamController<List<Character>>.broadcast() {
     _controller.onListen = _refreshStream;
+    dio.interceptors.add(
+      RetryInterceptor(
+        maxRetries: 3,
+        retryInterval: const Duration(seconds: 2),
+        dio: dio,
+      ),
+    );
   }
 
   @override
