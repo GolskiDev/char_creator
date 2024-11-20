@@ -20,10 +20,8 @@ final characterByIdProvider =
 
 final characterRepositoryProvider = Provider<CharacterRepository>(
   (ref) {
-    final dio = Dio();
     return CharacterRepositoryDio(
-      baseUrl: 'http://localhost:5000',
-      dio: dio,
+      baseUrl: 'http://10.0.2.2:5000',
     );
   },
 );

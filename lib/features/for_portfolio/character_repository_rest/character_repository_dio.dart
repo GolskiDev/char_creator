@@ -15,14 +15,23 @@ class CharacterRepositoryDio implements CharacterRepository {
 
   CharacterRepositoryDio({
     required this.baseUrl,
-    required this.dio,
-  }) : _controller = StreamController<List<Character>>.broadcast() {
+  })  : dio = Dio(
+          BaseOptions(
+            baseUrl: baseUrl,
+          ),
+        ),
+        _controller = StreamController<List<Character>>.broadcast() {
     _controller.onListen = _refreshStream;
+
     dio.interceptors.add(
       RetryInterceptor(
         maxRetries: 3,
-        retryInterval: const Duration(seconds: 2),
-        dio: dio,
+        retryInterval: const Duration(seconds: 10),
+        dio: Dio(
+          BaseOptions(
+            baseUrl: baseUrl,
+          ),
+        ),
       ),
     );
   }
