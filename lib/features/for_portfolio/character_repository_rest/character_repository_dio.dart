@@ -108,7 +108,7 @@ class CharacterRepositoryDio implements CharacterRepository {
       }
     } on DioException catch (e) {
       throw _mapToMyExceptions(e);
-    } 
+    }
   }
 
   _refreshStream() async {
@@ -121,27 +121,57 @@ class CharacterRepositoryDio implements CharacterRepository {
     }
   }
 
-  Exception _mapToMyExceptions(DioException e){
-    return switch(e){
-      DioException(type: DioExceptionType.connectionTimeout,) => remote_errors.ConnectionError(e.message),
-      DioException(type: DioExceptionType.sendTimeout,) => remote_errors.RequestTimeoutError(e.message),
-      DioException(type: DioExceptionType.receiveTimeout,) => remote_errors.RequestTimeoutError(e.message),
-      DioException(type: DioExceptionType.badCertificate,) => remote_errors.BadCertificateError(e.message),
-      DioException(type: DioExceptionType.badResponse,) => _mapToRestError(e),
-      DioException(type: DioExceptionType.cancel,) => remote_errors.RequestCancelledError(e.message),
-      DioException(type: DioExceptionType.connectionError,) => remote_errors.ConnectionError(e.message),
-      DioException(type: DioExceptionType.unknown,) => remote_errors.UnknownError(e.message),
+  Exception _mapToMyExceptions(DioException e) {
+    return switch (e) {
+      DioException(
+        type: DioExceptionType.connectionTimeout,
+      ) =>
+        remote_errors.ConnectionError(e.message),
+      DioException(
+        type: DioExceptionType.sendTimeout,
+      ) =>
+        remote_errors.RequestTimeoutError(e.message),
+      DioException(
+        type: DioExceptionType.receiveTimeout,
+      ) =>
+        remote_errors.RequestTimeoutError(e.message),
+      DioException(
+        type: DioExceptionType.badCertificate,
+      ) =>
+        remote_errors.BadCertificateError(e.message),
+      DioException(
+        type: DioExceptionType.badResponse,
+      ) =>
+        _mapToRestError(e),
+      DioException(
+        type: DioExceptionType.cancel,
+      ) =>
+        remote_errors.RequestCancelledError(e.message),
+      DioException(
+        type: DioExceptionType.connectionError,
+      ) =>
+        remote_errors.ConnectionError(e.message),
+      DioException(
+        type: DioExceptionType.unknown,
+      ) =>
+        remote_errors.UnknownError(e.message),
     };
   }
 
   rest_errors.RestError _mapToRestError(DioException e) {
     return switch (e.response?.statusCode) {
-      400 => rest_errors.BadRequestError(e.response?.statusMessage ?? 'Bad request'),
-      404 => rest_errors.NotFoundError(e.response?.statusMessage ?? 'Not found'),
-      408 => rest_errors.RequestTimeoutError(e.response?.statusMessage ?? 'Request timeout'),
-      500 => rest_errors.InternalServerError(e.response?.statusMessage ?? 'Internal server error'),
-      502 => rest_errors.InternalServerError(e.response?.statusMessage ?? 'Bad gateway'),
-      504 => rest_errors.InternalServerError(e.response?.statusMessage ?? 'Gateway timeout'),
+      400 =>
+        rest_errors.BadRequestError(e.response?.statusMessage ?? 'Bad request'),
+      404 =>
+        rest_errors.NotFoundError(e.response?.statusMessage ?? 'Not found'),
+      408 => rest_errors.RequestTimeoutError(
+          e.response?.statusMessage ?? 'Request timeout'),
+      500 => rest_errors.InternalServerError(
+          e.response?.statusMessage ?? 'Internal server error'),
+      502 => rest_errors.InternalServerError(
+          e.response?.statusMessage ?? 'Bad gateway'),
+      504 => rest_errors.InternalServerError(
+          e.response?.statusMessage ?? 'Gateway timeout'),
       _ => rest_errors.UnexpectedError(e.message),
     };
   }
