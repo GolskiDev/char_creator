@@ -1,11 +1,9 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:langchain/langchain.dart';
 
 import '../notes/note.dart';
-import 'chat_bot.dart';
+import 'chat_bots/chat_bot.dart';
 import 'chat_history_repository.dart';
 
 enum MyMessageType {
@@ -39,24 +37,25 @@ class MyChatWidget extends HookConsumerWidget {
       ),
     );
     final chatBot = useMemoized(
-      () => ChatBotWithMemory(
-        ConversationBufferMemory(
-          chatHistory: ChatMessageHistory(
-            messages: messages.value.mapIndexed((index, message) {
-              if (index % 2 == 1) {
-                return ChatMessage.human(
-                    ChatMessageContent.text(message.toString()));
-              } else {
-                return ChatMessage.ai(message.toString());
-              }
-            }).toList(),
-          ),
-          returnMessages: true,
-        ),
-      ),
+      () => ChatBot(),
+      // () => ChatBotWithMemory(
+      //   ConversationBufferMemory(
+      //     chatHistory: ChatMessageHistory(
+      //       messages: messages.value.mapIndexed((index, message) {
+      //         if (index % 2 == 1) {
+      //           return ChatMessage.human(
+      //               ChatMessageContent.text(message.toString()));
+      //         } else {
+      //           return ChatMessage.ai(message.toString());
+      //         }
+      //       }).toList(),
+      //     ),
+      //     returnMessages: true,
+      //   ),
+      // ),
     );
 
-    Future<void> _onSendPressed(String text) async {
+    Future<void> onSendPressed(String text) async {
       final newMessage = MyMessage(
         author: MyMessageType.human,
         text: text,
@@ -64,9 +63,9 @@ class MyChatWidget extends HookConsumerWidget {
       messages.value = [newMessage, ...messages.value];
       ref.read(myChatHistoryProviderByCharacterId(characterId).notifier).state =
           messages.value;
-      final response = await chatBot.sendUserMessageWithContext(
+      final response = await chatBot.sendUserMessage(
         text,
-        additionalContext ?? [],
+        // additionalContext ?? [],
       );
       final botMessage = MyMessage(
         author: MyMessageType.bot,
@@ -122,6 +121,8 @@ class MyChatWidget extends HookConsumerWidget {
 
     final controller = useTextEditingController();
 
+    final currentMessage = useState<String?>(null);
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -143,17 +144,29 @@ class MyChatWidget extends HookConsumerWidget {
               child: TextField(
                 controller: controller,
                 onSubmitted: (text) {
-                  _onSendPressed(text);
+                  onSendPressed(text);
                   controller.clear();
+                },
+                onChanged: (text) {
+                  currentMessage.value = text;
                 },
                 decoration: InputDecoration(
                   hintText: 'You can type here',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.send),
-                    onPressed: () {
-                      _onSendPressed(controller.text);
-                      controller.clear();
-                    },
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GenerateImageButton(
+                        prompt: currentMessage.value ?? '',
+                        chatBot: chatBot,
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.send),
+                        onPressed: () {
+                          onSendPressed(controller.text);
+                          controller.clear();
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -161,6 +174,37 @@ class MyChatWidget extends HookConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class GenerateImageButton extends StatelessWidget {
+  const GenerateImageButton({
+    required this.prompt,
+    required this.chatBot,
+    super.key,
+  });
+  final String prompt;
+  final ChatBot chatBot;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.image),
+      onPressed: () async {
+        final response = await chatBot.generateImage(prompt);
+        if (!context.mounted) {
+          return;
+        }
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Image.network(response),
+            );
+          },
+        );
+      },
     );
   }
 }
