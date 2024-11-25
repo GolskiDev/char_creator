@@ -1,6 +1,7 @@
 import 'package:char_creator/features/character/character.dart';
 import 'package:char_creator/features/character/character_use_cases.dart';
 import 'package:char_creator/features/character/widgets/create_character_widget.dart';
+import 'package:char_creator/features/images/picking_images.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -38,6 +39,12 @@ class ListOfCharactersPage extends HookConsumerWidget {
     }
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          PickingImages.pickImage();
+        },
+        child: const Icon(Icons.add),
+      ),
       appBar: AppBar(
         title: Text(
           'Characters',
