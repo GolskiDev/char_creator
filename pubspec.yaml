@@ -22,6 +22,9 @@ dependencies:
   go_router: 
   google_fonts: 
   image_picker: 
+  path_provider:
+  http:
+  path: 
 
 dev_dependencies:
   flutter_test:
