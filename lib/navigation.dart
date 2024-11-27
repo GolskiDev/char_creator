@@ -1,6 +1,6 @@
-import 'package:char_creator/views/document_page.dart';
 import 'package:go_router/go_router.dart';
 
+import 'views/character_page.dart';
 import 'views/list_of_documents_page.dart';
 
 class Navigation {
@@ -16,7 +16,7 @@ class Navigation {
         routes: [
           GoRoute(
             path: '/:id',
-            builder: (context, state) => DocumentPage(
+            builder: (context, state) => CharacterPage(
               documentId: state.pathParameters['id']!,
             ),
           ),

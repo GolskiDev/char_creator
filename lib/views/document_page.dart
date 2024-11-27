@@ -34,20 +34,11 @@ class DocumentPage extends ConsumerWidget {
       ),
       floatingActionButton: document != null
           ? FloatingActionButton(
-              onPressed: () {
-                final updatedDocument = document.copyWith(
-                  fields: [
-                    ...document.fields,
-                    Field(
-                      name: 'New Field ${Random().nextInt(100)}',
-                      values: [],
-                    ),
-                  ],
-                );
-                ref.read(documentRepositoryProvider).updateDocument(
-                      updatedDocument,
-                    );
-              },
+              onPressed: () => _addNewField(
+                context,
+                ref,
+                document,
+              ),
               child: const Icon(Icons.add),
             )
           : null,
@@ -112,6 +103,71 @@ class DocumentPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _addNewField(
+    BuildContext context,
+    WidgetRef ref,
+    Document document,
+  ) async {
+    final TextEditingController controller = TextEditingController();
+    final String? fieldName = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter Field Name'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(hintText: 'Field Name'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(controller.text),
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (fieldName != null && fieldName.isNotEmpty) {
+      final updatedDocument = document.copyWith(
+        fields: [
+          ...document.fields,
+          Field(
+            name: fieldName,
+            values: [],
+          ),
+        ],
+      );
+      ref.read(documentRepositoryProvider).updateDocument(updatedDocument);
+    }
+  }
+
+  Widget _buildFieldValueWidget(BuildContext context, FieldValue value) {
+    switch (value) {
+      case StringValue string:
+        return Chip(
+          label: Text(string.value),
+        );
+      case DocumentReference ref:
+        return ActionChip(
+          onPressed: () => context.go(
+            '/documents/${ref.refId}',
+          ),
+          label: Text(ref.refId),
+        );
+      case ImageValue image:
+        return Image.file(
+          File(image.url),
+        );
+      default:
+        throw ArgumentError('Invalid field value type');
+    }
   }
 
   void _onAddPressed({
