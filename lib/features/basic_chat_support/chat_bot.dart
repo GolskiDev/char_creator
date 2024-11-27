@@ -2,7 +2,6 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 
 import '../../secrets.dart';
-import '../notes/note.dart';
 
 class ChatBot {
   final chat = ChatOpenAI(apiKey: chatGPTApiKey);
@@ -80,7 +79,7 @@ class ChatBotWithMemory implements ChatBot {
 
   Future<String> sendUserMessageWithContext(
     String prompt,
-    List<Note> someContext,
+    List<String> someContext,
   ) async {
     final promptTemplate = ChatPromptTemplate.fromPromptMessages(
       [
@@ -107,7 +106,7 @@ class ChatBotWithMemory implements ChatBot {
         stringOutputParser;
 
     final inputWithContext =
-        "$prompt context: ${someContext.map((note) => note.value).join("\n")}";
+        "$prompt context: ${someContext.map((string) => string).join("\n")}";
 
     final response = await chain.invoke({
       'input': inputWithContext,

@@ -4,7 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:langchain/langchain.dart';
 
-import '../notes/note.dart';
 import 'chat_bot.dart';
 import 'chat_history_repository.dart';
 
@@ -29,7 +28,7 @@ class MyChatWidget extends HookConsumerWidget {
     super.key,
   });
   final String characterId;
-  final List<Note>? additionalContext;
+  final List<String>? additionalContext;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
