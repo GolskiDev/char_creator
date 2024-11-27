@@ -1,13 +1,4 @@
-sealed class FieldValue {
-  static FieldValue fromJson(Map<String, dynamic> json) {
-    return switch (json['type']) {
-      StringValue.typeId => StringValue.fromJson(json),
-      _ => throw ArgumentError('Invalid field value type'),
-    };
-  }
-
-  Map<String, dynamic> toJson();
-}
+part of 'field_value.dart';
 
 class StringValue extends FieldValue {
   static const String typeId = 'string';

@@ -1,4 +1,4 @@
-import 'field_value.dart';
+import 'field_values/field_value.dart';
 
 class Field {
   final String name;

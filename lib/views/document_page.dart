@@ -1,13 +1,14 @@
 import 'dart:math';
 
-import 'package:char_creator/features/basic_chat_support/my_chat_widget.dart';
+import 'package:char_creator/features/documents/document.dart';
 import 'package:char_creator/features/documents/document_providers.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../features/fields/field.dart';
-import '../features/fields/field_value.dart';
+import '../features/fields/field_values/field_value.dart';
 
 class DocumentPage extends ConsumerWidget {
   const DocumentPage({
@@ -64,46 +65,12 @@ class DocumentPage extends ConsumerWidget {
                       IconButton(
                         icon: const Icon(Icons.add),
                         onPressed: () {
-                          final loremIpsumWords = [
-                            'Lorem',
-                            'ipsum',
-                            'dolor',
-                            'sit',
-                            'amet',
-                            'consectetur',
-                            'adipiscing',
-                            'elit',
-                            'sed',
-                            'do',
-                            'eiusmod',
-                            'tempor',
-                            'incididunt',
-                            'ut',
-                            'labore',
-                            'et',
-                            'dolore',
-                            'magna',
-                            'aliqua'
-                          ];
-                          final randomWord = (loremIpsumWords..shuffle()).first;
-
-                          final updatedFields = document.fields.map((f) {
-                            if (f == field) {
-                              return f.copyWith(
-                                values: [
-                                  ...f.values,
-                                  StringValue(
-                                    value: randomWord,
-                                  ),
-                                ],
-                              );
-                            }
-                            return f;
-                          }).toList();
-
-                          ref.read(documentRepositoryProvider).updateDocument(
-                                document.copyWith(fields: updatedFields),
-                              );
+                          _onAddPressed(
+                            context: context,
+                            ref: ref,
+                            document: document,
+                            field: field,
+                          );
                         },
                       ),
                     ],
@@ -120,8 +87,13 @@ class DocumentPage extends ConsumerWidget {
                               return Chip(
                                 label: Text(string.value),
                               );
-                            default:
-                              return null;
+                            case DocumentReference ref:
+                              return ActionChip(
+                                onPressed: () => context.go(
+                                  '/documents/${ref.refId}',
+                                ),
+                                label: Text(ref.refId),
+                              );
                           }
                         },
                       ).whereNotNull()
@@ -132,6 +104,152 @@ class DocumentPage extends ConsumerWidget {
             ),
         ],
       ),
+    );
+  }
+
+  void _onAddPressed({
+    required BuildContext context,
+    required WidgetRef ref,
+    required Document document,
+    required Field field,
+  }) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Add Value or Reference'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const Text('Add Value'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _showAddValueDialog(context, ref, document, field);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Create Reference'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _showCreateReferenceDialog(context, ref, document, field);
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  void _showAddValueDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Document document,
+    Field field,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final TextEditingController controller = TextEditingController();
+        return AlertDialog(
+          title: const Text('Add Value'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(hintText: 'Enter value'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final updatedField = field.copyWith(
+                  values: [
+                    ...field.values,
+                    StringValue(value: controller.text),
+                  ],
+                );
+                final updatedDocument = document.copyWith(
+                  fields: document.fields.map((f) {
+                    return f.name == field.name ? updatedField : f;
+                  }).toList(),
+                );
+                ref.read(documentRepositoryProvider).updateDocument(
+                      updatedDocument,
+                    );
+                Navigator.of(context).pop();
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCreateReferenceDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Document document,
+    Field field,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final documents = ref
+            .watch(documentsProvider)
+            .asData
+            ?.value
+            .where((d) => d.id != document.id)
+            .toList();
+
+        return AlertDialog(
+          title: const Text('Create Reference'),
+          content: documents != null
+              ? SizedBox(
+                  width: double.maxFinite,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: documents.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final doc = documents[index];
+                      return ListTile(
+                        title: Text(doc.id),
+                        onTap: () {
+                          final updatedField = field.copyWith(
+                            values: [
+                              ...field.values,
+                              DocumentReference(refId: doc.id),
+                            ],
+                          );
+                          final updatedDocument = document.copyWith(
+                            fields: document.fields.map((f) {
+                              return f.name == field.name ? updatedField : f;
+                            }).toList(),
+                          );
+                          ref.read(documentRepositoryProvider).updateDocument(
+                                updatedDocument,
+                              );
+                          Navigator.of(context).pop();
+                        },
+                      );
+                    },
+                  ),
+                )
+              : const CircularProgressIndicator(),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
