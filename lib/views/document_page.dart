@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/dynamic_types/dynamic_types_providers.dart';
 import '../features/fields/field.dart';
 import '../features/fields/field_values/field_value.dart';
 
@@ -111,14 +112,61 @@ class DocumentPage extends ConsumerWidget {
     Document document,
   ) async {
     final TextEditingController controller = TextEditingController();
+    final documentTypes = ref.read(documentTypesProvider);
+    final documentType = documentTypes.firstWhereOrNull(
+      (type) => type.documentType == document.type,
+    );
+    final availableFieldModels = documentType?.fields
+        .where((field) => !document.fields.any((f) => f.name == field.name))
+        .toList();
+
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (availableFieldModels != null &&
+            availableFieldModels.isNotEmpty) ...[
+          Text(
+            'Select type',
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.start,
+          ),
+          ...availableFieldModels.map(
+            (field) => ListTile(
+              title: Text(field.label),
+              onTap: () {
+                Navigator.of(context).pop(field.name);
+              },
+              trailing: const Icon(Icons.add),
+            ),
+          ),
+          const SizedBox(
+            height: 32,
+          ),
+          Text(
+            'Or create custom field',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          TextField(
+            controller: controller,
+            decoration: const InputDecoration(hintText: 'Enter field name'),
+          ),
+        ] else ...[
+          TextField(
+            controller: controller,
+            decoration: const InputDecoration(hintText: 'Enter field name'),
+          ),
+        ],
+      ],
+    );
+
     final String? fieldName = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter Field Name'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(hintText: 'Field Name'),
+          title: const Text('Add new field'),
+          content: SingleChildScrollView(
+            child: content,
           ),
           actions: <Widget>[
             TextButton(

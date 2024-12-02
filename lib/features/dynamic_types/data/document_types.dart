@@ -5,7 +5,7 @@ class DocumentTypes {
       "label": "Character",
       "fields": [
         "name",
-        "image",
+        "images",
         "description",
       ]
     },
@@ -14,7 +14,7 @@ class DocumentTypes {
       "label": "Location",
       "fields": [
         "name",
-        "image",
+        "images",
         "description",
       ]
     },
@@ -23,7 +23,7 @@ class DocumentTypes {
       "label": "Item",
       "fields": [
         "name",
-        "image",
+        "images",
         "description",
       ]
     },

@@ -25,10 +25,12 @@ class Document implements Identifiable {
 
   factory Document.create({
     List<Field> fields = const [],
+    String? type,
   }) {
     return Document._(
       id: IdGenerator.generateId(Document),
       fields: fields,
+      type: type,
     );
   }
 

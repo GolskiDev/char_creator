@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/documents/document.dart';
 import '../features/documents/document_providers.dart';
+import '../features/dynamic_types/dynamic_types_providers.dart';
 
 class ListOfDocumentsPage extends ConsumerWidget {
   const ListOfDocumentsPage({super.key});
@@ -20,12 +21,60 @@ class ListOfDocumentsPage extends ConsumerWidget {
         title: const Text('Documents'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ref.read(documentRepositoryProvider).saveDocument(
-                Document.create(
-                  fields: [],
+        onPressed: () async {
+          final documentTypes = ref.read(
+            documentTypesProvider,
+          );
+          await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Select Document Type'),
+                content: Consumer(
+                  builder: (context, ref, child) => SingleChildScrollView(
+                    child: ListBody(
+                      children: documentTypes.map((type) {
+                        return ListTile(
+                          title: Text(type.label),
+                          onTap: () async {
+                            final documentRepository =
+                                ref.read(documentRepositoryProvider);
+                            await documentRepository.saveDocument(
+                              Document.create(
+                                type: type.documentType,
+                              ),
+                            );
+                            if (!context.mounted) {
+                              return;
+                            }
+                            Navigator.of(context).pop();
+                          },
+                        );
+                      }).toList()
+                        ..add(
+                          ListTile(
+                            title: const Text('Plain Document'),
+                            onTap: () async {
+                              final documentRepository =
+                                  ref.read(documentRepositoryProvider);
+                              await documentRepository.saveDocument(
+                                Document.create(
+                                  type: null,
+                                ),
+                              );
+                              if (!context.mounted) {
+                                return;
+                              }
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ),
+                    ),
+                  ),
                 ),
               );
+            },
+          );
         },
         child: const Icon(Icons.add),
       ),

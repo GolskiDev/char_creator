@@ -9,7 +9,7 @@ class FieldTypes {
       "label": "Images",
     },
     {
-      "description": "description",
+      "name": "description",
       "label": "Description",
     },
   ];
