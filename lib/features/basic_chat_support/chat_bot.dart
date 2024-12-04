@@ -21,11 +21,13 @@ class ChatBot {
   }
 
   Future<String> sendSystemMessage(String prompt) {
-    final promptTemplate = ChatPromptTemplate.fromPromptMessages([
-      SystemChatMessagePromptTemplate.fromTemplate(
-        '{input}',
-      ),
-    ]);
+    final promptTemplate = ChatPromptTemplate.fromPromptMessages(
+      [
+        SystemChatMessagePromptTemplate.fromTemplate(
+          '{input}',
+        ),
+      ],
+    );
     const stringOutputParser = StringOutputParser<ChatResult>();
 
     final chain = promptTemplate.pipe(chat).pipe(stringOutputParser);
@@ -54,66 +56,22 @@ class ChatBotWithMemory implements ChatBot {
 
     const stringOutputParser = StringOutputParser<ChatResult>();
 
-    final chain = Runnable.fromMap({
-          'input': Runnable.passthrough(),
-          'history': Runnable.mapInput(
-            (_) async {
-              final m = await memory.loadMemoryVariables();
-              return m['history'];
-            },
-          ),
-        }) |
-        promptTemplate |
-        chat |
-        stringOutputParser;
+    final chain = Runnable.fromMap(
+      {
+        'input': Runnable.passthrough(),
+        'history': Runnable.mapInput(
+          (_) async {
+            final m = await memory.loadMemoryVariables();
+            return m['history'];
+          },
+        ),
+      },
+    ).pipe(promptTemplate).pipe(chat).pipe(stringOutputParser);
 
-    final response = await chain.invoke({'input': prompt}) as String;
+    final response = await chain.invoke({'input': prompt});
 
     await memory.saveContext(
       inputValues: {'input': prompt},
-      outputValues: {'output': response},
-    );
-
-    return response;
-  }
-
-  Future<String> sendUserMessageWithContext(
-    String prompt,
-    List<String> someContext,
-  ) async {
-    final promptTemplate = ChatPromptTemplate.fromPromptMessages(
-      [
-        const MessagesPlaceholder(variableName: 'history'),
-        HumanChatMessagePromptTemplate.fromTemplate(
-          '{input}',
-        ),
-      ],
-    );
-
-    const stringOutputParser = StringOutputParser<ChatResult>();
-
-    final chain = Runnable.fromMap({
-          'input': Runnable.passthrough(),
-          'history': Runnable.mapInput(
-            (_) async {
-              final m = await memory.loadMemoryVariables();
-              return m['history'];
-            },
-          ),
-        }) |
-        promptTemplate |
-        chat |
-        stringOutputParser;
-
-    final inputWithContext =
-        "$prompt context: ${someContext.map((string) => string).join("\n")}";
-
-    final response = await chain.invoke({
-      'input': inputWithContext,
-    }) as String;
-
-    await memory.saveContext(
-      inputValues: {'input': inputWithContext},
       outputValues: {'output': response},
     );
 

@@ -62,4 +62,20 @@ class Document implements Identifiable {
       fields: fields ?? this.fields,
     );
   }
+
+  Document updateOrInsertField(Field field) {
+    final existingFieldIndex = fields.indexWhere((f) => f.name == field.name);
+    if (existingFieldIndex == -1) {
+      return copyWith(fields: [...fields, field]);
+    } else {
+      final newFields = List<Field>.from(fields);
+      newFields[existingFieldIndex] = field;
+      return copyWith(fields: newFields);
+    }
+  }
+
+  Document removeField(String fieldName) {
+    final newFields = fields.where((field) => field.name != fieldName).toList();
+    return copyWith(fields: newFields);
+  }
 }

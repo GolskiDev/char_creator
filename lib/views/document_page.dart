@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
+import 'package:char_creator/features/basic_chat_support/chat_providers.dart';
+import 'package:char_creator/features/basic_chat_support/chat_use_cases.dart';
 import 'package:char_creator/features/documents/document.dart';
 import 'package:char_creator/features/documents/document_providers.dart';
 import 'package:char_creator/features/images/image_providers.dart';
@@ -13,6 +15,8 @@ import 'package:go_router/go_router.dart';
 import '../features/dynamic_types/dynamic_types_providers.dart';
 import '../features/fields/field.dart';
 import '../features/fields/field_values/field_value.dart';
+import '../features/prompts/prompt_model.dart';
+import '../features/prompts/prompt_use_cases.dart';
 
 class DocumentPage extends ConsumerWidget {
   const DocumentPage({
@@ -32,6 +36,20 @@ class DocumentPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Document'),
+        actions: [
+          if (document != null) ...[
+            IconButton(
+              icon: const Icon(Icons.lightbulb_outline),
+              onPressed: () {
+                _showPrompts(
+                  context: context,
+                  ref: ref,
+                  document: document,
+                );
+              },
+            ),
+          ]
+        ],
       ),
       floatingActionButton: document != null
           ? FloatingActionButton(
@@ -420,6 +438,68 @@ class DocumentPage extends ConsumerWidget {
               child: const Text('Cancel'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showPrompts({
+    required BuildContext context,
+    required WidgetRef ref,
+    required Document document,
+  }) {
+    final avialablePrompts =
+        PromptUseCases.getAllAvailablePromptsForDocument(document);
+
+    if (avialablePrompts.isEmpty) {
+      return;
+    }
+
+    onPromptPressed(PromptModel prompt) async {
+      final chatBot = ref.read(chatBotProvider);
+      final result = await ChatUseCases.askPrompt(prompt, document, chatBot);
+      final map = jsonDecode(result);
+      final chatResult = ChatResult.fromMap(map);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Response'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(chatResult.response),
+                ...chatResult.values.map((value) {
+                  return ListTile(
+                    title: Text(value['fieldName']),
+                    subtitle: Text(value['value']),
+                  );
+                }).toList(),
+              ],
+            ),
+          );
+        },
+      );
+      final updatedDocument = chatResult.addToDocument(document);
+      ref.read(documentRepositoryProvider).updateDocument(updatedDocument);
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Ideas'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: avialablePrompts.map((prompt) {
+              return ListTile(
+                title: Text(prompt.prompt),
+                onTap: () {
+                  onPromptPressed(prompt);
+                },
+              );
+            }).toList(),
+          ),
         );
       },
     );

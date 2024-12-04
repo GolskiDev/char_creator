@@ -33,24 +33,26 @@ class ListOfDocumentsPage extends ConsumerWidget {
                 content: Consumer(
                   builder: (context, ref, child) => SingleChildScrollView(
                     child: ListBody(
-                      children: documentTypes.map((type) {
-                        return ListTile(
-                          title: Text(type.label),
-                          onTap: () async {
-                            final documentRepository =
-                                ref.read(documentRepositoryProvider);
-                            await documentRepository.saveDocument(
-                              Document.create(
-                                type: type.documentType,
-                              ),
-                            );
-                            if (!context.mounted) {
-                              return;
-                            }
-                            Navigator.of(context).pop();
-                          },
-                        );
-                      }).toList()
+                      children: documentTypes.map(
+                        (type) {
+                          return ListTile(
+                            title: Text(type.label),
+                            onTap: () async {
+                              final documentRepository =
+                                  ref.read(documentRepositoryProvider);
+                              await documentRepository.saveDocument(
+                                Document.create(
+                                  type: type.documentType,
+                                ),
+                              );
+                              if (!context.mounted) {
+                                return;
+                              }
+                              Navigator.of(context).pop();
+                            },
+                          );
+                        },
+                      ).toList()
                         ..add(
                           ListTile(
                             title: const Text('Plain Document'),

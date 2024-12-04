@@ -35,7 +35,7 @@ extension DocumentBasicViewModel on Document {
         .firstOrNull
         ?.value;
 
-    List<String> imagePathFieldNames = ['image'];
+    List<String> imagePathFieldNames = ['images'];
     final String? imagePath = fields
         .firstWhereOrNull((field) => imagePathFieldNames.contains(field.name))
         ?.values
