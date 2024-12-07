@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../documents/document_providers.dart';
+import '../fields/field_values/field_value.dart';
 import 'chat_response_model.dart';
 
 class MyMessageWidget extends HookConsumerWidget {
@@ -71,7 +72,26 @@ class ListOfValuesWidget extends HookConsumerWidget {
             (value) {
               final fieldName = value['fieldName'] as String;
               final fieldValue = value['value'] as String;
-              final isSelected = selectedValues.value.contains(fieldValue);
+              final documentHasThisValue = ref
+                  .watch(documentsProvider)
+                  .asData
+                  ?.value
+                  .firstWhereOrNull(
+                    (document) => document.id == documentId,
+                  )
+                  ?.fields
+                  .any(
+                    (field) =>
+                        field.name == fieldName &&
+                        field.values.any(
+                          (fieldVal) =>
+                              fieldVal is StringValue &&
+                              fieldVal.value == fieldValue,
+                        ),
+                  );
+              final isSelected = selectedValues.value.contains(fieldValue) ||
+                  documentHasThisValue == true;
+              final isDisabled = documentHasThisValue == true;
 
               return ChoiceChip(
                 label: Column(
@@ -85,50 +105,53 @@ class ListOfValuesWidget extends HookConsumerWidget {
                   ],
                 ),
                 selected: isSelected,
-                onSelected: (value) {
-                  if (value) {
-                    selectedValues.value = [
-                      ...selectedValues.value,
-                      fieldValue
-                    ];
-                  } else {
-                    selectedValues.value = selectedValues.value
-                        .where((element) => element != fieldValue)
-                        .toList();
-                  }
-                },
+                onSelected: isDisabled
+                    ? null
+                    : (value) {
+                        if (value) {
+                          selectedValues.value = [
+                            ...selectedValues.value,
+                            fieldValue
+                          ];
+                        } else {
+                          selectedValues.value = selectedValues.value
+                              .where((element) => element != fieldValue)
+                              .toList();
+                        }
+                      },
               );
             },
           ).toList(),
         ),
-        FilledButton(
-          onPressed: () async {
-            if (documentId == null) {
-              return;
-            }
-            final fieldsToAdd = listOfValues
-                .where(
-                  (value) => selectedValues.value.contains(value['value']),
-                )
-                .toList();
-            final documents = await ref.read(documentsProvider.future);
-            final document = documents.firstWhereOrNull(
-              (document) => document.id == documentId,
-            );
-            if (document == null) {
-              return;
-            }
-            final updatedDocument = ChatResponseModel.addToDocument(
-              fieldsToAdd,
-              document,
-            );
-            await ref
-                .read(documentRepositoryProvider)
-                .updateDocument(updatedDocument);
-            selectedValues.value = [];
-          },
-          child: const Text('Add to Doument'),
-        ),
+        if (selectedValues.value.isNotEmpty)
+          FilledButton(
+            onPressed: () async {
+              if (documentId == null) {
+                return;
+              }
+              final fieldsToAdd = listOfValues
+                  .where(
+                    (value) => selectedValues.value.contains(value['value']),
+                  )
+                  .toList();
+              final documents = await ref.read(documentsProvider.future);
+              final document = documents.firstWhereOrNull(
+                (document) => document.id == documentId,
+              );
+              if (document == null) {
+                return;
+              }
+              final updatedDocument = ChatResponseModel.addToDocument(
+                fieldsToAdd,
+                document,
+              );
+              await ref
+                  .read(documentRepositoryProvider)
+                  .updateDocument(updatedDocument);
+              selectedValues.value = [];
+            },
+            child: const Text('Add to Doument'),
+          ),
       ],
     );
   }
