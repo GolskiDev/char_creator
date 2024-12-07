@@ -6,19 +6,22 @@ import '../fields/field_values/field_value.dart';
 
 class ChatResponseModel {
   final String response;
-  final List<Map<String, dynamic>> values;
+  final List<Map<String, dynamic>>? values;
+  final String? imageUrl;
 
   ChatResponseModel({
     required this.response,
     required this.values,
+    required this.imageUrl,
   });
 
   factory ChatResponseModel.fromMap(Map<String, dynamic> map) {
     return ChatResponseModel(
       response: map['response'] as String,
-      values: (map['values'] as List)
-          .map((e) => e as Map<String, dynamic>)
-          .toList(),
+      values: map['values'] != null
+          ? List<Map<String, dynamic>>.from(map['values'] as List)
+          : null,
+      imageUrl: map['imageUrl'] != null ? map['imageUrl'] as String : null,
     );
   }
 

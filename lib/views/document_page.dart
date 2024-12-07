@@ -478,16 +478,18 @@ class DocumentPage extends ConsumerWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Ideas'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: avialablePrompts.map((prompt) {
-              return ListTile(
-                title: Text(prompt.prompt),
-                onTap: () {
-                  onPromptPressed(prompt);
-                },
-              );
-            }).toList(),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: avialablePrompts.map((prompt) {
+                return ListTile(
+                  title: Text(prompt.prompt),
+                  onTap: () {
+                    onPromptPressed(prompt);
+                  },
+                );
+              }).toList(),
+            ),
           ),
         );
       },

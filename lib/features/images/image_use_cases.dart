@@ -40,7 +40,12 @@ class ImageUseCases {
     if (response.statusCode == 200) {
       final String id = IdGenerator.generateId(ImageModel);
       final String fileExtension = path.extension(imageUrl);
-      final String newFileName = '$id$fileExtension';
+      final String newFileName;
+      if (fileExtension.isEmpty) {
+        newFileName = '$id.png';
+      } else {
+        newFileName = '$id$fileExtension';
+      }
 
       return repository.saveFromBytes(newFileName, response.bodyBytes);
     } else {

@@ -40,4 +40,15 @@ class ImageRepository {
     }
     return null;
   }
+
+  Future<ImageModel> getImageModelById(String id) async {
+    final List<FileSystemEntity> files = directory.listSync();
+
+    for (var file in files) {
+      if (file is File && path.basename(file.path) == id) {
+        return ImageModel(id: id, filePath: file.path);
+      }
+    }
+    throw Exception('Image not found');
+  }
 }

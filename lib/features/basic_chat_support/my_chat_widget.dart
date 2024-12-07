@@ -31,6 +31,7 @@ class MyChatWidget extends HookConsumerWidget {
                 text: message.text,
                 documentId: documentId,
                 listOfValues: message.fields,
+                imageId: message.imageId,
               ),
             );
 

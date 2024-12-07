@@ -2,7 +2,6 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 
 import '../../secrets.dart';
-import 'my_chat_widget.dart';
 import 'my_message.dart';
 
 class ChatBot {
@@ -40,7 +39,12 @@ class ChatBot {
 }
 
 class ChatBotWithMemory implements ChatBot {
-  final chat = ChatOpenAI(apiKey: chatGPTApiKey);
+  final chat = ChatOpenAI(
+    apiKey: chatGPTApiKey,
+    defaultOptions: ChatOpenAIOptions(
+      model: 'gpt-4-turbo',
+    ),
+  );
   final ConversationBufferMemory memory;
 
   ChatBotWithMemory(this.memory);
@@ -102,6 +106,29 @@ class ChatBotWithMemory implements ChatBot {
     );
 
     return response;
+  }
+
+  Future<String> generateImage(String prompt) async {
+    final tools = <Tool>[
+      OpenAIDallETool(
+        apiKey: chatGPTApiKey,
+        defaultOptions: const OpenAIDallEToolOptions(
+          model: 'dall-e-2',
+          size: ImageSize.v256x256,
+          quality: ImageQuality.standard,
+          responseFormat: ImageResponseFormat.url,
+        ),
+      ),
+    ];
+    final agent = OpenAIToolsAgent.fromLLMAndTools(
+      llm: chat,
+      tools: tools,
+    );
+    final executor = AgentExecutor(agent: agent);
+    final res = await executor.run(
+      prompt,
+    );
+    return res;
   }
 
   @override

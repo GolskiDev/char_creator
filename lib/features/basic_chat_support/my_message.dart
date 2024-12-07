@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../fields/field_values/field_value.dart';
+
 enum MyMessageType {
   human,
   bot;
@@ -28,11 +30,13 @@ class MyMessage {
   final String text;
   final MyMessageType author;
   final List<Map<String, dynamic>>? fields;
+  final String? imageId;
 
   MyMessage({
     required this.text,
     required this.author,
     this.fields,
+    this.imageId,
   });
 
   factory MyMessage.fromJson(Map<String, dynamic> json) {
@@ -42,6 +46,7 @@ class MyMessage {
         json['author'],
       ),
       fields: jsonDecode(json['fields'])?.cast<Map<String, dynamic>>(),
+      imageId: json['imageId'],
     );
   }
 
@@ -50,6 +55,7 @@ class MyMessage {
       'text': text,
       'author': author.toJson(),
       'fields': jsonEncode(fields),
+      'imageId': imageId,
     };
   }
 }
