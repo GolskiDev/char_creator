@@ -2,6 +2,8 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 
 import '../../secrets.dart';
+import 'my_chat_widget.dart';
+import 'my_message.dart';
 
 class ChatBot {
   final chat = ChatOpenAI(apiKey: chatGPTApiKey);
@@ -42,6 +44,30 @@ class ChatBotWithMemory implements ChatBot {
   final ConversationBufferMemory memory;
 
   ChatBotWithMemory(this.memory);
+
+  factory ChatBotWithMemory.fromChatHistory(List<MyMessage> messages) {
+    return ChatBotWithMemory(
+      ConversationBufferMemory(
+        chatHistory: ChatMessageHistory(
+          messages: messages.map(
+            (message) {
+              switch (message.author) {
+                case MyMessageType.human:
+                  return ChatMessage.humanText(
+                    message.text,
+                  );
+                case MyMessageType.bot:
+                  return ChatMessage.ai(
+                    message.text,
+                  );
+              }
+            },
+          ).toList(),
+        ),
+        returnMessages: true,
+      ),
+    );
+  }
 
   @override
   Future<String> sendUserMessage(String prompt) async {

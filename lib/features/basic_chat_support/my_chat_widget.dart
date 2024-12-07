@@ -1,26 +1,11 @@
-import 'package:char_creator/features/basic_chat_support/chat_providers.dart';
-import 'package:collection/collection.dart';
+import 'package:char_creator/features/basic_chat_support/chat.dart';
+import 'package:char_creator/features/basic_chat_support/my_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:langchain/langchain.dart';
 
-import 'chat_bot.dart';
 import 'chat_history_repository.dart';
-
-enum MyMessageType {
-  human,
-  bot,
-}
-
-class MyMessage {
-  final String text;
-  final MyMessageType author;
-  MyMessage({
-    required this.text,
-    required this.author,
-  });
-}
+import 'my_message.dart';
 
 class MyChatWidget extends HookConsumerWidget {
   const MyChatWidget({
@@ -31,36 +16,21 @@ class MyChatWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final messages = ref.watch(myChatHistoryProvider);
-    final chatBot = ref.watch(chatBotProvider);
+    final chatAsync = ref.watch(chatProvider).asData?.value;
+    final messages = ref.watch(myChatHistoryProvider).asData?.value ?? [];
 
     Future<void> _onSendPressed(String text) async {
-      List<MyMessage> updatedMessages =
-          ref.read(myChatHistoryProvider.notifier).state;
-      final newMessage = MyMessage(
-        author: MyMessageType.human,
-        text: text,
-      );
-      updatedMessages = [newMessage, ...messages];
-      ref.read(myChatHistoryProvider.notifier).state = messages;
-      final response = await chatBot.sendUserMessage(
-        text,
-      );
-      final botMessage = MyMessage(
-        author: MyMessageType.bot,
-        text: response,
-      );
-      updatedMessages = [botMessage, ...messages];
-      ref.read(myChatHistoryProvider.notifier).state = messages;
+      chatAsync?.sendUserMessage(text);
     }
 
-    List<Widget> buildMessages(BuildContext context) => messages.map(
+    List<Widget> buildMessages(BuildContext context) => messages.reversed.map(
           (message) {
             Widget child = Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                message.text,
-                style: Theme.of(context).textTheme.bodyLarge,
+              child: MyMessageWidget(
+                text: message.text,
+                documentId: documentId,
+                listOfValues: message.fields,
               ),
             );
 

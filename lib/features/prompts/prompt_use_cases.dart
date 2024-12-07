@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 
+import '../documents/document.dart' as my_document;
 import '../documents/document.dart';
 import 'prompt_model.dart';
 import 'prompts.dart';
@@ -57,5 +58,48 @@ class PromptUseCases {
         .toList();
 
     return availablePrompts;
+  }
+
+  static String fillPromptWithValues(
+    PromptModel prompt,
+    my_document.Document targetDocument,
+  ) {
+    final fieldValues = prompt.requiredFieldNames.map((fieldName) {
+      final field = targetDocument.fields.firstWhereOrNull(
+        (field) => field.name == fieldName,
+      );
+      return field?.values.first;
+    }).toList();
+
+    final filledPrompt = prompt.prompt.replaceAllMapped(
+      RegExp(r'{(\d+)}'),
+      (match) {
+        final index = int.parse(match.group(1) ?? '0');
+        return fieldValues[index]?.toString() ?? '';
+      },
+    );
+
+    return '''$filledPrompt
+    Return JSON in this format. Don't add extra ',' and escape special characters:
+    {
+      "response": "String",
+      "values": [
+        {
+          "value", "value",
+          "fieldName": "${prompt.outputFieldName}
+          }"
+        }
+      ]
+    }
+    ''';
+  }
+
+  static String generatePromptFromPromptModelAndDocument(
+    PromptModel prompt,
+    my_document.Document targetDocument,
+  ) {
+    final filledPrompt = fillPromptWithValues(prompt, targetDocument);
+
+    return filledPrompt;
   }
 }

@@ -1,8 +1,5 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:char_creator/features/basic_chat_support/chat_providers.dart';
-import 'package:char_creator/features/basic_chat_support/chat_use_cases.dart';
 import 'package:char_creator/features/documents/document.dart';
 import 'package:char_creator/features/documents/document_providers.dart';
 import 'package:char_creator/features/images/image_providers.dart';
@@ -12,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/basic_chat_support/chat.dart';
 import '../features/dynamic_types/dynamic_types_providers.dart';
 import '../features/fields/field.dart';
 import '../features/fields/field_values/field_value.dart';
@@ -48,7 +46,13 @@ class DocumentPage extends ConsumerWidget {
                 );
               },
             ),
-          ]
+          ],
+          IconButton(
+            icon: const Icon(Icons.chat),
+            onPressed: () {
+              context.go('/documents/$documentId/chat');
+            },
+          ),
         ],
       ),
       floatingActionButton: document != null
@@ -455,33 +459,18 @@ class DocumentPage extends ConsumerWidget {
       return;
     }
 
-    onPromptPressed(PromptModel prompt) async {
-      final chatBot = ref.read(chatBotProvider);
-      final result = await ChatUseCases.askPrompt(prompt, document, chatBot);
-      final map = jsonDecode(result);
-      final chatResult = ChatResult.fromMap(map);
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Response'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(chatResult.response),
-                ...chatResult.values.map((value) {
-                  return ListTile(
-                    title: Text(value['fieldName']),
-                    subtitle: Text(value['value']),
-                  );
-                }).toList(),
-              ],
-            ),
-          );
-        },
+    onPromptPressed(
+      PromptModel prompt,
+    ) async {
+      final chat = await ref.read(chatProvider.future);
+      final generatedPrompt =
+          PromptUseCases.generatePromptFromPromptModelAndDocument(
+        prompt,
+        document,
       );
-      final updatedDocument = chatResult.addToDocument(document);
-      ref.read(documentRepositoryProvider).updateDocument(updatedDocument);
+      chat.sendUserMessage(generatedPrompt);
+      if (!context.mounted) return;
+      context.push('/chat/${document.id}');
     }
 
     showDialog(
