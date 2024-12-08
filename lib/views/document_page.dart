@@ -69,17 +69,14 @@ class DocumentPage extends ConsumerWidget {
         children: <Widget>[
           if (document != null)
             ...document.fields.map(
-              (field) => Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(field.name),
-                      IconButton(
+              (field) => Card(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ListTile(
+                      title: Text(field.name),
+                      trailing: IconButton(
                         icon: const Icon(Icons.add),
                         onPressed: () {
                           _onAddPressed(
@@ -90,37 +87,52 @@ class DocumentPage extends ConsumerWidget {
                           );
                         },
                       ),
-                    ],
-                  ),
-                  const Divider(),
-                  Wrap(
-                    runSpacing: 8,
-                    spacing: 8,
-                    children: [
-                      ...field.values.map(
-                        (value) {
-                          switch (value) {
-                            case StringValue string:
-                              return Chip(
-                                label: Text(string.value),
-                              );
-                            case DocumentReference ref:
-                              return ActionChip(
-                                onPressed: () => context.go(
-                                  '/documents/${ref.refId}',
-                                ),
-                                label: Text(ref.refId),
-                              );
-                            case ImageValue image:
-                              return Image.file(
-                                File(image.url),
-                              );
-                          }
-                        },
-                      ).whereNotNull()
-                    ],
-                  ),
-                ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            ...field.values
+                                .map(
+                                  (value) {
+                                    switch (value) {
+                                      case StringValue string:
+                                        return Chip(
+                                          label: Text(string.value),
+                                        );
+                                      case DocumentReference ref:
+                                        return ActionChip(
+                                          onPressed: () => context.go(
+                                            '/documents/${ref.refId}',
+                                          ),
+                                          label: Text(ref.refId),
+                                        );
+                                      case ImageValue image:
+                                        return _buildImageWidget(
+                                          context,
+                                          ref,
+                                          image,
+                                        );
+                                    }
+                                  },
+                                )
+                                .whereNotNull()
+                                .expand(
+                                  (element) => [
+                                    element,
+                                    const SizedBox(
+                                      width: 4,
+                                    ),
+                                  ],
+                                )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
         ],
@@ -468,7 +480,11 @@ class DocumentPage extends ConsumerWidget {
         prompt,
         document,
       );
-      chat.sendUserMessage(generatedPrompt);
+      if (prompt.outputFieldName == 'images') {
+        chat.askForImage(generatedPrompt);
+      } else {
+        chat.sendUserMessage(generatedPrompt);
+      }
       if (!context.mounted) return;
       context.push('/chat/${document.id}');
     }
@@ -476,23 +492,74 @@ class DocumentPage extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Ideas'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: avialablePrompts.map((prompt) {
-                return ListTile(
+        return Dialog(
+          clipBehavior: Clip.antiAlias,
+          child: ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: avialablePrompts.length,
+            itemBuilder: (context, index) {
+              final prompt = avialablePrompts[index];
+              return Card.outlined(
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(
                   title: Text(prompt.prompt),
                   onTap: () {
                     onPromptPressed(prompt);
                   },
-                );
-              }).toList(),
-            ),
+                ),
+              );
+            },
           ),
         );
       },
+    );
+  }
+
+  Widget _buildImageWidget(
+    BuildContext context,
+    WidgetRef ref,
+    ImageValue image,
+  ) {
+    return Card.outlined(
+      clipBehavior: Clip.antiAlias,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxHeight: 200,
+        ),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return Scaffold(
+                      body: InteractiveViewer(
+                        child: Center(
+                          child: Hero(
+                            tag: image.url,
+                            child: Image.file(
+                              File(image.url),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+            child: Hero(
+              tag: image.url,
+              child: Image.file(
+                File(image.url),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

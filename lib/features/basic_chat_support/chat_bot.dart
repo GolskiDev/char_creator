@@ -39,9 +39,10 @@ class ChatBot {
 }
 
 class ChatBotWithMemory implements ChatBot {
+  @override
   final chat = ChatOpenAI(
     apiKey: chatGPTApiKey,
-    defaultOptions: ChatOpenAIOptions(
+    defaultOptions: const ChatOpenAIOptions(
       model: 'gpt-4-turbo',
     ),
   );

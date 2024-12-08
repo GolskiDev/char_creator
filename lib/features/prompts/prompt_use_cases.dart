@@ -100,16 +100,20 @@ class PromptUseCases {
     Return JSON in this format. Don't add extra ',' and escape special characters:
     Return url to image you generated in imageUrl field.
     {
-      "response": "String",
+      "textMessage": "String",
       "imageUrl": "String",
     }
     ''';
     }
 
     return '''$filledPrompt
+    Return all the details for user to see in "textMessage".
+    Return all additional values in "values" array.
+    This is request from application
+    Return JSON only. Don't add extra text.
     Return JSON in this format. Don't add extra ',' and escape special characters:
     {
-      "response": "String",
+      "textMessage": "String",
       "values": [
         {
           "value", "value",

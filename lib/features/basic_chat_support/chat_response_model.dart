@@ -17,7 +17,7 @@ class ChatResponseModel {
 
   factory ChatResponseModel.fromMap(Map<String, dynamic> map) {
     return ChatResponseModel(
-      response: map['response'] as String,
+      response: map['textMessage'] as String,
       values: map['values'] != null
           ? List<Map<String, dynamic>>.from(map['values'] as List)
           : null,

@@ -9,6 +9,7 @@ class ChatPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      appBar: AppBar(),
       body: MyChatWidget(
         documentId: documentId,
       ),

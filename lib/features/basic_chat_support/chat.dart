@@ -43,19 +43,35 @@ class Chat {
         author: MyMessageType.human,
       ),
     );
+    final response = await chatBot.sendUserMessage(message);
+
+    await _saveResponse(response);
+  }
+
+  Future<void> askForImage(String message) async {
+    await chatHistoryRepository.saveMessage(
+      MyMessage(
+        text: message,
+        author: MyMessageType.human,
+      ),
+    );
     final response = await chatBot.generateImage(message);
-    var parsedResponse;
+
+    await _saveResponse(response);
+  }
+
+  _saveResponse(String response) async {
+    dynamic parsedResponse;
     try {
       parsedResponse = ChatResponseModel.fromMap(jsonDecode(response));
     } catch (e) {
-      print("Error parsing response: $e");
       parsedResponse = response;
     }
-    print('responseText: $response');
     switch (parsedResponse) {
       case ChatResponseModel responseModel:
         final String? imageId;
-        if (responseModel.imageUrl != null) {
+        if (responseModel.imageUrl != null &&
+            responseModel.imageUrl!.isNotEmpty) {
           final imageModel = await ImageUseCases.saveImageFromUrl(
             imageRepository,
             responseModel.imageUrl!,
