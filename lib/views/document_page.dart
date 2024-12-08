@@ -483,7 +483,10 @@ class DocumentPage extends ConsumerWidget {
       if (prompt.outputFieldName == 'images') {
         chat.askForImage(generatedPrompt);
       } else {
-        chat.sendUserMessage(generatedPrompt);
+        chat.sendUserMessage(
+          message: generatedPrompt,
+          displayedMessage: prompt.displayedPrompt,
+        );
       }
       if (!context.mounted) return;
       context.push('/chat/${document.id}');
@@ -502,7 +505,7 @@ class DocumentPage extends ConsumerWidget {
               return Card.outlined(
                 clipBehavior: Clip.antiAlias,
                 child: ListTile(
-                  title: Text(prompt.prompt),
+                  title: Text(prompt.displayedPrompt),
                   onTap: () {
                     onPromptPressed(prompt);
                   },

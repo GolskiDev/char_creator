@@ -238,11 +238,18 @@ class ImageWidget extends HookConsumerWidget {
                 if (document == null) {
                   return;
                 }
+                final currentField = document.fields.firstWhereOrNull(
+                      (field) => field.name == 'images',
+                    ) ??
+                    Field(
+                      name: 'images',
+                      values: [],
+                    );
                 final updatedDocument = document.updateOrInsertField(
-                  Field(
-                    name: 'images',
+                  currentField.copyWith(
                     values: [
-                      ImageValue(url: imageModel?.filePath ?? ''),
+                      ...currentField.values,
+                      ImageValue(url: imageId),
                     ],
                   ),
                 );

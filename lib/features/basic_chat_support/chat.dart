@@ -36,10 +36,13 @@ class Chat {
     required this.imageRepository,
   });
 
-  Future<void> sendUserMessage(String message) async {
+  Future<void> sendUserMessage({
+    required String message,
+    String? displayedMessage,
+  }) async {
     await chatHistoryRepository.saveMessage(
       MyMessage(
-        text: message,
+        text: displayedMessage ?? message,
         author: MyMessageType.human,
       ),
     );

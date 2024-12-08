@@ -16,6 +16,7 @@ class PromptUseCases {
                 documentType: prompt['documentType'],
                 requiredFieldNames:
                     List<String>.from(prompt['requiredFieldNames']),
+                displayedPrompt: prompt['displayedPrompt'],
                 prompt: prompt['prompt'],
                 outputFieldName: prompt['outputFieldName'],
               );
@@ -117,8 +118,7 @@ class PromptUseCases {
       "values": [
         {
           "value", "value",
-          "fieldName": "${prompt.outputFieldName}
-          }"
+          "fieldName": "${prompt.outputFieldName}"
         }
       ],
     }

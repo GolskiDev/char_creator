@@ -20,7 +20,7 @@ class MyChatWidget extends HookConsumerWidget {
     final messages = ref.watch(myChatHistoryProvider).asData?.value ?? [];
 
     Future<void> _onSendPressed(String text) async {
-      chatAsync?.sendUserMessage(text);
+      chatAsync?.sendUserMessage(message: text);
     }
 
     List<Widget> buildMessages(BuildContext context) => messages.reversed.map(
