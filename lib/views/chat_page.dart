@@ -1,3 +1,4 @@
+import 'package:char_creator/features/chat_context/chat_context_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -10,6 +11,16 @@ class ChatPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(),
+      endDrawer: Drawer(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ChatContextWidget(
+              currentDocumentId: documentId,
+            ),
+          ),
+        ),
+      ),
       body: MyChatWidget(
         documentId: documentId,
       ),
