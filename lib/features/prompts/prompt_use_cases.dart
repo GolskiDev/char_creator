@@ -112,7 +112,7 @@ class PromptUseCases {
     Return all additional values in "values" array.
     This is request from application
     Return JSON only. Don't add extra text.
-    Return JSON in this format. Don't add extra ',' and escape special characters:
+    Don't add extra ',' and escape special characters:
     {
       "textMessage": "String",
       "values": [
@@ -122,6 +122,7 @@ class PromptUseCases {
         }
       ],
     }
+    Return JSON in format above 
     ''';
   }
 

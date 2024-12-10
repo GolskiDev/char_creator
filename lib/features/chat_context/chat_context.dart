@@ -1,14 +1,9 @@
+import 'dart:convert';
+
 import 'package:char_creator/features/fields/field.dart';
-import 'package:riverpod/riverpod.dart';
 
 import '../documents/document.dart';
 import '../fields/field_values/field_value.dart';
-
-final chatContextProvider = StateProvider<ChatContext>(
-  (ref) {
-    return ChatContext.empty();
-  },
-);
 
 class ChatContext {
   List<String> get referencedDocumentIds => contextValueKeys
@@ -75,6 +70,63 @@ class ChatContext {
       contextValueKeys:
           contextValueKeys.where((element) => element != key).toList(),
     );
+  }
+
+  String toChatContextString(
+    List<Document> documents,
+  ) {
+    // replace all the special characters like {, } with \ . match the group and replace it with escaped group
+    final String jsonString = jsonEncode(_toMap(documents))
+        .replaceAllMapped(RegExp(r'(\{|\})'), (match) => '\\${match.group(0)}');
+
+    return jsonString;
+  }
+
+  Map<String, dynamic> _toMap(
+    List<Document> documents,
+  ) {
+    final Map<String, dynamic> result = {};
+    final Set<String> referencedIds = referencedDocumentIds.toSet();
+
+    for (var document
+        in documents.where((doc) => referencedIds.contains(doc.id))) {
+      final documentId = document.id;
+      final documentName = document.displayedName;
+      final fields = <String, dynamic>{};
+
+      for (var field in document.fields) {
+        final fieldValues = <String>[];
+
+        for (var value in field.values) {
+          if (value is StringValue) {
+            final key = ChatContextValueKey.fromDocument(
+              document: document,
+              field: field,
+              stringValue: value,
+            );
+
+            if (contextValueKeys.contains(key)) {
+              fieldValues.add(value.value);
+            }
+          }
+        }
+
+        if (fieldValues.isNotEmpty) {
+          fields[field.name] = {
+            'name': field.name,
+            'values': fieldValues,
+          };
+        }
+      }
+
+      result[documentId] = {
+        'id': documentId,
+        'name': documentName,
+        'fields': fields,
+      };
+    }
+
+    return result;
   }
 }
 

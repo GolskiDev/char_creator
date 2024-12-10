@@ -1,5 +1,7 @@
 import 'package:char_creator/features/basic_chat_support/chat.dart';
 import 'package:char_creator/features/basic_chat_support/my_message_widget.dart';
+import 'package:char_creator/features/chat_context/chat_context_providers.dart';
+import 'package:char_creator/features/documents/document_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -20,7 +22,19 @@ class MyChatWidget extends HookConsumerWidget {
     final messages = ref.watch(myChatHistoryProvider).asData?.value ?? [];
 
     Future<void> _onSendPressed(String text) async {
-      chatAsync?.sendUserMessage(message: text);
+      final String message;
+      final isChatContextEnabled = ref.read(isChatContextEnabledProvider);
+      if (isChatContextEnabled) {
+        final chatContext = ref.read(chatContextProvider);
+        final documents = await ref.read(documentsProvider.future);
+        message = '$text \n\n${chatContext.toChatContextString(documents)}';
+      } else {
+        message = text;
+      }
+      chatAsync?.sendUserMessage(
+        message: message,
+        displayedMessage: text,
+      );
     }
 
     List<Widget> buildMessages(BuildContext context) => messages.reversed.map(
