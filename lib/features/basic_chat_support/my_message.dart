@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import '../fields/field_values/field_value.dart';
-
 enum MyMessageType {
   human,
   bot;
