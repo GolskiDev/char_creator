@@ -95,14 +95,14 @@ extension DefaultDocumentFields on Document {
 
     final docType = type != null ? toBeginningOfSentenceCase(type!) : null;
 
-    final firstIdLetters = id.substring(0, 3).toUpperCase();
+    final lastIdLetters = id.substring(id.length - 3, id.length).toUpperCase();
 
     if (nameFromField != null) {
       return nameFromField.value;
     }
     if (docType != null) {
-      return '$docType $firstIdLetters';
+      return '$docType $lastIdLetters';
     }
-    return 'Document $firstIdLetters';
+    return 'Document $lastIdLetters';
   }
 }

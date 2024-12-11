@@ -6,6 +6,7 @@ import 'data/field_types.dart';
 import 'models/field_type_model.dart';
 
 class DynamicTypesRepository {
+  static String plainDocumentIconPath = 'assets/icons/draft.svg';
   static List<DocumentTypeModel> getAvailableDocumentTypes() {
     final allFieldTypeModels = FieldTypes.fieldTypesMaps
         .map((e) {
@@ -49,6 +50,12 @@ class DynamicTypesRepository {
         .toList();
 
     return allDocumentTypeModels;
+  }
+
+  static List<FieldTypeModel> getAllFieldTypes() {
+    return FieldTypes.fieldTypesMaps
+        .map((entry) => FieldTypeModel.fromMap(entry))
+        .toList();
   }
 
   static List<FieldTypeModel> getCommonFieldTypes() {

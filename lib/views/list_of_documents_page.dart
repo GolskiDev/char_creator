@@ -1,7 +1,9 @@
+import 'package:char_creator/features/dynamic_types/dynamic_types_repository.dart';
 import 'package:char_creator/features/standard_layout/basic_view_model.dart';
 import 'package:char_creator/features/standard_layout/widgets/card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/documents/document.dart';
@@ -33,42 +35,63 @@ class ListOfDocumentsPage extends ConsumerWidget {
                 content: Consumer(
                   builder: (context, ref, child) => SingleChildScrollView(
                     child: ListBody(
-                      children: documentTypes.map(
+                      children: documentTypes.map<Widget>(
                         (type) {
-                          return ListTile(
-                            title: Text(type.label),
-                            onTap: () async {
-                              final documentRepository =
-                                  ref.read(documentRepositoryProvider);
-                              await documentRepository.saveDocument(
-                                Document.create(
-                                  type: type.documentType,
-                                ),
-                              );
-                              if (!context.mounted) {
-                                return;
-                              }
-                              Navigator.of(context).pop();
-                            },
+                          final icon = type.iconPath != null
+                              ? SvgPicture.asset(
+                                  type.iconPath!,
+                                  width: 24,
+                                  height: 24,
+                                )
+                              : null;
+                          return Card(
+                            clipBehavior: Clip.antiAlias,
+                            child: ListTile(
+                              leading: icon,
+                              title: Text(
+                                type.label,
+                              ),
+                              onTap: () async {
+                                final documentRepository =
+                                    ref.read(documentRepositoryProvider);
+                                await documentRepository.saveDocument(
+                                  Document.create(
+                                    type: type.documentType,
+                                  ),
+                                );
+                                if (!context.mounted) {
+                                  return;
+                                }
+                                Navigator.of(context).pop();
+                              },
+                            ),
                           );
                         },
                       ).toList()
                         ..add(
-                          ListTile(
-                            title: const Text('Plain Document'),
-                            onTap: () async {
-                              final documentRepository =
-                                  ref.read(documentRepositoryProvider);
-                              await documentRepository.saveDocument(
-                                Document.create(
-                                  type: null,
-                                ),
-                              );
-                              if (!context.mounted) {
-                                return;
-                              }
-                              Navigator.of(context).pop();
-                            },
+                          Card(
+                            clipBehavior: Clip.antiAlias,
+                            child: ListTile(
+                              leading: SvgPicture.asset(
+                                DynamicTypesRepository.plainDocumentIconPath,
+                                width: 24,
+                                height: 24,
+                              ),
+                              title: const Text('Plain Document'),
+                              onTap: () async {
+                                final documentRepository =
+                                    ref.read(documentRepositoryProvider);
+                                await documentRepository.saveDocument(
+                                  Document.create(
+                                    type: null,
+                                  ),
+                                );
+                                if (!context.mounted) {
+                                  return;
+                                }
+                                Navigator.of(context).pop();
+                              },
+                            ),
                           ),
                         ),
                     ),
@@ -97,7 +120,9 @@ class ListOfDocumentsPage extends ConsumerWidget {
                       );
                     },
                     child: CardWidget(
-                      basicViewModel: document.basicViewModel,
+                      basicViewModel: document.basicViewModel(
+                        ref.watch(documentTypesProvider),
+                      ),
                     ),
                   ),
                 )

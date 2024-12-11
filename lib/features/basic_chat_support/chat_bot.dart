@@ -81,22 +81,7 @@ class ChatBotWithMemory implements ChatBot {
         const MessagesPlaceholder(variableName: 'history'),
         HumanChatMessagePromptTemplate.fromTemplate(
           '''
-{input}
-Return all the details for user to see in "textMessage".
-    Return all additional values in "values" array.
-    This is request from application
-    Return JSON only. Don't add extra text.
-    Don't add extra ',' and escape special characters:
-    {
-      "textMessage": "String",
-      "values": [
-        {
-          "value", "value",
-          "fieldName": "specifiedFieldName"
-        }
-      ],
-    }
-    Return JSON in a format above. 
+        {input}
           ''',
         ),
       ],

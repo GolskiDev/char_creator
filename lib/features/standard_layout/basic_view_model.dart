@@ -1,7 +1,9 @@
+import 'package:char_creator/features/dynamic_types/dynamic_types_repository.dart';
 import 'package:char_creator/features/fields/field_values/field_value.dart';
 import 'package:collection/collection.dart';
 
 import '../documents/document.dart';
+import '../dynamic_types/models/document_type_model.dart';
 
 class BasicViewModel {
   final String id;
@@ -18,15 +20,7 @@ class BasicViewModel {
 }
 
 extension DocumentBasicViewModel on Document {
-  BasicViewModel get basicViewModel {
-    List<String> titleFieldNames = ['name'];
-    final String? title = fields
-        .firstWhereOrNull((field) => titleFieldNames.contains(field.name))
-        ?.values
-        .whereType<StringValue>()
-        .firstOrNull
-        ?.value;
-
+  BasicViewModel basicViewModel(List<DocumentTypeModel> documentTypeModels) {
     List<String> descriptionFieldNames = ['description'];
     final String? description = fields
         .firstWhereOrNull((field) => descriptionFieldNames.contains(field.name))
@@ -43,11 +37,18 @@ extension DocumentBasicViewModel on Document {
         .firstOrNull
         ?.url;
 
+    final String? typeImagePath = documentTypeModels
+        .firstWhereOrNull(
+            (documentTypeModel) => documentTypeModel.documentType == type)
+        ?.iconPath;
+
     return BasicViewModel(
       id: id,
-      title: title ?? id.substring(0, runtimeType.toString().length + 5),
+      title: displayedName,
       description: description,
-      imagePath: imagePath,
+      imagePath: imagePath ??
+          typeImagePath ??
+          DynamicTypesRepository.plainDocumentIconPath,
     );
   }
 }

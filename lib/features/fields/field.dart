@@ -1,3 +1,6 @@
+import 'package:collection/collection.dart';
+
+import '../dynamic_types/models/field_type_model.dart';
 import 'field_values/field_value.dart';
 
 class Field {
@@ -42,5 +45,14 @@ class Field {
       name: name ?? this.name,
       values: values ?? this.values,
     );
+  }
+}
+
+extension FieldLabel on Field {
+  String? getLabel(List<FieldTypeModel> fieldTypes) {
+    final fieldType = fieldTypes.firstWhereOrNull(
+      (fieldType) => fieldType.name == name,
+    );
+    return fieldType?.label;
   }
 }

@@ -25,6 +25,7 @@ dependencies:
   path_provider:
   http:
   path: 
+  flutter_svg: 
 
 dev_dependencies:
   flutter_test:
@@ -36,3 +37,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/icons/

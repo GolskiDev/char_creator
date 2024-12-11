@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../features/dynamic_types/dynamic_types_providers.dart';
 import '../features/standard_layout/basic_view_model.dart';
 
 class CharacterPage extends ConsumerWidget {
@@ -31,7 +32,9 @@ class CharacterPage extends ConsumerWidget {
         ),
       );
     }
-    final basicViewModel = document.basicViewModel;
+    final basicViewModel = document.basicViewModel(
+      ref.watch(documentTypesProvider),
+    );
     return Scaffold(
       appBar: AppBar(),
       body: Column(

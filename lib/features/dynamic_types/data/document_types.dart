@@ -7,16 +7,8 @@ class DocumentTypes {
         "name",
         "images",
         "description",
-      ]
-    },
-    {
-      "type": "location",
-      "label": "Location",
-      "fields": [
-        "name",
-        "images",
-        "description",
-      ]
+      ],
+      "iconPath": "assets/icons/face.svg",
     },
     {
       "type": "item",
@@ -25,7 +17,8 @@ class DocumentTypes {
         "name",
         "images",
         "description",
-      ]
+      ],
+      "iconPath": "assets/icons/inventory.svg",
     },
   ];
 }

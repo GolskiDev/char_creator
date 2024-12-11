@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:char_creator/features/documents/document.dart';
 import 'package:char_creator/features/documents/document_providers.dart';
+import 'package:char_creator/features/dynamic_types/dynamic_types_repository.dart';
 import 'package:char_creator/features/images/image_providers.dart';
 import 'package:char_creator/features/images/image_use_cases.dart';
 import 'package:collection/collection.dart';
@@ -33,7 +34,7 @@ class DocumentPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Document'),
+        title: Text(document?.displayedName ?? 'Document'),
         actions: [
           if (document != null) ...[
             IconButton(
@@ -75,7 +76,11 @@ class DocumentPage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ListTile(
-                      title: Text(field.name),
+                      title: Text(
+                        field.getLabel(
+                                DynamicTypesRepository.getAllFieldTypes()) ??
+                            field.name,
+                      ),
                       trailing: IconButton(
                         icon: const Icon(Icons.add),
                         onPressed: () {

@@ -1,7 +1,7 @@
-import 'dart:io';
-
 import 'package:char_creator/features/standard_layout/basic_view_model.dart';
 import 'package:flutter/material.dart';
+
+import '../../../utils/image_automatic.dart';
 
 class CardWidget extends StatelessWidget {
   const CardWidget({
@@ -14,18 +14,27 @@ class CardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final image = basicViewModel.imagePath != null
-        ? Hero(
-            tag: basicViewModel.imagePath!,
-            child: Image.file(
-              File(basicViewModel.imagePath!),
-              fit: BoxFit.cover,
+    final Widget image;
+    if (basicViewModel.imagePath != null) {
+      final imageType = ImageAutomatic.getImageType(
+        basicViewModel.imagePath!,
+      );
+      image = switch (imageType) {
+        ImageType.svg => FractionallySizedBox(
+            alignment: Alignment.center,
+            widthFactor: 0.5,
+            child: ImageAutomatic.build(
+              path: basicViewModel.imagePath!,
             ),
-          )
-        : imagePlaceholder ??
-            Container(
-              color: Colors.transparent,
-            );
+          ),
+        _ => ImageAutomatic.build(
+            path: basicViewModel.imagePath!,
+          ),
+      };
+    } else {
+      image = imagePlaceholder ?? Container();
+    }
+
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Column(
