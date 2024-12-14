@@ -2,7 +2,7 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 
 import '../../secrets.dart';
-import '../notes/note.dart';
+import 'my_message.dart';
 
 class ChatBot {
   final chat = ChatOpenAI(apiKey: chatGPTApiKey);
@@ -22,11 +22,13 @@ class ChatBot {
   }
 
   Future<String> sendSystemMessage(String prompt) {
-    final promptTemplate = ChatPromptTemplate.fromPromptMessages([
-      SystemChatMessagePromptTemplate.fromTemplate(
-        '{input}',
-      ),
-    ]);
+    final promptTemplate = ChatPromptTemplate.fromPromptMessages(
+      [
+        SystemChatMessagePromptTemplate.fromTemplate(
+          '{input}',
+        ),
+      ],
+    );
     const stringOutputParser = StringOutputParser<ChatResult>();
 
     final chain = promptTemplate.pipe(chat).pipe(stringOutputParser);
@@ -37,10 +39,40 @@ class ChatBot {
 }
 
 class ChatBotWithMemory implements ChatBot {
-  final chat = ChatOpenAI(apiKey: chatGPTApiKey);
+  @override
+  final chat = ChatOpenAI(
+    apiKey: chatGPTApiKey,
+    defaultOptions: const ChatOpenAIOptions(
+      model: 'gpt-4-turbo',
+    ),
+  );
   final ConversationBufferMemory memory;
 
   ChatBotWithMemory(this.memory);
+
+  factory ChatBotWithMemory.fromChatHistory(List<MyMessage> messages) {
+    return ChatBotWithMemory(
+      ConversationBufferMemory(
+        chatHistory: ChatMessageHistory(
+          messages: messages.map(
+            (message) {
+              switch (message.author) {
+                case MyMessageType.human:
+                  return ChatMessage.humanText(
+                    message.text,
+                  );
+                case MyMessageType.bot:
+                  return ChatMessage.ai(
+                    message.text,
+                  );
+              }
+            },
+          ).toList(),
+        ),
+        returnMessages: true,
+      ),
+    );
+  }
 
   @override
   Future<String> sendUserMessage(String prompt) async {
@@ -48,27 +80,28 @@ class ChatBotWithMemory implements ChatBot {
       [
         const MessagesPlaceholder(variableName: 'history'),
         HumanChatMessagePromptTemplate.fromTemplate(
-          '{input}',
+          '''
+        {input}
+          ''',
         ),
       ],
     );
 
     const stringOutputParser = StringOutputParser<ChatResult>();
 
-    final chain = Runnable.fromMap({
-          'input': Runnable.passthrough(),
-          'history': Runnable.mapInput(
-            (_) async {
-              final m = await memory.loadMemoryVariables();
-              return m['history'];
-            },
-          ),
-        }) |
-        promptTemplate |
-        chat |
-        stringOutputParser;
+    final chain = Runnable.fromMap(
+      {
+        'input': Runnable.passthrough(),
+        'history': Runnable.mapInput(
+          (_) async {
+            final m = await memory.loadMemoryVariables();
+            return m['history'];
+          },
+        ),
+      },
+    ).pipe(promptTemplate).pipe(chat).pipe(stringOutputParser);
 
-    final response = await chain.invoke({'input': prompt}) as String;
+    final response = await chain.invoke({'input': prompt});
 
     await memory.saveContext(
       inputValues: {'input': prompt},
@@ -78,47 +111,27 @@ class ChatBotWithMemory implements ChatBot {
     return response;
   }
 
-  Future<String> sendUserMessageWithContext(
-    String prompt,
-    List<Note> someContext,
-  ) async {
-    final promptTemplate = ChatPromptTemplate.fromPromptMessages(
-      [
-        const MessagesPlaceholder(variableName: 'history'),
-        HumanChatMessagePromptTemplate.fromTemplate(
-          '{input}',
+  Future<String> generateImage(String prompt) async {
+    final tools = <Tool>[
+      OpenAIDallETool(
+        apiKey: chatGPTApiKey,
+        defaultOptions: const OpenAIDallEToolOptions(
+          model: 'dall-e-2',
+          size: ImageSize.v256x256,
+          quality: ImageQuality.standard,
+          responseFormat: ImageResponseFormat.url,
         ),
-      ],
+      ),
+    ];
+    final agent = OpenAIToolsAgent.fromLLMAndTools(
+      llm: chat,
+      tools: tools,
     );
-
-    const stringOutputParser = StringOutputParser<ChatResult>();
-
-    final chain = Runnable.fromMap({
-          'input': Runnable.passthrough(),
-          'history': Runnable.mapInput(
-            (_) async {
-              final m = await memory.loadMemoryVariables();
-              return m['history'];
-            },
-          ),
-        }) |
-        promptTemplate |
-        chat |
-        stringOutputParser;
-
-    final inputWithContext =
-        "$prompt context: ${someContext.map((note) => note.value).join("\n")}";
-
-    final response = await chain.invoke({
-      'input': inputWithContext,
-    }) as String;
-
-    await memory.saveContext(
-      inputValues: {'input': inputWithContext},
-      outputValues: {'output': response},
+    final executor = AgentExecutor(agent: agent);
+    final res = await executor.run(
+      prompt,
     );
-
-    return response;
+    return res;
   }
 
   @override
