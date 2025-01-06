@@ -51,10 +51,13 @@ class Chat {
     await _saveResponse(response);
   }
 
-  Future<void> askForImage(String message) async {
+  Future<void> askForImage({
+    required String message,
+    String? displayedMessage,
+  }) async {
     await chatHistoryRepository.saveMessage(
       MyMessage(
-        text: message,
+        text: displayedMessage ?? message,
         author: MyMessageType.human,
       ),
     );

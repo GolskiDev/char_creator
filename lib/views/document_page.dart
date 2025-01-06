@@ -486,7 +486,10 @@ class DocumentPage extends ConsumerWidget {
         document,
       );
       if (prompt.outputFieldName == 'images') {
-        chat.askForImage(generatedPrompt);
+        chat.askForImage(
+          message: generatedPrompt,
+          displayedMessage: prompt.displayedPrompt,
+        );
       } else {
         chat.sendUserMessage(
           message: generatedPrompt,
