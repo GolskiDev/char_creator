@@ -2,6 +2,7 @@ import 'package:char_creator/features/basic_chat_support/chat.dart';
 import 'package:char_creator/features/basic_chat_support/my_message_widget.dart';
 import 'package:char_creator/features/chat_context/chat_context_providers.dart';
 import 'package:char_creator/features/documents/document_providers.dart';
+import 'package:char_creator/features/prompts/prompt_use_cases.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -21,7 +22,7 @@ class MyChatWidget extends HookConsumerWidget {
     final chatAsync = ref.watch(chatProvider).asData?.value;
     final messages = ref.watch(myChatHistoryProvider).asData?.value ?? [];
 
-    Future<void> _onSendPressed(String text) async {
+    Future<void> onSendPressed(String text) async {
       final String message;
       final isChatContextEnabled = ref.read(isChatContextEnabledProvider);
       if (isChatContextEnabled) {
@@ -33,6 +34,22 @@ class MyChatWidget extends HookConsumerWidget {
       }
       chatAsync?.sendUserMessage(
         message: message,
+        displayedMessage: text,
+      );
+    }
+
+    Future<void> onGenerateImagePressed(String text) async {
+      final String message;
+      final isChatContextEnabled = ref.read(isChatContextEnabledProvider);
+      if (isChatContextEnabled) {
+        final chatContext = ref.read(chatContextProvider);
+        final documents = await ref.read(documentsProvider.future);
+        message = '$text \n\n${chatContext.toChatContextString(documents)}';
+      } else {
+        message = text;
+      }
+      chatAsync?.askForImage(
+        message: PromptUseCases.addImageTemplateToPrompt(message),
         displayedMessage: text,
       );
     }
@@ -99,24 +116,39 @@ class MyChatWidget extends HookConsumerWidget {
         ),
         SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: controller,
-                onSubmitted: (text) {
-                  _onSendPressed(text);
-                  controller.clear();
-                },
-                decoration: InputDecoration(
-                  hintText: 'You can type here',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.send),
-                    onPressed: () {
-                      _onSendPressed(controller.text);
-                      controller.clear();
-                    },
-                  ),
+            padding: const EdgeInsets.only(
+              left: 8.0,
+              right: 8.0,
+              bottom: 8.0,
+            ),
+            child: TextField(
+              controller: controller,
+              onSubmitted: (text) {
+                onSendPressed(text);
+                controller.clear();
+              },
+              decoration: InputDecoration(
+                hintText: 'You can type here',
+                suffix: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.image),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () {
+                        onGenerateImagePressed(controller.text);
+                        controller.clear();
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.send),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () {
+                        onSendPressed(controller.text);
+                        controller.clear();
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -95,19 +95,17 @@ class PromptUseCases {
     );
 
     if (prompt.outputFieldName == 'images') {
-      return '''$filledPrompt
-    This is request for image generation from application.
-    Return JSON only. Don't add extra text.
-    Return JSON in this format. Don't add extra ',' and escape special characters:
-    Return url to image you generated in imageUrl field.
-    {
-      "textMessage": "String",
-      "imageUrl": "String",
-    }
-    ''';
+      return addImageTemplateToPrompt(filledPrompt);
     }
 
-    return '''$filledPrompt
+    return addValuesTemplateToPrompt(filledPrompt, prompt.outputFieldName);
+  }
+
+  static String addValuesTemplateToPrompt(
+    String prompt,
+    String? outputFieldName,
+  ) {
+    return '''$prompt
     Return all the details for user to see in "textMessage".
     Return all additional values in "values" array.
     This is request from application
@@ -118,11 +116,24 @@ class PromptUseCases {
       "values": [
         {
           "value", "value",
-          "fieldName": "${prompt.outputFieldName}"
+          "fieldName": ${outputFieldName != null ? "$outputFieldName" : '"outputFieldName" //default: "other"'}
         }
       ],
     }
     Return JSON in format above 
+    ''';
+  }
+
+  static String addImageTemplateToPrompt(String prompt) {
+    return '''$prompt
+    This is request for image generation from application.
+    Return JSON only. Don't add extra text.
+    Return JSON in this format. Don't add extra ',' and escape special characters:
+    Return url to image you generated in imageUrl field.
+    {
+      "textMessage": "String",
+      "imageUrl": "String",
+    }
     ''';
   }
 
