@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:char_creator/features/fields/field.dart';
 import 'package:char_creator/features/images/image_providers.dart';
+import 'package:char_creator/utils/image_automatic.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -182,7 +183,6 @@ class ImageWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final imageModel = ref.watch(imageModelByIdProvider(imageId)).asData?.value;
     return Card(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -196,10 +196,8 @@ class ImageWidget extends HookConsumerWidget {
                   child: InteractiveViewer(
                     child: Hero(
                       tag: imageId,
-                      child: Image.file(
-                        File.fromUri(
-                          Uri.parse(imageModel?.filePath ?? ''),
-                        ),
+                      child: ImageAutomatic.build(
+                        path: imageId,
                       ),
                     ),
                   ),
@@ -208,23 +206,8 @@ class ImageWidget extends HookConsumerWidget {
             },
             child: Hero(
               tag: imageId,
-              child: Image.file(
-                File.fromUri(
-                  Uri.parse(imageModel?.filePath ?? ''),
-                ),
-                frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                  if (wasSynchronouslyLoaded) {
-                    return child;
-                  }
-                  return AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: frame != null
-                        ? child
-                        : const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                  );
-                },
+              child: ImageAutomatic.build(
+                path: imageId,
               ),
             ),
           ),

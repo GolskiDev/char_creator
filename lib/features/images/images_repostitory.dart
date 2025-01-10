@@ -19,7 +19,7 @@ class ImageRepository {
 
     await imageFile.copy(newFilePath);
 
-    return ImageModel(id: id, filePath: newFilePath);
+    return ImageModel(filePath: newFilePath);
   }
 
   Future<ImageModel> saveFromBytes(String filename, Uint8List bytes) async {
@@ -27,26 +27,15 @@ class ImageRepository {
 
     await File(filePath).writeAsBytes(bytes);
 
-    return ImageModel(id: filename, filePath: filePath);
+    return ImageModel(filePath: filePath);
   }
 
-  Future<File?> getImageById(String id) async {
+  Future<ImageModel> getImageModelByPath(String providedPath) async {
     final List<FileSystemEntity> files = directory.listSync();
 
     for (var file in files) {
-      if (file is File && path.basenameWithoutExtension(file.path) == id) {
-        return file;
-      }
-    }
-    return null;
-  }
-
-  Future<ImageModel> getImageModelById(String id) async {
-    final List<FileSystemEntity> files = directory.listSync();
-
-    for (var file in files) {
-      if (file is File && path.basename(file.path) == id) {
-        return ImageModel(id: id, filePath: file.path);
+      if (file is File && file.path == providedPath) {
+        return ImageModel(filePath: file.path);
       }
     }
     throw Exception('Image not found');

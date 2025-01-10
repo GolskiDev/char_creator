@@ -324,7 +324,8 @@ class DocumentPage extends ConsumerWidget {
                     await ref.read(imageRepositoryProvider.future);
                 final imageModel =
                     await ImageUseCases.pickFromLocalDeviceAndSave(
-                        imageRepository);
+                  imageRepository,
+                );
                 final ImageValue imageValue =
                     ImageValue(url: imageModel.filePath);
                 final updatedField = field.copyWith(

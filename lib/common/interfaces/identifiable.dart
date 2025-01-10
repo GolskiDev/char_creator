@@ -1,10 +1,9 @@
 import 'package:uuid/uuid.dart';
 
 abstract class Identifiable {
-  final String _id;
-  String get id => _id;
+  String get id;
 
-  const Identifiable({required String id}) : _id = id;
+  const Identifiable();
 
   @override
   bool operator ==(Object other) {

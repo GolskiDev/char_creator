@@ -98,7 +98,7 @@ class ImageAutomatic {
   }
 
   static ImageType getImageType(String path) {
-    switch (path) {
+    switch (path.split('.').last) {
       case 'svg':
         return ImageType.svg;
       case 'png':

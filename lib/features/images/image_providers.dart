@@ -17,9 +17,9 @@ final imageRepositoryProvider = FutureProvider<ImageRepository>(
   },
 );
 
-final imageModelByIdProvider = FutureProvider.family<ImageModel, String>(
+final imageByPathProvider = FutureProvider.family<ImageModel, String>(
   (ref, imageId) async {
     final imageRepository = await ref.watch(imageRepositoryProvider.future);
-    return imageRepository.getImageModelById(imageId);
+    return imageRepository.getImageModelByPath(imageId);
   },
 );

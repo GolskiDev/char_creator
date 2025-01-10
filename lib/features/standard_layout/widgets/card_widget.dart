@@ -29,6 +29,7 @@ class CardWidget extends StatelessWidget {
           ),
         _ => ImageAutomatic.build(
             path: basicViewModel.imagePath!,
+            fit: BoxFit.cover,
           ),
       };
     } else {
