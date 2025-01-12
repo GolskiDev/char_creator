@@ -51,7 +51,7 @@ class MyMessageWidget extends HookConsumerWidget {
         : null;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
         textWidget,
@@ -138,33 +138,36 @@ class ListOfValuesWidget extends HookConsumerWidget {
           ).toList(),
         ),
         if (selectedValues.value.isNotEmpty)
-          FilledButton(
-            onPressed: () async {
-              if (documentId == null) {
-                return;
-              }
-              final fieldsToAdd = listOfValues
-                  .where(
-                    (value) => selectedValues.value.contains(value['value']),
-                  )
-                  .toList();
-              final documents = await ref.read(documentsProvider.future);
-              final document = documents.firstWhereOrNull(
-                (document) => document.id == documentId,
-              );
-              if (document == null) {
-                return;
-              }
-              final updatedDocument = ChatResponseModel.addToDocument(
-                fieldsToAdd,
-                document,
-              );
-              await ref
-                  .read(documentRepositoryProvider)
-                  .updateDocument(updatedDocument);
-              selectedValues.value = [];
-            },
-            child: const Text('Add to Doument'),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FilledButton(
+              onPressed: () async {
+                if (documentId == null) {
+                  return;
+                }
+                final fieldsToAdd = listOfValues
+                    .where(
+                      (value) => selectedValues.value.contains(value['value']),
+                    )
+                    .toList();
+                final documents = await ref.read(documentsProvider.future);
+                final document = documents.firstWhereOrNull(
+                  (document) => document.id == documentId,
+                );
+                if (document == null) {
+                  return;
+                }
+                final updatedDocument = ChatResponseModel.addToDocument(
+                  fieldsToAdd,
+                  document,
+                );
+                await ref
+                    .read(documentRepositoryProvider)
+                    .updateDocument(updatedDocument);
+                selectedValues.value = [];
+              },
+              child: const Text('Add to Doument'),
+            ),
           ),
       ],
     );
@@ -183,21 +186,29 @@ class ImageWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GestureDetector(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Card.outlined(
+          clipBehavior: Clip.antiAlias,
+          child: GestureDetector(
             onTap: () {
-              showDialog(
-                useSafeArea: true,
-                context: context,
-                builder: (context) => Dialog(
-                  child: InteractiveViewer(
-                    child: Hero(
-                      tag: imageId,
-                      child: ImageAutomatic.build(
-                        path: imageId,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(),
+                    extendBodyBehindAppBar: true,
+                    body: Center(
+                      child: InteractiveViewer(
+                        child: Hero(
+                          tag: imageId,
+                          child: ImageAutomatic.build(
+                            path: imageId,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -208,11 +219,14 @@ class ImageWidget extends HookConsumerWidget {
               tag: imageId,
               child: ImageAutomatic.build(
                 path: imageId,
+                fit: BoxFit.cover,
               ),
             ),
           ),
-          if (documentId != null)
-            FilledButton(
+        ),
+        if (documentId != null)
+          UnconstrainedBox(
+            child: FilledButton(
               onPressed: () async {
                 final documents = await ref.read(documentsProvider.future);
                 final document = documents.firstWhereOrNull(
@@ -242,8 +256,8 @@ class ImageWidget extends HookConsumerWidget {
               },
               child: const Text('Add to Document'),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }
