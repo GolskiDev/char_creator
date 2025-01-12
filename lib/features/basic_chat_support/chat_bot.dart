@@ -116,8 +116,8 @@ class ChatBotWithMemory implements ChatBot {
       OpenAIDallETool(
         apiKey: chatGPTApiKey,
         defaultOptions: const OpenAIDallEToolOptions(
-          model: 'dall-e-2',
-          size: ImageSize.v256x256,
+          model: 'dall-e-3',
+          size: ImageSize.v1024x1024,
           quality: ImageQuality.standard,
           responseFormat: ImageResponseFormat.url,
         ),
