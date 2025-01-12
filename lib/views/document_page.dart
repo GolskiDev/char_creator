@@ -5,6 +5,8 @@ import 'package:char_creator/features/documents/document_providers.dart';
 import 'package:char_creator/features/dynamic_types/dynamic_types_repository.dart';
 import 'package:char_creator/features/images/image_providers.dart';
 import 'package:char_creator/features/images/image_use_cases.dart';
+import 'package:char_creator/features/standard_layout/basic_view_model.dart';
+import 'package:char_creator/utils/image_automatic.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,44 +97,82 @@ class DocumentPage extends ConsumerWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            ...field.values
-                                .map(
-                                  (value) {
-                                    switch (value) {
-                                      case StringValue string:
-                                        return Chip(
-                                          label: Text(string.value),
-                                        );
-                                      case DocumentReference ref:
-                                        return ActionChip(
-                                          onPressed: () => context.go(
-                                            '/documents/${ref.refId}',
-                                          ),
-                                          label: Text(ref.refId),
-                                        );
-                                      case ImageValue image:
-                                        return _buildImageWidget(
-                                          context,
-                                          ref,
-                                          image,
-                                        );
-                                    }
-                                  },
-                                )
-                                .whereNotNull()
-                                .expand(
-                                  (element) => [
-                                    element,
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                  ],
-                                )
-                          ],
+                      child: IntrinsicHeight(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              ...field.values
+                                  .map(
+                                    (value) {
+                                      switch (value) {
+                                        case StringValue string:
+                                          return Chip(
+                                            label: Text(string.value),
+                                          );
+                                        case DocumentReference docRef:
+                                          final referencedDocument = ref
+                                              .read(documentsProvider)
+                                              .asData
+                                              ?.value
+                                              .firstWhere(
+                                                (d) => d.id == docRef.refId,
+                                              );
+                                          if (referencedDocument == null) {
+                                            return const SizedBox();
+                                          }
+                                          final viewModel =
+                                              referencedDocument.basicViewModel(
+                                            ref.watch(documentTypesProvider),
+                                          );
+                                          return Container(
+                                            width: 200,
+                                            child: Card.outlined(
+                                              margin: const EdgeInsets.all(0),
+                                              clipBehavior: Clip.antiAlias,
+                                              child: ListTile(
+                                                contentPadding: EdgeInsets.zero,
+                                                onTap: () {
+                                                  context.go(
+                                                    '/documents/${docRef.refId}',
+                                                  );
+                                                },
+                                                leading:
+                                                    viewModel.imagePath != null
+                                                        ? ImageAutomatic.build(
+                                                            path: viewModel
+                                                                .imagePath!,
+                                                            fit: BoxFit.fill,
+                                                          )
+                                                        : null,
+                                                title: Text(
+                                                  viewModel.title ??
+                                                      referencedDocument
+                                                          .displayedName,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        case ImageValue image:
+                                          return _buildImageWidget(
+                                            context,
+                                            ref,
+                                            image,
+                                          );
+                                      }
+                                    },
+                                  )
+                                  .whereNotNull()
+                                  .expand(
+                                    (element) => [
+                                      element,
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                    ],
+                                  )
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -429,7 +469,7 @@ class DocumentPage extends ConsumerWidget {
                     itemBuilder: (BuildContext context, int index) {
                       final doc = documents[index];
                       return ListTile(
-                        title: Text(doc.id),
+                        title: Text(doc.displayedName),
                         onTap: () {
                           final updatedField = field.copyWith(
                             values: [
