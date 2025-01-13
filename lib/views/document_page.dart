@@ -11,6 +11,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../features/basic_chat_support/chat.dart';
 import '../features/dynamic_types/dynamic_types_providers.dart';
@@ -97,83 +98,75 @@ class DocumentPage extends ConsumerWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: IntrinsicHeight(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              ...field.values
-                                  .map(
-                                    (value) {
-                                      switch (value) {
-                                        case StringValue string:
-                                          return Chip(
-                                            label: Text(string.value),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 4,
+                        children: [
+                          ...field.values
+                              .map(
+                                (value) {
+                                  switch (value) {
+                                    case StringValue string:
+                                      return Chip(
+                                        label: Text(string.value),
+                                      );
+                                    case DocumentReference docRef:
+                                      final referencedDocument = ref
+                                          .read(documentsProvider)
+                                          .asData
+                                          ?.value
+                                          .firstWhere(
+                                            (d) => d.id == docRef.refId,
                                           );
-                                        case DocumentReference docRef:
-                                          final referencedDocument = ref
-                                              .read(documentsProvider)
-                                              .asData
-                                              ?.value
-                                              .firstWhere(
-                                                (d) => d.id == docRef.refId,
-                                              );
-                                          if (referencedDocument == null) {
-                                            return const SizedBox();
-                                          }
-                                          final viewModel =
-                                              referencedDocument.basicViewModel(
-                                            ref.watch(documentTypesProvider),
-                                          );
-                                          return Container(
-                                            width: 200,
-                                            child: Card.outlined(
-                                              margin: const EdgeInsets.all(0),
-                                              clipBehavior: Clip.antiAlias,
-                                              child: ListTile(
-                                                contentPadding: EdgeInsets.zero,
-                                                onTap: () {
-                                                  context.go(
-                                                    '/documents/${docRef.refId}',
-                                                  );
-                                                },
-                                                leading:
-                                                    viewModel.imagePath != null
-                                                        ? ImageAutomatic.build(
-                                                            path: viewModel
-                                                                .imagePath!,
-                                                            fit: BoxFit.fill,
-                                                          )
-                                                        : null,
-                                                title: Text(
-                                                  viewModel.title ??
-                                                      referencedDocument
-                                                          .displayedName,
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        case ImageValue image:
-                                          return _buildImageWidget(
-                                            context,
-                                            ref,
-                                            image,
-                                          );
+                                      if (referencedDocument == null) {
+                                        return const SizedBox();
                                       }
-                                    },
-                                  )
-                                  .whereNotNull()
-                                  .expand(
-                                    (element) => [
-                                      element,
-                                      const SizedBox(
-                                        width: 4,
-                                      ),
-                                    ],
-                                  )
-                            ],
-                          ),
-                        ),
+                                      final viewModel =
+                                          referencedDocument.basicViewModel(
+                                        ref.watch(documentTypesProvider),
+                                      );
+                                      return Card.outlined(
+                                        margin: const EdgeInsets.all(0),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: ListTile(
+                                          contentPadding: EdgeInsets.zero,
+                                          onTap: () {
+                                            context.go(
+                                              '/documents/${docRef.refId}',
+                                            );
+                                          },
+                                          leading: viewModel.imagePath != null
+                                              ? ImageAutomatic.build(
+                                                  path: viewModel.imagePath!,
+                                                  fit: BoxFit.fill,
+                                                )
+                                              : null,
+                                          title: Text(
+                                            viewModel.title ??
+                                                referencedDocument
+                                                    .displayedName,
+                                          ),
+                                        ),
+                                      );
+                                    case ImageValue image:
+                                      return _buildImageWidget(
+                                        context,
+                                        ref,
+                                        image,
+                                      );
+                                  }
+                                },
+                              )
+                              .nonNulls
+                              .expand(
+                                (element) => [
+                                  element,
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                ],
+                              )
+                        ],
                       ),
                     ),
                   ],
@@ -610,6 +603,54 @@ class DocumentPage extends ConsumerWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+//Just an example of field
+class SingleValueFieldWidget extends HookConsumerWidget {
+  const SingleValueFieldWidget({
+    super.key,
+  });
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Card(
+      child: ListTile(
+        leading: const Icon(
+          Icons.theater_comedy,
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Alignment',
+            ),
+            SizedBox(
+              width: 8,
+            ),
+            Flexible(
+              child: Card.outlined(
+                margin: const EdgeInsets.all(0),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 8.0,
+                  ),
+                  child: Text(
+                    'Lawful Very Very Very Very Good',
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          height: 1.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                    textAlign: TextAlign.center,
+                    textWidthBasis: TextWidthBasis.longestLine,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
