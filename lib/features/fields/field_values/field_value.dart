@@ -6,7 +6,7 @@ sealed class FieldValue {
   static FieldValue fromJson(Map<String, dynamic> json) {
     return switch (json['type']) {
       StringValue.typeId => StringValue.fromJson(json),
-      DocumentReference.typeId => DocumentReference.fromJson(json),
+      DocumentReferenceValue.typeId => DocumentReferenceValue.fromJson(json),
       ImageValue.typeId => ImageValue.fromJson(json),
       _ => throw ArgumentError('Invalid field value type'),
     };

@@ -72,6 +72,25 @@ class ChatContext {
     );
   }
 
+  ChatContext removeAllKeysOfDocumentFromContext({
+    required String documentId,
+  }) {
+    return ChatContext._(
+      contextValueKeys: contextValueKeys
+          .where((element) => element.documentId != documentId)
+          .toList(),
+    );
+  }
+
+  ChatContext addMultipleKeysToContext({
+    required Iterable<ChatContextValueKey> keys,
+  }) {
+    return ChatContext._(
+      contextValueKeys:
+          <ChatContextValueKey>{...contextValueKeys, ...keys}.toList(),
+    );
+  }
+
   String toChatContextString(
     List<Document> documents,
   ) {

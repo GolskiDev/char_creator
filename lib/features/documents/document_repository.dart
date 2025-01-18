@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:char_creator/features/documents/static_document_data_source.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:char_creator/features/documents/document.dart';
@@ -11,9 +12,11 @@ class DocumentRepository {
   Stream<List<Document>> get stream => _controller.stream;
 
   final StreamController<List<Document>> _controller;
+  final StaticDocumentDataSource _staticDataSource;
 
-  DocumentRepository()
-      : _controller = StreamController<List<Document>>.broadcast() {
+  DocumentRepository(
+    this._staticDataSource,
+  ) : _controller = StreamController<List<Document>>.broadcast() {
     _controller.onListen = _refreshStream;
   }
 
@@ -39,14 +42,21 @@ class DocumentRepository {
 
   Future<List<Document>> getAllDocuments() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final List<Document> staticDocuments =
+        await _staticDataSource.loadDocuments();
+
     final List<String>? encodedDocuments = prefs.getStringList(_storageKey);
-    if (encodedDocuments == null) {
-      return [];
-    }
-    final documents = encodedDocuments
+    final sharedPrefsDocuments = encodedDocuments ?? [];
+
+    final documents = sharedPrefsDocuments
         .map((encodedDocument) => _decodeDocument(encodedDocument))
         .toList();
-    return documents;
+
+    return [
+      ...staticDocuments,
+      ...documents,
+    ];
   }
 
   Future<void> updateDocument(Document updatedDocument) async {

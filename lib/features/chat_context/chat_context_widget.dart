@@ -57,12 +57,6 @@ class ChatContextWidget extends HookConsumerWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: CurrentDocumentContextWidget(
                     document: currentDocument,
-                    contextValueKeys: chatContext.contextValueKeys
-                        .where(
-                          (contextValueKey) =>
-                              contextValueKey.documentId == currentDocument.id,
-                        )
-                        .toList(),
                   ),
                 ),
               ),
@@ -123,7 +117,7 @@ class ContextDocumentWidget extends HookConsumerWidget {
             return (contextValueKey, fieldName, value.value);
           },
         )
-        .whereNotNull()
+        .nonNulls
         .toList();
 
     return Column(
@@ -165,18 +159,18 @@ class ContextDocumentWidget extends HookConsumerWidget {
 class CurrentDocumentContextWidget extends HookConsumerWidget {
   const CurrentDocumentContextWidget({
     required this.document,
-    required this.contextValueKeys,
     super.key,
   });
 
   final Document document;
-  final List<ChatContextValueKey> contextValueKeys;
 
   @override
   Widget build(
     BuildContext context,
     WidgetRef ref,
   ) {
+    final documents = ref.watch(documentsProvider).asData?.value;
+    final chatContext = ref.watch(chatContextProvider);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,7 +181,10 @@ class CurrentDocumentContextWidget extends HookConsumerWidget {
         ),
         ...document.fields.map(
           (field) {
-            if (field.values.whereType<StringValue>().isEmpty) {
+            final stringValues = field.values.whereType<StringValue>();
+            final referenceValues =
+                field.values.whereType<DocumentReferenceValue>();
+            if (stringValues.isEmpty && referenceValues.isEmpty) {
               return null;
             }
             return Padding(
@@ -204,43 +201,104 @@ class CurrentDocumentContextWidget extends HookConsumerWidget {
                     crossAxisAlignment: WrapCrossAlignment.start,
                     spacing: 8,
                     runSpacing: 8,
-                    children: field.values.whereType<StringValue>().map(
-                      (value) {
-                        final contextValueKey =
-                            ChatContextValueKey.fromDocument(
-                          document: document,
-                          field: field,
-                          stringValue: value,
-                        );
-                        final isSelected =
-                            contextValueKeys.contains(contextValueKey);
-                        return ChoiceChip(
-                          label: Text(value.value),
-                          selected: isSelected,
-                          onSelected: (isSelected) {
-                            final chatContext = ref.read(chatContextProvider);
-                            if (isSelected) {
-                              ref.read(chatContextProvider.notifier).state =
-                                  chatContext.addKeyToContext(
-                                key: contextValueKey,
+                    children: [
+                      ...field.values.map(
+                        (value) {
+                          switch (value) {
+                            case StringValue value:
+                              final contextValueKey =
+                                  ChatContextValueKey.fromDocument(
+                                document: document,
+                                field: field,
+                                stringValue: value,
                               );
-                              return;
-                            } else {
-                              ref.read(chatContextProvider.notifier).state =
-                                  chatContext.removeKeyFromContext(
-                                key: contextValueKey,
+                              final isSelected = chatContext.contextValueKeys
+                                  .contains(contextValueKey);
+                              return ChoiceChip(
+                                label: Text(value.value),
+                                selected: isSelected,
+                                onSelected: (isSelected) {
+                                  if (isSelected) {
+                                    ref
+                                        .read(chatContextProvider.notifier)
+                                        .state = chatContext.addKeyToContext(
+                                      key: contextValueKey,
+                                    );
+                                    return;
+                                  } else {
+                                    ref
+                                            .read(chatContextProvider.notifier)
+                                            .state =
+                                        chatContext.removeKeyFromContext(
+                                      key: contextValueKey,
+                                    );
+                                  }
+                                },
                               );
-                            }
-                          },
-                        );
-                      },
-                    ).toList(),
+                            case DocumentReferenceValue value:
+                              final isSelected =
+                                  chatContext.contextValueKeys.any(
+                                (contextValueKey) =>
+                                    contextValueKey.documentId == value.refId,
+                              );
+                              final referencedDocument =
+                                  documents?.firstWhereOrNull(
+                                (document) => document.id == value.refId,
+                              );
+                              if (referencedDocument == null) return null;
+                              return ChoiceChip(
+                                label: Text(referencedDocument.displayedName),
+                                selected: isSelected,
+                                onSelected: (wasSelected) {
+                                  if (wasSelected) {
+                                    // add all context keys for this document
+                                    final keysToAdd = referencedDocument.fields
+                                        .map(
+                                          (field) => field.values
+                                              .whereType<StringValue>()
+                                              .map(
+                                                (stringValue) =>
+                                                    ChatContextValueKey
+                                                        .fromDocument(
+                                                  document: referencedDocument,
+                                                  field: field,
+                                                  stringValue: stringValue,
+                                                ),
+                                              )
+                                              .nonNulls,
+                                        )
+                                        .nonNulls
+                                        .expand((element) => element);
+                                    ref
+                                            .read(chatContextProvider.notifier)
+                                            .state =
+                                        chatContext.addMultipleKeysToContext(
+                                      keys: keysToAdd,
+                                    );
+                                  } else {
+                                    // remove all context keys for this document
+                                    ref
+                                            .read(chatContextProvider.notifier)
+                                            .state =
+                                        chatContext
+                                            .removeAllKeysOfDocumentFromContext(
+                                      documentId: value.refId,
+                                    );
+                                  }
+                                },
+                              );
+                            default:
+                              return null;
+                          }
+                        },
+                      ).nonNulls,
+                    ],
                   ),
                 ],
               ),
             );
           },
-        ).whereNotNull(),
+        ).nonNulls,
       ],
     );
   }

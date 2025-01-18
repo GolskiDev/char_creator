@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:char_creator/features/documents/document.dart';
@@ -39,6 +40,16 @@ class DocumentPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(document?.displayedName ?? 'Document'),
         actions: [
+          if (document != null) ...[
+            IconButton(
+              icon: const Icon(Icons.save),
+              onPressed: () {
+                log(
+                  document.toJson().toString(),
+                );
+              },
+            ),
+          ],
           if (document != null) ...[
             IconButton(
               icon: const Icon(Icons.lightbulb_outline),
@@ -100,6 +111,7 @@ class DocumentPage extends ConsumerWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
                         spacing: 4,
                         children: [
                           ...field.values
@@ -110,7 +122,7 @@ class DocumentPage extends ConsumerWidget {
                                       return Chip(
                                         label: Text(string.value),
                                       );
-                                    case DocumentReference docRef:
+                                    case DocumentReferenceValue docRef:
                                       final referencedDocument = ref
                                           .read(documentsProvider)
                                           .asData
@@ -138,7 +150,7 @@ class DocumentPage extends ConsumerWidget {
                                           leading: viewModel.imagePath != null
                                               ? ImageAutomatic.build(
                                                   path: viewModel.imagePath!,
-                                                  fit: BoxFit.fill,
+                                                  fit: BoxFit.cover,
                                                 )
                                               : null,
                                           title: Text(
@@ -265,28 +277,6 @@ class DocumentPage extends ConsumerWidget {
         ],
       );
       ref.read(documentRepositoryProvider).updateDocument(updatedDocument);
-    }
-  }
-
-  Widget _buildFieldValueWidget(BuildContext context, FieldValue value) {
-    switch (value) {
-      case StringValue string:
-        return Chip(
-          label: Text(string.value),
-        );
-      case DocumentReference ref:
-        return ActionChip(
-          onPressed: () => context.go(
-            '/documents/${ref.refId}',
-          ),
-          label: Text(ref.refId),
-        );
-      case ImageValue image:
-        return Image.file(
-          File(image.url),
-        );
-      default:
-        throw ArgumentError('Invalid field value type');
     }
   }
 
@@ -467,7 +457,7 @@ class DocumentPage extends ConsumerWidget {
                           final updatedField = field.copyWith(
                             values: [
                               ...field.values,
-                              DocumentReference(refId: doc.id),
+                              DocumentReferenceValue(refId: doc.id),
                             ],
                           );
                           final updatedDocument = document.copyWith(
@@ -633,20 +623,14 @@ class SingleValueFieldWidget extends HookConsumerWidget {
             Flexible(
               child: Card.outlined(
                 margin: const EdgeInsets.all(0),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 8.0,
-                  ),
-                  child: Text(
-                    'Lawful Very Very Very Very Good',
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          height: 1.0,
-                          fontWeight: FontWeight.w600,
-                        ),
-                    textAlign: TextAlign.center,
-                    textWidthBasis: TextWidthBasis.longestLine,
-                  ),
+                child: Text(
+                  'Lawful Very Very Very Very Good',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        height: 1.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                  textAlign: TextAlign.center,
+                  textWidthBasis: TextWidthBasis.longestLine,
                 ),
               ),
             ),

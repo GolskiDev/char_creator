@@ -21,29 +21,35 @@ class ImageAutomatic {
 
     if (fileType == ImageType.svg) {
       return switch (fileSource) {
-        ImageSource.asset => SvgPicture.asset(
-            path,
-            alignment: alignment ?? Alignment.center,
-            fit: fit ?? BoxFit.contain,
-            height: height,
-            width: width,
-            placeholderBuilder: placeholderBuilder,
+        ImageSource.asset => FittedBox(
+            child: SvgPicture.asset(
+              path,
+              alignment: alignment ?? Alignment.center,
+              fit: fit ?? BoxFit.contain,
+              height: height,
+              width: width,
+              placeholderBuilder: placeholderBuilder,
+            ),
           ),
-        ImageSource.file => SvgPicture.file(
-            File(path),
-            alignment: alignment ?? Alignment.center,
-            fit: fit ?? BoxFit.contain,
-            height: height,
-            width: width,
-            placeholderBuilder: placeholderBuilder,
+        ImageSource.file => FittedBox(
+            child: SvgPicture.file(
+              File(path),
+              alignment: alignment ?? Alignment.center,
+              fit: fit ?? BoxFit.contain,
+              height: height,
+              width: width,
+              placeholderBuilder: placeholderBuilder,
+            ),
           ),
-        ImageSource.web => SvgPicture.network(
-            path,
-            alignment: alignment ?? Alignment.center,
-            fit: fit ?? BoxFit.contain,
-            height: height,
-            width: width,
-            placeholderBuilder: placeholderBuilder,
+        ImageSource.web => FittedBox(
+            child: SvgPicture.network(
+              path,
+              alignment: alignment ?? Alignment.center,
+              fit: fit ?? BoxFit.contain,
+              height: height,
+              width: width,
+              placeholderBuilder: placeholderBuilder,
+            ),
           ),
       };
     }
