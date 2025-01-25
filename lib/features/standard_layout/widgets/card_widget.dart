@@ -72,6 +72,7 @@ class CardWidget extends StatelessWidget {
                   child: Text(
                     basicViewModel.description!,
                     style: Theme.of(context).textTheme.bodyLarge,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),

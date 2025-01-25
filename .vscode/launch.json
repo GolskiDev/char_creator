@@ -10,6 +10,12 @@
             "type": "dart"
         },
         {
+            "name": "char_creator (web)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--web-browser-flag=--disable-web-security"]
+        },
+        {
             "name": "char_creator (profile mode)",
             "request": "launch",
             "type": "dart",
