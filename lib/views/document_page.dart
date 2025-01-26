@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -45,7 +46,7 @@ class DocumentPage extends ConsumerWidget {
               icon: const Icon(Icons.save),
               onPressed: () {
                 log(
-                  document.toJson().toString(),
+                  jsonEncode(document.toJson()).toString(),
                 );
               },
             ),

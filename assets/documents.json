@@ -1,0 +1,26 @@
+[
+    {
+        "id": "GetValuees",
+        "type": null,
+        "fields": [
+            {
+                "name": "name",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Get Values"
+                    }
+                ]
+            },
+            {
+                "name": "description",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Return all the details for user to see in \"textMessage\".Return all additional values in \"values\" array.This is request from applicationReturn JSON only. Don't add extra text.Don't add extra ',' and escape special characters:{\"textMessage\": \"String\",\"values\": [{\"value\", \"value\",\"fieldName\": ${outputFieldName != null ? \"$outputFieldName\" : '\"outputFieldName\" //default: \"other\"'}}],}Return JSON in format above"
+                    }
+                ]
+            }
+        ]
+    }
+]
