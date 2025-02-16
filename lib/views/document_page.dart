@@ -110,9 +110,8 @@ class DocumentPage extends ConsumerWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisSize: MainAxisSize.min,
+                      child: Wrap(
+                        runSpacing: 4,
                         spacing: 4,
                         children: [
                           ...field.values

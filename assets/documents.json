@@ -22,5 +22,753 @@
                 ]
             }
         ]
+    },
+    {
+        "id": "Pictures",
+        "type": null,
+        "fields": [
+            {
+                "name": "name",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Pictures"
+                    }
+                ]
+            },
+            {
+                "name": "General Framing & Composition Terms",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Centered"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Off-Center"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Rule of Thirds"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Golden Ratio (Phi Grid)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Symmetry"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Asymmetry"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Negative Space"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Positive Space"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Dynamic Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Static Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Balanced Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Unbalanced Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Minimal Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Crowded Frame"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Diagonal Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Radial Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Pyramid Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Triangular Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Fractal Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Grid Composition"
+                    }
+                ]
+            },
+            {
+                "name": "Framing Styles",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Tight Framing"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Loose Framing"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Close-Up"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Extreme Close-Up"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Medium Shot"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Long Shot"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Extreme Long Shot"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Over-the-Shoulder (OTS)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Two-Shot (Two Subjects in Frame)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Overhead Shot (Bird’s-Eye View)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Low Angle"
+                    },
+                    {
+                        "type": "string",
+                        "value": "High Angle"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Dutch Angle (Tilted Horizon)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Eye Level"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Worm’s-Eye View"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Framed Within a Frame"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Window Framing"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Doorway Framing"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Foreground Framing"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Natural Framing (Using Natural Elements as a Border)"
+                    }
+                ]
+            },
+            {
+                "name": "Leading Lines & Flow",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Leading Lines"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Converging Lines"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Horizontal Lines"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Vertical Lines"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Diagonal Lines"
+                    },
+                    {
+                        "type": "string",
+                        "value": "S-Curve"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Z-Pattern Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Eye Path"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Implied Lines"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Radiating Lines"
+                    }
+                ]
+            },
+            {
+                "name": "Depth & Perspective",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "One-Point Perspective"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Two-Point Perspective"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Three-Point Perspective"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Flat Composition (No Depth)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Layered Composition (Foreground, Middle Ground, Background)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Overlapping Elements"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Shallow Depth of Field"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Deep Depth of Field"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Forced Perspective"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Aerial Perspective (Using Light/Color for Depth)"
+                    }
+                ]
+            },
+            {
+                "name": "Motion and Action",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Leading Space (Space in Front of Moving Object)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Headroom (Space Above the Subject’s Head)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Motion Blur Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Panoramic Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Frozen Motion"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Continuous Movement Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Stroboscopic Motion (Sequential Frames in One)"
+                    }
+                ]
+            },
+            {
+                "name": "Focus and Subject Placement",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Single Point Focus"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Multiple Point Focus"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Central Focus"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Off-Center Focus"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Edge Placement"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Rule of Odds (Odd Number of Subjects)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Subject Isolation"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Repetition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Pattern Break"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Open Composition (Subjects Extend Beyond Frame)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Closed Composition (Everything Contained Within Frame)"
+                    }
+                ]
+            },
+            {
+                "name": "Light and Shadow",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "High-Key Lighting Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Low-Key Lighting Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Chiaroscuro"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Silhouette Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Rim Lighting"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Split Lighting"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Backlit Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Side-Lit Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Hard Light Framing"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Soft Light Framing"
+                    }
+                ]
+            },
+            {
+                "name": "Specialized Film & Design Terms",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Extreme Wide Shot"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Establishing Shot"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Insert Shot"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Tracking Shot Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Symmetrical Centering (e.g., Wes Anderson Style)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Montage Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Match-on-Action Framing"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Overlapping Action Framing"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Collage Composition (Layered Graphics)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Rule of Depth (Size Scaling to Emphasize Depth)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Overexposure Framing"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Split Screen Composition"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "Portrait",
+        "type": null,
+        "fields": [
+            {
+                "name": "name",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Portrait"
+                    }
+                ]
+            },
+            {
+                "name": "Subject Positioning",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Centered"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Off-Center"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Rule of Thirds"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Golden Ratio (Phi Grid)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Edge Placement"
+                    }
+                ]
+            },
+            {
+                "name": "Subject Framing",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Tight Framing (Close to Subject)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Loose Framing (Room Around Subject)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Close-Up (Face Dominates Frame)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Medium Shot (Torso and Head)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Long Shot (Full Body)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Extreme Close-Up (Details Only, e.g., Eyes)"
+                    }
+                ]
+            },
+            {
+                "name": "Camera Angle or Viewpoint",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Eye Level (Neutral, engaging gaze)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "High Angle (Looking down on subject)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Low Angle (Looking up at subject)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Over-the-Shoulder (OTS)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Worm’s-Eye View (Dramatic low angle)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Dutch Angle (Tilted Horizon for Drama)"
+                    }
+                ]
+            },
+            {
+                "name": "Depth & Perspective",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Flat Composition (No Depth)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Shallow Depth of Field (Blurry Background)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Layered Composition (Foreground, Middle Ground, Background)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "One-Point Perspective (Converging Lines Focus on Subject)"
+                    }
+                ]
+            },
+            {
+                "name": "Leading Lines and Flow",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Leading Lines (Lines Guide Eye to Subject))"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Converging Lines"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Horizontal Lines"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Vertical Lines"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Diagonal Lines"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Radiating Lines"
+                    }
+                ]
+            },
+            {
+                "name": "Light and Shadow Style",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "High-Key Lighting (Bright and Even)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Low-Key Lighting (Dramatic Shadows)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Chiaroscuro (Strong Light/Dark Contrast)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Split Lighting (Half Face Lit)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Rim Lighting (Light Around Edges of Subject)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Backlit Composition (Silhouette or Glow)"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Side-Lit Composition (Highlighting One Side of Face)"
+                    }
+                ]
+            },
+            {
+                "name": "Composition Balance",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Symmetrical Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Asymmetrical Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Balanced Composition"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Unbalanced Composition"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "Color Palletes",
+        "type": null,
+        "fields": [
+            {
+                "name": "name",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Color Palletes"
+                    }
+                ]
+            },
+            {
+                "name": "Classic",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Monochrome: Different shades of a single color"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Sepia Tones: Beige, brown, cream, soft yellow."
+                    },
+                    {
+                        "type": "string",
+                        "value": "Black and White with a Pop of Color: Black, white, and a single vibrant accent color (e.g., red or teal)."
+                    }
+                ]
+            },
+            {
+                "name": "Warm and Inviting Palettes",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Sunset Glow: Deep orange, coral, lavender, soft pink, and golden yellow."
+                    },
+                    {
+                        "type": "string",
+                        "value": "Autumn Hues: Burnt orange, mustard yellow, deep brown, forest green, and burgundy"
+                    },
+                    {
+                        "type": "string",
+                        "value": "Earthy Tones: Terracotta, olive green, sand beige, and chocolate brown."
+                    }
+                ]
+            },
+            {
+                "name": "Cool and Calming Palettes",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Ocean Breeze: Aqua blue, seafoam green, sandy beige, and white."
+                    },
+                    {
+                        "type": "string",
+                        "value": "Winter Chill: Icy blue, soft gray, slate, and lavender."
+                    },
+                    {
+                        "type": "string",
+                        "value": "Mint and Lavender: Light mint green, pale lavender, soft gray, and white."
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "Styles",
+        "name": "Styles",
+        "type": null,
+        "fields": [
+            {
+                "name": "name",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Styles"
+                    }
+                ]
+            },
+            {
+                "name": "Style Cartoon 1",
+                "values": [
+                    {
+                        "type": "string",
+                        "value": "Stylized Realism: The characters are designed with a balance between realism and stylization. They have distinct, exaggerated features (like big eyes and sharp facial expressions) that make them easily recognizable and memorable, yet they still have a sense of weight and proportion that grounds them in a semi-realistic world. Sharp and Clean Lines: The character outlines are generally bold, clear, and sharp. This helps in making the characters stand out against the highly detailed backgrounds and environments. Facial Expressions and Emotions: The animation places a strong emphasis on exaggerated facial expressions to highlight character emotions. Characters' faces are often exaggerated during moments of anger, sadness, or comedy, creating a more dynamic and expressive performance. Fluid, Highly Dynamic Movement: The action scenes are a mix of fluid animation and dynamic camera angles. The animation is well-choreographed, especially in fight sequences, where the characters' movements are swift and impactful. Fight Scenes with Exaggeration: Combat and magic use are often exaggerated for dramatic effect, such as a warrior's sword swinging with intense force or a spellcasting wizard unleashing a fiery explosion. These moments take advantage of fast pacing, dynamic poses, and visual effects. Impact Frames and Over-the-Top Actions: Much like anime, certain actions are accentuated with fast-motion, sharp poses, or “smear frames” that give a sense of speed and power. Vibrant and Saturated Palette: The show uses a rich, vibrant color palette with saturated tones. The colors help to elevate the fantastical nature of the world, with glowing magical effects, fiery explosions, and vivid landscapes. Shading and Lighting Effects: The animation employs cell-shading techniques, giving it a slightly cartoonish, yet detailed and dimensional look. Shadows and light play a big role in establishing atmosphere, and often, scenes are lit with dramatic, high-contrast lighting, especially in magical or intense moments. Mood Lighting: The lighting adjusts dramatically with the tone of the scene, from dark, moody lighting during intense combat or perilous moments to bright, warm tones during lighter, comedic scenes. Detailed and Lush Environments: The backgrounds and settings are highly detailed, featuring sprawling landscapes, castles, forests, and dungeons. These environments are rich in texture and depth, complementing the characters' movements and the dynamic nature of the world. Fantasy Aesthetic: The world design is very much aligned with high fantasy aesthetics. It’s medieval and magical with glowing runes, mystical forests, mythical creatures, and ancient ruins, all of which feel alive and richly built. Dynamic Visual Effects: The magic is is often depicted with bold visual effects like glowing runes, energy blasts, fiery explosions, and dazzling light shows. These effects are highly stylized to match the intense moments, providing excitement and drama to the magical moments. Elemental Magic Representation: Elements like fire, ice, and lightning are often given bold visual identities, like swirling vortexes or crackling energy, to create strong visual impact. This is typical of the fantasy genre and adds to the dynamic nature of the show.Dynamic Poses and Expressions: Like many anime shows, uses dynamic poses for its characters. These exaggerated stances enhance the impact of the scenes, especially during combat. There’s an influence from action-heavy anime genres like shonen (targeted at young males), where characters take dramatic, action-filled stances to emphasize their movements. Speed Lines and Action Streaks: In fast-paced action sequences, the show uses techniques like speed lines, motion blurs, and exaggerated poses to convey energy and intensity. Exaggerated Reactions for Comedy: incorporates humor into its serious scenes by exaggerating characters’ reactions to outlandish situations. This keeps the tone light-hearted at times, especially in character moments or quirky exchanges between the group members. Character-Specific Visual Styles: The show also plays with visual style based on characters' personalities. For instance, characters like Grog (a barbarian) are drawn with more exaggerated, humorous features, while others like Vex (a ranger) or Keyleth (a druid) may be depicted in more graceful, fantastical styles during action or emotional moments. Requested style is a fusion of Western animation with a hint of anime-inspired techniques. It balances high action, vibrant visuals, and exaggerated features, creating a dynamic yet whimsical fantasy world. It utilizes bold outlines, dramatic lighting, exaggerated character expressions, and fluid movements to draw the audience into an exciting, high-energy adventure. This visual style is perfect for bringing the larger-than-life nature of the D&D universe to the screen."
+                    }
+                ]
+            }
+        ]
     }
 ]

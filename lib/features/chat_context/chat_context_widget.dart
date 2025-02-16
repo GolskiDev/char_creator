@@ -31,56 +31,61 @@ class ChatContextWidget extends HookConsumerWidget {
         ) ??
         [];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Current Context',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            ListTile(
-              title: const Text('Use Chat Context'),
-              trailing: Switch(
-                value: ref.watch(isChatContextEnabledProvider),
-                onChanged: (bool value) {
-                  ref.read(isChatContextEnabledProvider.notifier).state = value;
-                },
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Current Context',
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-            ),
-            if (currentDocument != null)
-              Card.filled(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CurrentDocumentContextWidget(
-                    document: currentDocument,
-                  ),
+              ListTile(
+                title: const Text('Use Chat Context'),
+                trailing: Switch(
+                  value: ref.watch(isChatContextEnabledProvider),
+                  onChanged: (bool value) {
+                    ref.read(isChatContextEnabledProvider.notifier).state =
+                        value;
+                  },
                 ),
               ),
-            ...otherDocumentsAddedToContext.map(
-              (document) {
-                return Card.outlined(
+              if (currentDocument != null)
+                Card.filled(
+                  margin: const EdgeInsets.all(0),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: ContextDocumentWidget(
-                      document: document,
-                      contextValueKeys: chatContext.contextValueKeys
-                          .where(
-                            (contextValueKey) =>
-                                contextValueKey.documentId == document.id,
-                          )
-                          .toList(),
+                    child: CurrentDocumentContextWidget(
+                      document: currentDocument,
                     ),
                   ),
-                );
-              },
-            ),
-          ],
-        ),
-      ],
+                ),
+              ...otherDocumentsAddedToContext.map(
+                (document) {
+                  return Card.outlined(
+                    margin: const EdgeInsets.all(0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ContextDocumentWidget(
+                        document: document,
+                        contextValueKeys: chatContext.contextValueKeys
+                            .where(
+                              (contextValueKey) =>
+                                  contextValueKey.documentId == document.id,
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -130,8 +135,8 @@ class ContextDocumentWidget extends HookConsumerWidget {
         ),
         Wrap(
           alignment: WrapAlignment.start,
-          spacing: 8,
-          runSpacing: 8,
+          spacing: 4,
+          runSpacing: 4,
           children: data.map(
             (fieldValue) {
               final contextValueKey = fieldValue.$1;
@@ -199,8 +204,8 @@ class CurrentDocumentContextWidget extends HookConsumerWidget {
                   ),
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.start,
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: 4,
+                    runSpacing: 4,
                     children: [
                       ...field.values.map(
                         (value) {
