@@ -1,11 +1,13 @@
 import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 
-import '../../secrets.dart';
+// TODO: Add secrets
+// import '../../secrets.dart';
 import 'my_message.dart';
 
 class ChatBot {
-  final chat = ChatOpenAI(apiKey: chatGPTApiKey);
+  ///TODO: Add Secrets
+  final chat = ChatOpenAI(apiKey: "Test1234");
 
   Future<String> sendUserMessage(String prompt) {
     final promptTemplate = ChatPromptTemplate.fromPromptMessages([
@@ -41,7 +43,7 @@ class ChatBot {
 class ChatBotWithMemory implements ChatBot {
   @override
   final chat = ChatOpenAI(
-    apiKey: chatGPTApiKey,
+    apiKey: "Test1234",
     defaultOptions: const ChatOpenAIOptions(
       model: 'gpt-4-turbo',
     ),
@@ -114,7 +116,7 @@ class ChatBotWithMemory implements ChatBot {
   Future<String> generateImage(String prompt) async {
     final tools = <Tool>[
       OpenAIDallETool(
-        apiKey: chatGPTApiKey,
+        apiKey: "Test1234",
         defaultOptions: const OpenAIDallEToolOptions(
           model: 'dall-e-3',
           size: ImageSize.v1024x1024,

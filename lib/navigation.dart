@@ -1,3 +1,4 @@
+import 'package:char_creator/views/cards_page.dart';
 import 'package:char_creator/views/document_page.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,7 +10,11 @@ class Navigation {
     routes: [
       GoRoute(
         path: '/',
-        redirect: (context, state) => '/documents',
+        redirect: (context, state) => '/cards',
+      ),
+      GoRoute(
+        path: '/cards',
+        builder: (context, state) => const CardsPage(),
       ),
       GoRoute(
         path: '/documents',
