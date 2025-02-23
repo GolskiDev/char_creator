@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:ui';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +64,10 @@ class CardsPage extends HookConsumerWidget {
           FadeTransition(
             opacity: animation,
             child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              imageFilter: ImageFilter.blur(
+                sigmaX: 10,
+                sigmaY: 10,
+              ),
               child: Image.asset(
                 imagePaths[currentIndex.value],
                 fit: BoxFit.cover,
@@ -76,14 +81,11 @@ class CardsPage extends HookConsumerWidget {
             dragStartBehavior: DragStartBehavior.down,
             children: imagePaths.map(
               (path) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: AspectRatio(
-                      aspectRatio: 9 / 16,
-                      child: Card(
-                        path: path,
-                      ),
+                return Center(
+                  child: AspectRatio(
+                    aspectRatio: 9 / 16,
+                    child: CardWidget(
+                      path: path,
                     ),
                   ),
                 );
@@ -96,43 +98,115 @@ class CardsPage extends HookConsumerWidget {
   }
 }
 
-class Card extends StatelessWidget {
-  const Card({super.key, required this.path});
+class SpellsData extends HookConsumerWidget {
+  const SpellsData({super.key});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final spells = useMemoized(
+      () async {
+        // https://api.open5e.com/v2/spells/?level=1?limit=2
+        final response = await http.get(
+          Uri.parse('https://api.open5e.com/v2/spells/?level=1&limit=2'),
+        );
+
+        final data = jsonDecode(response.body);
+
+        return data;
+      },
+    );
+
+    final future = useFuture(spells);
+
+    final Widget body;
+
+    if (future.connectionState == ConnectionState.waiting) {
+      body = Center(
+        child: CircularProgressIndicator(),
+      );
+    } else if (future.connectionState == ConnectionState.done) {
+      final index = 0;
+      final spell = future.data['results'][index];
+      final name = spell['name'];
+      final desc = spell['desc'];
+      body = Column(
+        children: [
+          Text(
+            name,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Column(
+            children: [
+              for (final item in spell.keys)
+                Text(
+                  item.toString(),
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+            ],
+          ),
+          Text(
+            desc,
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ],
+      );
+    } else {
+      body = Text('Error');
+    }
+
+    return Card.outlined(
+      child: body,
+    );
+  }
+}
+
+class CardWidget extends StatelessWidget {
+  const CardWidget({super.key, required this.path});
 
   final String path;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        AspectRatio(
-          aspectRatio: 9 / 16,
-          child: Image.asset(
-            path,
-            fit: BoxFit.cover,
+    return SingleChildScrollView(
+      primary: false,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AspectRatio(
+            aspectRatio: 9 / 16,
+            child: Image.asset(
+              path,
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            color: Colors.black,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Card Title',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              color: Colors.black,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Card Title',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+          SpellsData(),
+        ],
+      ),
     );
   }
 }
