@@ -55,7 +55,7 @@ class SpellCardWidget extends ConsumerWidget {
             children: [
               TableRow(
                   children: [
-                if (spellModel.requiresVerbalComponent != null)
+                if (spellModel.requiresVerbalComponent == true)
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -68,10 +68,8 @@ class SpellCardWidget extends ConsumerWidget {
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],
-                  )
-                else
-                  SizedBox.shrink(),
-                if (spellModel.requiresSomaticComponent != null)
+                  ),
+                if (spellModel.requiresSomaticComponent == true)
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -84,10 +82,8 @@ class SpellCardWidget extends ConsumerWidget {
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],
-                  )
-                else
-                  SizedBox.shrink(),
-                if (spellModel.requiresMaterialComponent != null)
+                  ),
+                if (spellModel.requiresMaterialComponent == true)
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -102,9 +98,7 @@ class SpellCardWidget extends ConsumerWidget {
                         ),
                       ),
                     ],
-                  )
-                else
-                  SizedBox.shrink(),
+                  ),
               ]
                       .map(
                         (e) => Padding(

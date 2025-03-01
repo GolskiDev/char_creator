@@ -67,7 +67,7 @@ class Open5eSpellModelV1 {
       requiresVerbalComponent: requiresVerbalComponent,
       requiresSomaticComponent: requiresSomaticComponent,
       requiresMaterialComponent: requiresMaterialComponent,
-      material: materialComponent,
+      material: materialComponent?.isNotEmpty ?? false ? materialComponent : null,
       duration: duration != null ? SpellDuration.fromString(duration!) : null,
       range: range != null ? SpellRange.fromString(range!) : null,
       castingTime: castingTime != null ? SpellCastingTime.fromString(castingTime!) : null,
