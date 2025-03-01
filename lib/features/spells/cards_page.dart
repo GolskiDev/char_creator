@@ -20,10 +20,10 @@ class CardPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final spellsAsync = ref.watch(allSRDCantripsProvider);
 
-    final List<Open5eSpellModel> spells;
+    final List<Open5eSpellModelV1> spells;
 
     switch (spellsAsync) {
-      case AsyncValue(value: List<Open5eSpellModel> loadedSpells):
+      case AsyncValue(value: List<Open5eSpellModelV1> loadedSpells):
         spells = loadedSpells;
         break;
       case AsyncValue(error: final error, hasError: true):

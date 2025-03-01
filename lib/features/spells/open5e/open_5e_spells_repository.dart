@@ -12,14 +12,14 @@ final open5eSpellsRepositoryProvider = Provider<Open5eSpellsRepository>(
   },
 );
 
-final allSpellProvider = FutureProvider.autoDispose<List<Open5eSpellModel>>(
+final allSpellProvider = FutureProvider.autoDispose<List<Open5eSpellModelV1>>(
   (ref) async {
     final repository = ref.read(open5eSpellsRepositoryProvider);
     return repository.allSpells();
   },
 );
 
-final allSRDSpellsProvider = FutureProvider.autoDispose<List<Open5eSpellModel>>(
+final allSRDSpellsProvider = FutureProvider.autoDispose<List<Open5eSpellModelV1>>(
   (ref) async {
     final repository = ref.read(open5eSpellsRepositoryProvider);
     return repository.allSRDSpells();
@@ -27,7 +27,7 @@ final allSRDSpellsProvider = FutureProvider.autoDispose<List<Open5eSpellModel>>(
 );
 
 final allSRDCantripsProvider =
-    FutureProvider.autoDispose<List<Open5eSpellModel>>(
+    FutureProvider.autoDispose<List<Open5eSpellModelV1>>(
   (ref) async {
     final repository = ref.read(open5eSpellsRepositoryProvider);
     return repository.allSRDCantrips();
@@ -35,7 +35,7 @@ final allSRDCantripsProvider =
 );
 
 class Open5eSpellsRepository {
-  Future<List<Open5eSpellModel>> allSpells({
+  Future<List<Open5eSpellModelV1>> allSpells({
     int limit = 50,
   }) async {
     final result = await http.get(
@@ -44,37 +44,37 @@ class Open5eSpellsRepository {
 
     final map = jsonDecode(result.body);
 
-    return List<Open5eSpellModel>.from(
+    return List<Open5eSpellModelV1>.from(
       map['results'].map(
-        (element) => Open5eSpellModel.fromJson(element),
+        (element) => Open5eSpellModelV1.fromJson(element),
       ),
     );
   }
 
-  Future<List<Open5eSpellModel>> allSRDSpells() async {
+  Future<List<Open5eSpellModelV1>> allSRDSpells() async {
     final result = await http.get(
       Uri.parse('${Open5e.baseUrl}spells/?document__slug=wotc-srd'),
     );
 
     final map = jsonDecode(result.body);
 
-    return List<Open5eSpellModel>.from(
+    return List<Open5eSpellModelV1>.from(
       map['results'].map(
-        (element) => Open5eSpellModel.fromJson(element),
+        (element) => Open5eSpellModelV1.fromJson(element),
       ),
     );
   }
 
-  Future<List<Open5eSpellModel>> allSRDCantrips() async {
+  Future<List<Open5eSpellModelV1>> allSRDCantrips() async {
     final result = await http.get(
       Uri.parse('${Open5e.baseUrl}spells/?document__slug=wotc-srd&level_int=0'),
     );
 
     final map = jsonDecode(result.body);
 
-    return List<Open5eSpellModel>.from(
+    return List<Open5eSpellModelV1>.from(
       map['results'].map(
-        (element) => Open5eSpellModel.fromJson(element),
+        (element) => Open5eSpellModelV1.fromJson(element),
       ),
     );
   }

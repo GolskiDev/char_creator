@@ -26,6 +26,7 @@ dependencies:
   http:
   path: 
   flutter_svg: 
+  material_symbols_icons:
 
 dev_dependencies:
   flutter_test:
