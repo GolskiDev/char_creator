@@ -119,7 +119,13 @@ class ListOfSpellsPage extends HookConsumerWidget {
     );
 
     return Scaffold(
-      endDrawer: const SpellFilterDrawer(),
+      endDrawer: SpellFilterDrawer(
+        allSpellModels: allCantrips.when(
+          data: (cantrips) => cantrips.map((e) => e.toSpellModel()).toList(),
+          loading: () => [],
+          error: (error, stack) => [],
+        ),
+      ),
       appBar: AppBar(
         title: appBarTitle,
         actions: [
