@@ -22,7 +22,6 @@ class ListOfSpellsPage extends HookConsumerWidget {
               final cantrip = cantrips[index];
               return ListTile(
                 title: Text(cantrip.name),
-                subtitle: Text(cantrip.description),
                 onTap: () {
                   context.go('/spells/${cantrip.name}');
                 },
