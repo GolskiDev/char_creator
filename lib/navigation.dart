@@ -1,7 +1,8 @@
-import 'package:char_creator/views/cards_page.dart';
 import 'package:char_creator/views/document_page.dart';
 import 'package:go_router/go_router.dart';
 
+import 'features/spells/cards_page.dart';
+import 'features/spells/list_of_spells_page.dart';
 import 'views/chat_page.dart';
 import 'views/list_of_documents_page.dart';
 
@@ -10,11 +11,19 @@ class Navigation {
     routes: [
       GoRoute(
         path: '/',
-        redirect: (context, state) => '/cards',
+        redirect: (context, state) => '/spells',
       ),
       GoRoute(
-        path: '/cards',
-        builder: (context, state) => const CardsPage(),
+        path: '/spells',
+        builder: (context, state) => const ListOfSpellsPage(),
+        routes: [
+          GoRoute(
+            path: '/:id',
+            builder: (context, state) => CardPage(
+              slug: state.pathParameters['id']!,
+            ),
+          ),
+        ]
       ),
       GoRoute(
         path: '/documents',
