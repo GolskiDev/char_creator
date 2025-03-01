@@ -6,10 +6,10 @@ class SpellModelFiltersState {
   SpellModelFiltersState({this.searchText});
 
   SpellModelFiltersState copyWith({
-    String? Function()? searchText,
+    String? Function()? searchTextSetter,
   }) {
     return SpellModelFiltersState(
-      searchText: searchText != null ? searchText() : this.searchText,
+      searchText: searchTextSetter != null ? searchTextSetter() : searchText,
     );
   }
 

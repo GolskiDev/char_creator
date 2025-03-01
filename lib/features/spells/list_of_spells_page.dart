@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../theme.dart';
 import 'open5e/open_5e_spells_repository.dart';
 import 'widgets/spell_filter_drawer.dart';
 
@@ -92,7 +93,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
                 },
                 onChanged: (value) {
                   spellFilters.value = spellFilters.value.copyWith(
-                    searchText: () {
+                    searchTextSetter: () {
                       return value;
                     },
                   );
@@ -103,7 +104,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
                     icon: const Icon(Icons.clear),
                     onPressed: () {
                       spellFilters.value = spellFilters.value.copyWith(
-                        searchText: () => null,
+                        searchTextSetter: () => null,
                       );
                       searchController.clear();
                       searchFocusNode.unfocus();
@@ -124,17 +125,12 @@ class ListOfSpellsPage extends HookConsumerWidget {
         actions: [
           MenuAnchor(
             menuChildren: menuEntries,
-            child: IconButton(
-              icon: const Icon(Icons.more_vert),
-              onPressed: () {
-                //Open menu
-              },
-            ),
-            builder: (context, controller, child) {
+            builder: (context, menuController, child) {
               return IconButton(
                 icon: const Icon(Icons.more_vert),
+                isSelected: menuController.isOpen,
                 onPressed: () {
-                  controller.isOpen ? controller.close() : controller.open();
+                  menuController.isOpen ? menuController.close() : menuController.open();
                 },
               );
             },
