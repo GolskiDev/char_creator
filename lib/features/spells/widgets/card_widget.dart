@@ -218,7 +218,7 @@ class SpellCardWidget extends ConsumerWidget {
                           }
                           return AnimatedOpacity(
                             duration: Durations.long1,
-                            curve: Curves.easeOut,
+                            curve: Curves.easeIn,
                             opacity: frame == null ? 0 : 1,
                             child: child,
                           );
