@@ -84,11 +84,14 @@ class CardWidget extends ConsumerWidget {
   final Open5eSpellModel spell;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref,) {
+  Widget build(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     final spellImagePathAsync = ref.watch(spellImagePathProvider(spell.slug));
 
     final String? spellImagePath;
-    switch(spellImagePathAsync){
+    switch (spellImagePathAsync) {
       case AsyncValue(value: final String? path, hasValue: true):
         spellImagePath = path;
         break;
@@ -105,14 +108,15 @@ class CardWidget extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (spellImagePath != null)
-            SafeArea(
-              child: Image.asset(
-                spellImagePath,
-                fit: BoxFit.cover,
-              ),
+            Image.asset(
+              spellImagePath,
+              fit: BoxFit.cover,
             ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
             child: SafeArea(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
