@@ -20,10 +20,10 @@ class LightColorScheme {
 
 class DarkColorScheme {
   ColorScheme get colorScheme => ColorScheme.fromSeed(
-          dynamicSchemeVariant: DynamicSchemeVariant.fruitSalad,
+          dynamicSchemeVariant: DynamicSchemeVariant.content,
           brightness: Brightness.dark,
-          seedColor: Color.fromARGB(255, 235, 187, 55),
-          surface: Color.fromARGB(255, 15, 15, 15), 
+          seedColor: Color.fromARGB(255, 99, 98, 98),
+          surface: Color.fromARGB(255, 13, 13, 18), 
         );
 }
 
