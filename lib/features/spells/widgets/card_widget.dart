@@ -32,75 +32,57 @@ class SpellCardWidget extends ConsumerWidget {
         );
     }
 
-    return Stack(
-      children: [
-        if (spellImagePath != null)
-          Positioned.fill(
-            child: ImageFiltered(
-              imageFilter: ImageFilter.blur(
-                sigmaX: 8,
-                sigmaY: 8,
-              ),
-              child: Image.asset(
-                spellImagePath,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                elevation: 32,
-                child: SingleChildScrollView(
-                  primary: false,
-                  child: Scrollbar(
-                    thumbVisibility: false,
-                    trackVisibility: false,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (spellImagePath != null)
-                          Image.asset(
-                            spellImagePath,
-                            fit: BoxFit.cover,
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          child: SafeArea(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  spell.name,
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  spell.description,
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+    return SafeArea(
+      child: SingleChildScrollView(
+        primary: false,
+        child: Scrollbar(
+          thumbVisibility: false,
+          trackVisibility: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (spellImagePath != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: Image.asset(
+                      spellImagePath,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: SafeArea(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        spell.name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        spell.description,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

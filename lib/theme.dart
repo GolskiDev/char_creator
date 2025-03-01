@@ -12,6 +12,7 @@ class Colors2 {
 
 class AppTheme {
   TextStyle get font => GoogleFonts.crimsonText();
+  BorderRadius get borderRadius => BorderRadius.circular(8);
   get themeData => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -22,5 +23,12 @@ class AppTheme {
           surface: Colors2().beige3,
         ),
         fontFamily: font.fontFamily,
+        cardTheme: CardTheme(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: borderRadius,
+          ),
+          margin: EdgeInsets.zero,
+        ),
       );
 }
