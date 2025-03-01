@@ -207,9 +207,23 @@ class SpellCardWidget extends ConsumerWidget {
                   ),
                   child: Card(
                     clipBehavior: Clip.antiAlias,
-                    child: Image.asset(
-                      spellImagePath,
-                      fit: BoxFit.cover,
+                    child: AspectRatio(
+                      aspectRatio: 3 / 4,
+                      child: Image.asset(
+                        spellImagePath,
+                        fit: BoxFit.cover,
+                        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                          if (wasSynchronouslyLoaded) {
+                            return child;
+                          }
+                          return AnimatedOpacity(
+                            duration: Durations.long1,
+                            curve: Curves.easeOut,
+                            opacity: frame == null ? 0 : 1,
+                            child: child,
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),

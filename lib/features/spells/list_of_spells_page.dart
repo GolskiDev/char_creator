@@ -1,3 +1,4 @@
+import 'package:char_creator/features/spells/filters/spell_model_filters_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +13,10 @@ class ListOfSpellsPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allCantrips = ref.watch(allSRDCantripsProvider);
+
+    final spellFilters = useState(
+      SpellModelFiltersState(),
+    );
 
     final menuEntries = [
       MenuItemButton(
@@ -36,33 +41,79 @@ class ListOfSpellsPage extends HookConsumerWidget {
       ),
     ];
 
-    final searchController = useTextEditingController();
-    final searchFocusNode = useFocusNode();
+    final searchController = useTextEditingController(
+      text: spellFilters.value.searchText,
+    );
+    final searchFocusNode = useFocusNode(
+      canRequestFocus: true,
+    );
+
+    final isSearchVisible =
+        searchFocusNode.hasFocus || searchController.text.isNotEmpty;
 
     final appBarTitle = Builder(
       builder: (context) {
-        if (searchFocusNode.hasFocus || searchController.text.isNotEmpty) {
-          return TextField(
-            focusNode: searchFocusNode,
-            controller: searchController,
-            onTapOutside: (_) {
-              searchController.clear();
-            },
-            decoration: InputDecoration(
-              hintText: 'Search',
-              //clear
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  searchController.clear();
-                  searchFocusNode.unfocus();
+        return Stack(
+          fit: StackFit.passthrough,
+          children: [
+            Visibility(
+              visible: !isSearchVisible,
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainInteractivity: true,
+              maintainState: true,
+              maintainSemantics: true,
+              child: GestureDetector(
+                child: Padding(
+                  padding: const EdgeInsets.only(top:8.0),
+                  child: Text(
+                    'Spells',
+                    style: Theme.of(context).appBarTheme.titleTextStyle,
+                  ),
+                ),
+                onTap: () {
+                  searchFocusNode.requestFocus();
                 },
               ),
             ),
-          );
-        }
-
-        return const Text('Cantrips');
+            Visibility(
+              visible: isSearchVisible,
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainInteractivity: true,
+              maintainState: true,
+              maintainSemantics: true,
+              child: TextField(
+                focusNode: searchFocusNode,
+                canRequestFocus: true,
+                controller: searchController,
+                onTapOutside: (_) {
+                  searchFocusNode.unfocus();
+                },
+                onChanged: (value) {
+                  spellFilters.value = spellFilters.value.copyWith(
+                    searchText: () {
+                      return value;
+                    },
+                  );
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      spellFilters.value = spellFilters.value.copyWith(
+                        searchText: () => null,
+                      );
+                      searchController.clear();
+                      searchFocusNode.unfocus();
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
       },
     );
 
@@ -100,21 +151,26 @@ class ListOfSpellsPage extends HookConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          FocusScope.of(context).requestFocus(searchFocusNode);
-        },
-        child: const Icon(Icons.search),
-      ),
+      floatingActionButton: isSearchVisible
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                searchFocusNode.requestFocus();
+                FocusScope.of(context).requestFocus(searchFocusNode);
+              },
+              child: const Icon(Icons.search),
+            ),
       body: allCantrips.when(
         data: (cantrips) {
+          final filteredCantrips = spellFilters.value
+              .filterSpells(cantrips.map((e) => e.toSpellModel()).toList());
           return SafeArea(
             child: Stack(
               children: [
                 ListView.separated(
-                  itemCount: cantrips.length,
+                  itemCount: filteredCantrips.length,
                   itemBuilder: (context, index) {
-                    final cantrip = cantrips[index];
+                    final cantrip = filteredCantrips[index];
                     return ListTile(
                       title: Text(cantrip.name),
                       onTap: () {
