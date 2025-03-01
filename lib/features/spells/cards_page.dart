@@ -120,7 +120,7 @@ class CardWidget extends ConsumerWidget {
                 children: [
                   Text(
                     spell.name,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
