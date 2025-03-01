@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'open5e/open_5e_spell_model.dart';
 import 'spell_images/spell_images_repository.dart';
+import 'widgets/card_widget.dart';
 
 class CardPage extends HookConsumerWidget {
   final String slug;
@@ -65,77 +66,11 @@ class CardPage extends HookConsumerWidget {
         dragStartBehavior: DragStartBehavior.down,
         children: spells.map(
           (spell) {
-            return CardWidget(
+            return SpellCardWidget(
               spell: spell,
             );
           },
         ).toList(),
-      ),
-    );
-  }
-}
-
-class CardWidget extends ConsumerWidget {
-  const CardWidget({
-    super.key,
-    required this.spell,
-  });
-
-  final Open5eSpellModel spell;
-
-  @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-    final spellImagePathAsync = ref.watch(spellImagePathProvider(spell.slug));
-
-    final String? spellImagePath;
-    switch (spellImagePathAsync) {
-      case AsyncValue(value: final String? path, hasValue: true):
-        spellImagePath = path;
-        break;
-      default:
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-    }
-
-    return SingleChildScrollView(
-      primary: false,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (spellImagePath != null)
-            Image.asset(
-              spellImagePath,
-              fit: BoxFit.cover,
-            ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
-            child: SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    spell.name,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    spell.description,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
