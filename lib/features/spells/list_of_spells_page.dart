@@ -1,10 +1,10 @@
 import 'package:char_creator/features/spells/filters/spell_model_filters_state.dart';
+import 'package:char_creator/features/spells/open5e/open_5e_spell_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../theme.dart';
 import 'open5e/open_5e_spells_repository.dart';
 import 'widgets/spell_filter_drawer.dart';
 
@@ -66,7 +66,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
               maintainSemantics: true,
               child: GestureDetector(
                 child: Padding(
-                  padding: const EdgeInsets.only(top:8.0),
+                  padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
                     'Spells',
                     style: Theme.of(context).appBarTheme.titleTextStyle,
@@ -74,6 +74,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
                 ),
                 onTap: () {
                   searchFocusNode.requestFocus();
+                  FocusScope.of(context).requestFocus(searchFocusNode);
                 },
               ),
             ),
@@ -119,12 +120,9 @@ class ListOfSpellsPage extends HookConsumerWidget {
     );
 
     return Scaffold(
-      endDrawer: SpellFilterDrawer(
-        allSpellModels: allCantrips.when(
-          data: (cantrips) => cantrips.map((e) => e.toSpellModel()).toList(),
-          loading: () => [],
-          error: (error, stack) => [],
-        ),
+      endDrawer: spellFilterDrawer(
+        allCantrips,
+        spellFilters,
       ),
       appBar: AppBar(
         title: appBarTitle,
@@ -136,7 +134,9 @@ class ListOfSpellsPage extends HookConsumerWidget {
                 icon: const Icon(Icons.more_vert),
                 isSelected: menuController.isOpen,
                 onPressed: () {
-                  menuController.isOpen ? menuController.close() : menuController.open();
+                  menuController.isOpen
+                      ? menuController.close()
+                      : menuController.open();
                 },
               );
             },
@@ -197,6 +197,54 @@ class ListOfSpellsPage extends HookConsumerWidget {
           );
         },
       ),
+    );
+  }
+
+  SpellFilterDrawer spellFilterDrawer(
+      AsyncValue<List<Open5eSpellModelV1>> allCantrips,
+      ValueNotifier<SpellModelFiltersState> spellFilters) {
+    return SpellFilterDrawer(
+      allSpellModels: allCantrips.when(
+        data: (cantrips) => cantrips.map((e) => e.toSpellModel()).toList(),
+        loading: () => [],
+        error: (error, stack) => [],
+      ),
+      filters: spellFilters.value,
+      onRequiresConcentrationChanged: (requiresConcentration) {
+        spellFilters.value = spellFilters.value.copyWith(
+          requiresConcentrationSetter: () {
+            return requiresConcentration;
+          },
+        );
+      },
+      onCanBeCastAsRitualChanged: (canBeCastAsRitual) {
+        spellFilters.value = spellFilters.value.copyWith(
+          canBeCastAsRitualSetter: () {
+            return canBeCastAsRitual;
+          },
+        );
+      },
+      onRequiresVerbalComponentChanged: (requiresVerbalComponent) {
+        spellFilters.value = spellFilters.value.copyWith(
+          requiresVerbalComponentSetter: () {
+            return requiresVerbalComponent;
+          },
+        );
+      },
+      onRequiresSomaticComponentChanged: (requiresSomaticComponent) {
+        spellFilters.value = spellFilters.value.copyWith(
+          requiresSomaticComponentSetter: () {
+            return requiresSomaticComponent;
+          },
+        );
+      },
+      onRequiresMaterialComponentChanged: (requiresMaterialComponent) {
+        spellFilters.value = spellFilters.value.copyWith(
+          requiresMaterialComponentSetter: () {
+            return requiresMaterialComponent;
+          },
+        );
+      },
     );
   }
 }
