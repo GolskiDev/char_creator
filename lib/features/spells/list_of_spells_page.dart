@@ -245,6 +245,11 @@ class ListOfSpellsPage extends HookConsumerWidget {
           },
         );
       },
+      onSelectedSchoolsChanged: (selectedSchools) {
+        spellFilters.value = spellFilters.value.copyWith(
+          selectedSchools: selectedSchools,
+        );
+      },
     );
   }
 }

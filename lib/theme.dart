@@ -10,21 +10,21 @@ class LightColorScheme {
   final beige3 = const Color.fromARGB(255, 248, 236, 210);
 
   ColorScheme get colorScheme => ColorScheme.fromSeed(
-          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-          seedColor: LightColorScheme().burgundy,
-          secondary: LightColorScheme().burntOrange,
-          tertiary: LightColorScheme().mutedOliveGreen,
-          surface: LightColorScheme().beige3,
-        );
+        dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+        seedColor: LightColorScheme().burgundy,
+        secondary: LightColorScheme().burntOrange,
+        tertiary: LightColorScheme().mutedOliveGreen,
+        surface: LightColorScheme().beige3,
+      );
 }
 
 class DarkColorScheme {
   ColorScheme get colorScheme => ColorScheme.fromSeed(
-          dynamicSchemeVariant: DynamicSchemeVariant.content,
-          brightness: Brightness.dark,
-          seedColor: Color.fromARGB(255, 99, 98, 98),
-          surface: Color.fromARGB(255, 13, 13, 18), 
-        );
+        dynamicSchemeVariant: DynamicSchemeVariant.content,
+        brightness: Brightness.dark,
+        seedColor: Color.fromARGB(255, 99, 98, 98),
+        surface: Color.fromARGB(255, 13, 13, 18),
+      );
 }
 
 class AppTheme {
@@ -40,6 +40,35 @@ class AppTheme {
             borderRadius: BorderRadius.circular(8),
           ),
           margin: EdgeInsets.zero,
+        ),
+        buttonTheme: ButtonThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        chipTheme: ChipThemeData(
+          padding: EdgeInsets.zero,
+        ),
+        segmentedButtonTheme: SegmentedButtonThemeData(
+          style: ButtonStyle(
+            padding: WidgetStatePropertyAll(EdgeInsets.zero),
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                  borderRadius,
+                ),
+              ),
+            ),
+          ),
+        ),
+        expansionTileTheme: ExpansionTileThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              borderRadius,
+            ),
+            side: BorderSide.none,
+          ),
+          expandedAlignment: Alignment.topLeft,
         ),
       );
 }

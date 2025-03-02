@@ -1,5 +1,6 @@
 import 'package:char_creator/features/spells/filters/spell_model_filters_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -17,6 +18,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
       onRequiresSomaticComponentChanged;
   final Function(bool? requiresMaterialComponent)
       onRequiresMaterialComponentChanged;
+  final Function(Set<String> selectedSchools) onSelectedSchoolsChanged;
 
   const SpellFilterDrawer({
     super.key,
@@ -27,14 +29,14 @@ class SpellFilterDrawer extends HookConsumerWidget {
     required this.onRequiresVerbalComponentChanged,
     required this.onRequiresSomaticComponentChanged,
     required this.onRequiresMaterialComponentChanged,
+    required this.onSelectedSchoolsChanged,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final schools = allSpellModels
-    //     .map((spell) => spell.school)
-    //     .where((school) => school != null)
-    //     .toSet();
+    final wereSchoolsExpanded = useState(false);
+    final areSchoolsExpanded =
+        wereSchoolsExpanded.value || filters.selectedSchools.isNotEmpty;
     return Drawer(
       width: 350,
       child: SingleChildScrollView(
@@ -53,6 +55,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
                 ),
               ),
             ),
+            Divider(),
             ListTile(
               leading: Tooltip(
                 message: 'Requires Concentration',
@@ -86,6 +89,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
                 },
               ),
             ),
+            Divider(),
             ListTile(
               leading: Icon(Symbols.person_celebrate),
               title: Text(
@@ -116,6 +120,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
                 },
               ),
             ),
+            Divider(),
             ListTile(
               leading: Icon(Icons.record_voice_over),
               title: Text(
@@ -146,6 +151,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
                 },
               ),
             ),
+            Divider(),
             ListTile(
               leading: Icon(Icons.waving_hand),
               title: Text(
@@ -176,6 +182,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
                 },
               ),
             ),
+            Divider(),
             ListTile(
               leading: Icon(Icons.category),
               title: Text(
@@ -206,24 +213,55 @@ class SpellFilterDrawer extends HookConsumerWidget {
                 },
               ),
             ),
-            // ListTile(
-            //   title: Text(
-            //     'School',
-            //     style: Theme.of(context).textTheme.titleMedium,
-            //   ),
-            //   subtitle: Wrap(
-            //     spacing: 8,
-            //     runAlignment: WrapAlignment.center,
-            //     children: schools
-            //         .map(
-            //           (school) => FilterChip(
-            //             label: Text(school!),
-            //             onSelected: (selected) {},
-            //           ),
-            //         )
-            //         .toList(),
-            //   ),
-            // ),
+            Divider(),
+            ExpansionTile(
+              initiallyExpanded: areSchoolsExpanded,
+              onExpansionChanged: (expanded) {
+                wereSchoolsExpanded.value = expanded;
+              },
+              childrenPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+              ),
+              title: Row(
+                children: [
+                  Icon(Icons.book),
+                  const SizedBox(width: 16),
+                  Text(
+                    'School',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
+              children: [
+                Wrap(
+                  spacing: 8,
+                  alignment: WrapAlignment.start,
+                  children: allSpellModels
+                      .map((spell) => spell.school)
+                      .where((school) => school != null)
+                      .toSet()
+                      .map(
+                        (school) => FilterChip(
+                          visualDensity: VisualDensity.compact,
+                          label: Text(school!),
+                          selected: filters.selectedSchools.contains(school),
+                          onSelected: (selected) {
+                            final updatedSchools =
+                                Set<String>.from(filters.selectedSchools);
+                            if (selected) {
+                              updatedSchools.add(school);
+                            } else {
+                              updatedSchools.remove(school);
+                            }
+                            onSelectedSchoolsChanged(updatedSchools);
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
+            ),
+            Divider(),
             // ListTile(
             //   title: const Text('Material'),
             //   subtitle: Wrap(
@@ -303,7 +341,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
             //         .toList(),
             //   ),
             // ),
-          ].expand((element) => [element, const Divider()]).toList(),
+          ],
         ),
       ),
     );

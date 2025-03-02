@@ -7,6 +7,7 @@ class SpellModelFiltersState {
   final bool? requiresVerbalComponent;
   final bool? requiresSomaticComponent;
   final bool? requiresMaterialComponent;
+  final Set<String> selectedSchools;
 
   SpellModelFiltersState({
     this.searchText,
@@ -15,6 +16,7 @@ class SpellModelFiltersState {
     this.requiresVerbalComponent,
     this.requiresSomaticComponent,
     this.requiresMaterialComponent,
+    this.selectedSchools = const {},
   });
 
   SpellModelFiltersState copyWith({
@@ -24,6 +26,7 @@ class SpellModelFiltersState {
     bool? Function()? requiresVerbalComponentSetter,
     bool? Function()? requiresSomaticComponentSetter,
     bool? Function()? requiresMaterialComponentSetter,
+    Set<String>? selectedSchools,
   }) {
     return SpellModelFiltersState(
       searchText: searchTextSetter != null ? searchTextSetter() : searchText,
@@ -42,6 +45,7 @@ class SpellModelFiltersState {
       requiresMaterialComponent: requiresMaterialComponentSetter != null
           ? requiresMaterialComponentSetter()
           : requiresMaterialComponent,
+      selectedSchools: selectedSchools ?? this.selectedSchools,
     );
   }
 
@@ -105,6 +109,14 @@ class SpellModelFiltersState {
     return material == requiresMaterialComponent;
   }
 
+  bool spellIsInSelectedSchools(String? school) {
+    if (selectedSchools.isEmpty) {
+      return true;
+    }
+
+    return school != null && selectedSchools.contains(school);
+  }
+
   List<SpellModel> filterSpells(
     List<SpellModel> spells,
   ) {
@@ -116,7 +128,8 @@ class SpellModelFiltersState {
             spellCanBeCastAsRitual(spell.canBeCastAsRitual) &&
             spellRequiresVerbalComponent(spell.requiresVerbalComponent) &&
             spellRequiresSomaticComponent(spell.requiresSomaticComponent) &&
-            spellRequiresMaterialComponent(spell.requiresMaterialComponent);
+            spellRequiresMaterialComponent(spell.requiresMaterialComponent) &&
+            spellIsInSelectedSchools(spell.school);
       },
     ).toList();
   }
