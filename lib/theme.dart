@@ -34,6 +34,10 @@ class AppTheme {
         useMaterial3: true,
         colorScheme: DarkColorScheme().colorScheme,
         fontFamily: font.fontFamily,
+        visualDensity: VisualDensity(
+              horizontal: VisualDensity.minimumDensity,
+              vertical: VisualDensity.minimumDensity,
+            ),
         cardTheme: CardTheme(
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -46,12 +50,9 @@ class AppTheme {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        chipTheme: ChipThemeData(
-          padding: EdgeInsets.zero,
-        ),
         segmentedButtonTheme: SegmentedButtonThemeData(
           style: ButtonStyle(
-            padding: WidgetStatePropertyAll(EdgeInsets.zero),
+            iconSize: WidgetStatePropertyAll(14),
             shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(

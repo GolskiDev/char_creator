@@ -8,6 +8,10 @@ class SpellModelFiltersState {
   final bool? requiresSomaticComponent;
   final bool? requiresMaterialComponent;
   final Set<String> selectedSchools;
+  final Set<String> castingTimeIds;
+  final Set<String> rangeIds;
+  final Set<String> durationIds;
+  final Set<int> spellLevels;
 
   SpellModelFiltersState({
     this.searchText,
@@ -17,6 +21,10 @@ class SpellModelFiltersState {
     this.requiresSomaticComponent,
     this.requiresMaterialComponent,
     this.selectedSchools = const {},
+    this.castingTimeIds = const {},
+    this.rangeIds = const {},
+    this.durationIds = const {},
+    this.spellLevels = const {},
   });
 
   SpellModelFiltersState copyWith({
@@ -27,6 +35,10 @@ class SpellModelFiltersState {
     bool? Function()? requiresSomaticComponentSetter,
     bool? Function()? requiresMaterialComponentSetter,
     Set<String>? selectedSchools,
+    Set<String>? castingTimeIds,
+    Set<String>? rangeIds,
+    Set<String>? durationIds,
+    Set<int>? spellLevels,
   }) {
     return SpellModelFiltersState(
       searchText: searchTextSetter != null ? searchTextSetter() : searchText,
@@ -46,6 +58,10 @@ class SpellModelFiltersState {
           ? requiresMaterialComponentSetter()
           : requiresMaterialComponent,
       selectedSchools: selectedSchools ?? this.selectedSchools,
+      castingTimeIds: castingTimeIds ?? this.castingTimeIds,
+      rangeIds: rangeIds ?? this.rangeIds,
+      durationIds: durationIds ?? this.durationIds,
+      spellLevels: spellLevels ?? this.spellLevels,
     );
   }
 
@@ -117,6 +133,38 @@ class SpellModelFiltersState {
     return school != null && selectedSchools.contains(school);
   }
 
+  bool spellMatchesCastingTime(String? castingTimeId) {
+    if (castingTimeIds.isEmpty) {
+      return true;
+    }
+
+    return castingTimeId != null && castingTimeIds.contains(castingTimeId);
+  }
+
+  bool spellMatchesRange(String? rangeId) {
+    if (rangeIds.isEmpty) {
+      return true;
+    }
+
+    return rangeId != null && rangeIds.contains(rangeId);
+  }
+
+  bool spellMatchesDuration(String? durationId) {
+    if (durationIds.isEmpty) {
+      return true;
+    }
+
+    return durationId != null && durationIds.contains(durationId);
+  }
+
+  bool spellMatchesLevel(int? level) {
+    if (spellLevels.isEmpty) {
+      return true;
+    }
+
+    return level != null && spellLevels.contains(level);
+  }
+
   List<SpellModel> filterSpells(
     List<SpellModel> spells,
   ) {
@@ -129,7 +177,11 @@ class SpellModelFiltersState {
             spellRequiresVerbalComponent(spell.requiresVerbalComponent) &&
             spellRequiresSomaticComponent(spell.requiresSomaticComponent) &&
             spellRequiresMaterialComponent(spell.requiresMaterialComponent) &&
-            spellIsInSelectedSchools(spell.school);
+            spellIsInSelectedSchools(spell.school) &&
+            spellMatchesCastingTime(spell.castingTime?.id) &&
+            spellMatchesRange(spell.range?.id) &&
+            spellMatchesDuration(spell.duration?.id) &&
+            spellMatchesLevel(spell.spellLevel);
       },
     ).toList();
   }

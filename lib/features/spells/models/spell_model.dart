@@ -1,3 +1,4 @@
+import '../utils/spell_utils.dart';
 import 'spell_duration.dart';
 import 'spell_range.dart';
 import 'spell_casting_time.dart';
@@ -42,17 +43,6 @@ class SpellModel {
 
 extension SpellLevelString on SpellModel{
   String get spellLevelString {
-    switch (spellLevel) {
-      case 0:
-        return 'Cantrip';
-      case 1:
-        return '1st Level';
-      case 2:
-        return '2nd Level';
-      case 3:
-        return '3rd Level';
-      default:
-        return '${spellLevel}th Level';
-    }
+    return SpellUtils.spellLevelString(spellLevel);
   }
 }

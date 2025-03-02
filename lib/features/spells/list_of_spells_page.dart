@@ -250,6 +250,26 @@ class ListOfSpellsPage extends HookConsumerWidget {
           selectedSchools: selectedSchools,
         );
       },
+      onCastingTimeChanged: (castingTimeIds) {
+        spellFilters.value = spellFilters.value.copyWith(
+          castingTimeIds: castingTimeIds,
+        );
+      },
+      onRangeChanged: (rangeIds) {
+        spellFilters.value = spellFilters.value.copyWith(
+          rangeIds: rangeIds,
+        );
+      },
+      onDurationChanged: (durationIds) {
+        spellFilters.value = spellFilters.value.copyWith(
+          durationIds: durationIds,
+        );
+      },
+      onSpellLevelChanged: (spellLevels) {
+        spellFilters.value = spellFilters.value.copyWith(
+          spellLevels: spellLevels,
+        );
+      },
     );
   }
 }
