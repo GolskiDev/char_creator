@@ -170,18 +170,26 @@ class ListOfSpellsPage extends HookConsumerWidget {
             child: Stack(
               children: [
                 ListView.separated(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8,
+                  ),
                   itemCount: filteredCantrips.length,
                   itemBuilder: (context, index) {
                     final cantrip = filteredCantrips[index];
-                    return ListTile(
-                      title: Text(cantrip.name),
-                      onTap: () {
-                        context.go('/spells/${cantrip.name}');
-                      },
+                    return Card.outlined(
+                      clipBehavior: Clip.antiAlias,
+                      child: ListTile(
+                        title: Text(cantrip.name),
+                        onTap: () {
+                          context.go('/spells/${cantrip.name}');
+                        },
+                      ),
                     );
                   },
                   separatorBuilder: (context, index) {
-                    return const Divider();
+                    return const SizedBox(
+                      height: 8,
+                    );
                   },
                 ),
               ],
