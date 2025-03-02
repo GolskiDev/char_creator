@@ -1,6 +1,5 @@
 import 'package:char_creator/features/spells/filters/spell_model_filters_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -36,7 +35,6 @@ class SpellFilterDrawer extends HookConsumerWidget {
     //     .map((spell) => spell.school)
     //     .where((school) => school != null)
     //     .toSet();
-
     return Drawer(
       width: 350,
       child: SingleChildScrollView(
@@ -48,7 +46,6 @@ class SpellFilterDrawer extends HookConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16.0,
-
                 ),
                 child: Text(
                   'Filters',
@@ -56,7 +53,159 @@ class SpellFilterDrawer extends HookConsumerWidget {
                 ),
               ),
             ),
-            const Divider(),
+            ListTile(
+              leading: Tooltip(
+                message: 'Requires Concentration',
+                child: Icon(Symbols.mindfulness),
+              ),
+              title: Text(
+                'Requires Concentration',
+              ),
+              trailing: SegmentedButton<bool?>(
+                emptySelectionAllowed: true,
+                multiSelectionEnabled: false,
+                selected: {filters.requiresConcentration},
+                segments: [
+                  ButtonSegment(
+                    value: true,
+                    label: Text(
+                      'Yes',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ButtonSegment(
+                    value: false,
+                    label: Text(
+                      'No',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+                onSelectionChanged: (p0) => {
+                  onRequiresConcentrationChanged(p0.firstOrNull),
+                },
+              ),
+            ),
+            ListTile(
+              leading: Icon(Symbols.person_celebrate),
+              title: Text(
+                'Can Be Cast As Ritual',
+              ),
+              trailing: SegmentedButton<bool?>(
+                emptySelectionAllowed: true,
+                multiSelectionEnabled: false,
+                selected: {filters.canBeCastAsRitual},
+                segments: [
+                  ButtonSegment(
+                    value: true,
+                    label: Text(
+                      'Yes',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ButtonSegment(
+                    value: false,
+                    label: Text(
+                      'No',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+                onSelectionChanged: (p0) => {
+                  onCanBeCastAsRitualChanged(p0.firstOrNull),
+                },
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.record_voice_over),
+              title: Text(
+                'Verbal Component',
+              ),
+              trailing: SegmentedButton<bool?>(
+                emptySelectionAllowed: true,
+                multiSelectionEnabled: false,
+                selected: {filters.requiresVerbalComponent},
+                segments: [
+                  ButtonSegment(
+                    value: true,
+                    label: Text(
+                      'Yes',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ButtonSegment(
+                    value: false,
+                    label: Text(
+                      'No',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+                onSelectionChanged: (p0) => {
+                  onRequiresVerbalComponentChanged(p0.firstOrNull),
+                },
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.waving_hand),
+              title: Text(
+                'Somatic Component',
+              ),
+              trailing: SegmentedButton<bool?>(
+                emptySelectionAllowed: true,
+                multiSelectionEnabled: false,
+                selected: {filters.requiresSomaticComponent},
+                segments: [
+                  ButtonSegment(
+                    value: true,
+                    label: Text(
+                      'Yes',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ButtonSegment(
+                    value: false,
+                    label: Text(
+                      'No',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+                onSelectionChanged: (p0) => {
+                  onRequiresSomaticComponentChanged(p0.firstOrNull),
+                },
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.category),
+              title: Text(
+                'Material Component',
+              ),
+              trailing: SegmentedButton<bool?>(
+                emptySelectionAllowed: true,
+                multiSelectionEnabled: false,
+                selected: {filters.requiresMaterialComponent},
+                segments: [
+                  ButtonSegment(
+                    value: true,
+                    label: Text(
+                      'Yes',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ButtonSegment(
+                    value: false,
+                    label: Text(
+                      'No',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+                onSelectionChanged: (p0) => {
+                  onRequiresMaterialComponentChanged(p0.firstOrNull),
+                },
+              ),
+            ),
             // ListTile(
             //   title: Text(
             //     'School',
@@ -75,116 +224,6 @@ class SpellFilterDrawer extends HookConsumerWidget {
             //         .toList(),
             //   ),
             // ),
-            ListTile(
-              title: const Text('Requires Concentration'),
-              leading: Icon(Symbols.mindfulness),
-              subtitle: SegmentedButton<bool?>(
-                emptySelectionAllowed: true,
-                multiSelectionEnabled: false,
-                selected: {filters.requiresConcentration},
-                segments: [
-                  ButtonSegment(
-                    value: true,
-                    label: Text('Yes'),
-                  ),
-                  ButtonSegment(
-                    value: false,
-                    label: Text('No'),
-                  ),
-                ],
-                onSelectionChanged: (p0) => {
-                  onRequiresConcentrationChanged(p0.firstOrNull),
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text('Can Be Cast As Ritual'),
-              leading: Icon(Symbols.person_celebrate),
-              subtitle: SegmentedButton<bool?>(
-                emptySelectionAllowed: true,
-                multiSelectionEnabled: false,
-                selected: {filters.canBeCastAsRitual},
-                segments: [
-                  ButtonSegment(
-                    value: true,
-                    label: Text('Yes'),
-                  ),
-                  ButtonSegment(
-                    value: false,
-                    label: Text('No'),
-                  ),
-                ],
-                onSelectionChanged: (p0) => {
-                  onCanBeCastAsRitualChanged(p0.firstOrNull),
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text('Requires Verbal Component'),
-              leading: Icon(Icons.record_voice_over),
-              subtitle: SegmentedButton<bool?>(
-                emptySelectionAllowed: true,
-                multiSelectionEnabled: false,
-                selected: {filters.requiresVerbalComponent},
-                segments: [
-                  ButtonSegment(
-                    value: true,
-                    label: Text('Yes'),
-                  ),
-                  ButtonSegment(
-                    value: false,
-                    label: Text('No'),
-                  ),
-                ],
-                onSelectionChanged: (p0) => {
-                  onRequiresVerbalComponentChanged(p0.firstOrNull),
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text('Requires Somatic Component'),
-              leading: Icon(Icons.waving_hand),
-              subtitle: SegmentedButton<bool?>(
-                emptySelectionAllowed: true,
-                multiSelectionEnabled: false,
-                selected: {filters.requiresSomaticComponent},
-                segments: [
-                  ButtonSegment(
-                    value: true,
-                    label: Text('Yes'),
-                  ),
-                  ButtonSegment(
-                    value: false,
-                    label: Text('No'),
-                  ),
-                ],
-                onSelectionChanged: (p0) => {
-                  onRequiresSomaticComponentChanged(p0.firstOrNull),
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text('Requires Material Component'),
-              leading: Icon(Icons.category),
-              subtitle: SegmentedButton<bool?>(
-                emptySelectionAllowed: true,
-                multiSelectionEnabled: false,
-                selected: {filters.requiresMaterialComponent},
-                segments: [
-                  ButtonSegment(
-                    value: true,
-                    label: Text('Yes'),
-                  ),
-                  ButtonSegment(
-                    value: false,
-                    label: Text('No'),
-                  ),
-                ],
-                onSelectionChanged: (p0) => {
-                  onRequiresMaterialComponentChanged(p0.firstOrNull),
-                },
-              ),
-            ),
             // ListTile(
             //   title: const Text('Material'),
             //   subtitle: Wrap(
@@ -264,7 +303,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
             //         .toList(),
             //   ),
             // ),
-          ],
+          ].expand((element) => [element, const Divider()]).toList(),
         ),
       ),
     );
