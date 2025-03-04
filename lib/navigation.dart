@@ -1,8 +1,8 @@
 import 'package:char_creator/views/document_page.dart';
 import 'package:go_router/go_router.dart';
 
-import 'features/spells/cards_page.dart';
-import 'features/spells/list_of_spells_page.dart';
+import 'features/5e/spells/cards_page.dart';
+import 'features/5e/spells/list_of_spells_page.dart';
 import 'views/chat_page.dart';
 import 'views/list_of_documents_page.dart';
 

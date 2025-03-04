@@ -1,4 +1,4 @@
-import 'package:char_creator/features/spells/open5e/open_5e_spells_repository.dart';
+import 'package:char_creator/features/5e/spells/open5e/open_5e_spells_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

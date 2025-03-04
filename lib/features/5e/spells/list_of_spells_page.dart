@@ -1,5 +1,5 @@
-import 'package:char_creator/features/spells/filters/spell_model_filters_state.dart';
-import 'package:char_creator/features/spells/open5e/open_5e_spell_model.dart';
+import 'package:char_creator/features/5e/spells/filters/spell_model_filters_state.dart';
+import 'package:char_creator/features/5e/spells/open5e/open_5e_spell_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
