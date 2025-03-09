@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+final isDarkModeEnabledProvider = StateProvider<bool>(
+  (ref) => true,
+);
 
 class LightColorScheme {
   final richBrown = const Color(0xFF6D4C41);
@@ -30,14 +35,17 @@ class DarkColorScheme {
 class AppTheme {
   TextStyle get font => GoogleFonts.crimsonText();
   double get borderRadius => 8;
-  get themeData => ThemeData(
+  themeData({
+    required bool isDarkMode,
+  }) =>
+      ThemeData(
         useMaterial3: true,
-        colorScheme: DarkColorScheme().colorScheme,
+        colorScheme: isDarkMode ? DarkColorScheme().colorScheme : LightColorScheme().colorScheme,
         fontFamily: font.fontFamily,
         visualDensity: VisualDensity(
-              horizontal: VisualDensity.minimumDensity,
-              vertical: VisualDensity.minimumDensity,
-            ),
+          horizontal: VisualDensity.minimumDensity,
+          vertical: VisualDensity.minimumDensity,
+        ),
         cardTheme: CardTheme(
           elevation: 0,
           margin: EdgeInsets.zero,
