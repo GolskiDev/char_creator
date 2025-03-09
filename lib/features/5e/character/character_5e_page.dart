@@ -87,21 +87,24 @@ class Character5ePage extends HookConsumerWidget {
                   children: [
                     if (spellImagePath != null)
                       Flexible(
-                        child: Image.asset(
-                          spellImagePath,
-                          fit: BoxFit.fitWidth,
-                          frameBuilder:
-                              (context, child, frame, wasSynchronouslyLoaded) {
-                            if (wasSynchronouslyLoaded) {
-                              return child;
-                            }
-                            return AnimatedOpacity(
-                              duration: Durations.long1,
-                              curve: Curves.easeIn,
-                              opacity: frame == null ? 0 : 1,
-                              child: child,
-                            );
-                          },
+                        child: Hero(
+                          tag: spellImagePath,
+                          child: Image.asset(
+                            spellImagePath,
+                            fit: BoxFit.fitWidth,
+                            frameBuilder: (context, child, frame,
+                                wasSynchronouslyLoaded) {
+                              if (wasSynchronouslyLoaded) {
+                                return child;
+                              }
+                              return AnimatedOpacity(
+                                duration: Durations.long1,
+                                curve: Curves.easeIn,
+                                opacity: frame == null ? 0 : 1,
+                                child: child,
+                              );
+                            },
+                          ),
                         ),
                       ),
                     Padding(

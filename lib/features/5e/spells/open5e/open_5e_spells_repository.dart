@@ -19,15 +19,15 @@ final allSpellProvider = FutureProvider.autoDispose<List<Open5eSpellModelV1>>(
   },
 );
 
-final allSRDSpellsProvider = FutureProvider.autoDispose<List<Open5eSpellModelV1>>(
+final allSRDSpellsProvider =
+    FutureProvider.autoDispose<List<Open5eSpellModelV1>>(
   (ref) async {
     final repository = ref.read(open5eSpellsRepositoryProvider);
     return repository.allSRDSpells();
   },
 );
 
-final allSRDCantripsProvider =
-    FutureProvider.autoDispose<List<Open5eSpellModelV1>>(
+final allSRDCantripsProvider = FutureProvider<List<Open5eSpellModelV1>>(
   (ref) async {
     final repository = ref.read(open5eSpellsRepositoryProvider);
     return repository.allSRDCantrips();

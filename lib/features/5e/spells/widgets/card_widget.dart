@@ -1,5 +1,4 @@
 import 'package:char_creator/features/5e/spells/models/spell_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -129,7 +128,7 @@ class SpellCardWidget extends ConsumerWidget {
           title: Text(spellModel.castingTime.toString()),
           subtitle: Text('Casting Time'),
         ),
-        if (spellModel.range != null)
+      if (spellModel.range != null)
         ListTile(
           visualDensity: VisualDensity.compact,
           leading: Icon(Symbols.target),
@@ -209,20 +208,24 @@ class SpellCardWidget extends ConsumerWidget {
                     clipBehavior: Clip.antiAlias,
                     child: AspectRatio(
                       aspectRatio: 3 / 4,
-                      child: Image.asset(
-                        spellImagePath,
-                        fit: BoxFit.cover,
-                        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                          if (wasSynchronouslyLoaded) {
-                            return child;
-                          }
-                          return AnimatedOpacity(
-                            duration: Durations.long1,
-                            curve: Curves.easeIn,
-                            opacity: frame == null ? 0 : 1,
-                            child: child,
-                          );
-                        },
+                      child: Hero(
+                        tag: spellImagePath,
+                        child: Image.asset(
+                          spellImagePath,
+                          fit: BoxFit.cover,
+                          frameBuilder:
+                              (context, child, frame, wasSynchronouslyLoaded) {
+                            if (wasSynchronouslyLoaded) {
+                              return child;
+                            }
+                            return AnimatedOpacity(
+                              duration: Durations.long1,
+                              curve: Curves.easeIn,
+                              opacity: frame == null ? 0 : 1,
+                              child: child,
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
