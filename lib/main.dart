@@ -13,13 +13,25 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final goRouter = Navigation.goRouter;
     return ProviderScope(
-      child: MaterialApp.router(
-        theme: AppTheme().themeData,
-        routerConfig: goRouter,
-        debugShowCheckedModeBanner: false,
-      ),
+      child: App(),
+    );
+  }
+}
+
+class App extends ConsumerWidget {
+  const App({
+    super.key,
+  });
+
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final goRouter = ref.watch(goRouterProvider);
+    return MaterialApp.router(
+      theme: AppTheme().themeData,
+      routerConfig: goRouter,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

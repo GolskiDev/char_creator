@@ -84,7 +84,6 @@ class DocumentRepository {
 
   Future<void> _refreshStream() async {
     final List<Document> documents = await getAllDocuments();
-    print('refreshing stream with ${documents.length} documents');
     _controller.add(documents);
   }
 }
