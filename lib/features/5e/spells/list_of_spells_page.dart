@@ -1,11 +1,17 @@
+import 'package:char_creator/features/5e/character/repository/character_repository.dart';
 import 'package:char_creator/features/5e/spells/filters/spell_model_filters_state.dart';
 import 'package:char_creator/features/5e/spells/open5e/open_5e_spell_model.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
+import '../character/models/character_5e_model.dart';
+import 'models/spell_model.dart';
 import 'open5e/open_5e_spells_repository.dart';
+import 'widgets/add_to_character_menu.dart';
 import 'widgets/spell_filter_drawer.dart';
 
 class ListOfSpellsPage extends HookConsumerWidget {
@@ -14,33 +20,65 @@ class ListOfSpellsPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allCantrips = ref.watch(allSRDCantripsProvider);
+    final allCharactersAsync = ref.watch(charactersStreamProvider);
 
     final spellFilters = useState(
       SpellModelFiltersState(),
     );
 
-    final menuEntries = [
-      MenuItemButton(
-        child: const Text('Hello'),
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Hello'),
-            ),
-          );
-        },
-      ),
-      MenuItemButton(
-        child: const Text('There'),
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('There'),
-            ),
-          );
-        },
-      ),
-    ];
+    final selectedCharacterId = useState<String?>(null);
+
+    final List<Character5eModel> characters;
+    switch (allCharactersAsync) {
+      case AsyncValue(value: final List<Character5eModel> loadedCharacters):
+        characters = loadedCharacters;
+        break;
+      default:
+        characters = [];
+        break;
+    }
+
+    final selectedCharacter = characters.firstWhereOrNull(
+      (element) => element.id == selectedCharacterId.value,
+    );
+
+    final List<RadioMenuButton> addToCharacterEntries = characters.isNotEmpty
+        ? AddToCharacterMenu().generateMenuEntries(
+            context,
+            characters,
+            selectedCharacterId.value,
+            (newId) {
+              selectedCharacterId.value = newId;
+            },
+          )
+        : [];
+
+    addToCharacterWidgetBuilder(SpellModel spell) => IconButton(
+          icon: selectedCharacter != null &&
+                  selectedCharacter.spellIds.contains(spell.id)
+              ? const Icon(Symbols.person_check)
+              : const Icon(Symbols.add),
+          onPressed: () async {
+            if (selectedCharacter != null) {
+              final updatedCharacter = selectedCharacter.copyWith(
+                spellIds: selectedCharacter.spellIds.union({spell.id}),
+              );
+              await ref
+                  .read(characterRepositoryProvider)
+                  .updateCharacter(updatedCharacter);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Added ${spell.name} to ${selectedCharacter.name}',
+                    ),
+                  ),
+                );
+              }
+            }
+          },
+        );
+    final isAddToCharacterEnabled = selectedCharacter != null;
 
     final searchController = useTextEditingController(
       text: spellFilters.value.searchText,
@@ -51,6 +89,16 @@ class ListOfSpellsPage extends HookConsumerWidget {
 
     final isSearchVisible =
         searchFocusNode.hasFocus || searchController.text.isNotEmpty;
+
+    final menuEntries = [
+      SubmenuButton(
+        menuChildren: addToCharacterEntries,
+        leadingIcon: Icon(
+          Symbols.person_add,
+        ),
+        child: Text("Add to Character"),
+      )
+    ];
 
     final appBarTitle = Builder(
       builder: (context) {
@@ -179,9 +227,12 @@ class ListOfSpellsPage extends HookConsumerWidget {
                     return Card.outlined(
                       clipBehavior: Clip.antiAlias,
                       child: ListTile(
+                        leading: isAddToCharacterEnabled
+                            ? addToCharacterWidgetBuilder(cantrip)
+                            : null,
                         title: Text(cantrip.name),
                         onTap: () {
-                          context.go('/spells/${cantrip.name}');
+                          context.go('/spells/${cantrip.id}');
                         },
                       ),
                     );

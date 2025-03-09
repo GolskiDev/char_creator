@@ -44,10 +44,10 @@ class MainMenuPage extends HookConsumerWidget {
       ),
       body: SafeArea(
         child: GridView.extent(
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          padding: EdgeInsets.all(16),
-          childAspectRatio: 2/3,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          padding: EdgeInsets.all(8),
+          childAspectRatio: 2 / 3,
           maxCrossAxisExtent: 300,
           children: List.generate(
             pages.length,

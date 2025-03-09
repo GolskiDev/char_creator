@@ -8,12 +8,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'open5e/open_5e_spell_model.dart';
 import 'widgets/card_widget.dart';
 
-class CardPage extends HookConsumerWidget {
-  final String slug;
+class SpellCardPage extends HookConsumerWidget {
+  final String id;
 
-  const CardPage({
+  const SpellCardPage({
     super.key,
-    required this.slug,
+    required this.id,
   });
 
   @override
@@ -41,7 +41,7 @@ class CardPage extends HookConsumerWidget {
     }
 
     final spell = spells.firstWhereOrNull(
-      (element) => element.name == slug,
+      (open5eSpellModel) => open5eSpellModel.slug == id,
     );
 
     if (spell == null) {

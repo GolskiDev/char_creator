@@ -42,15 +42,30 @@ class ListOfCharactersPage extends HookConsumerWidget {
     WidgetRef ref,
     List<Character5eModel> characters,
   ) {
-    return ListView.builder(
-      itemCount: characters.length,
-      itemBuilder: (context, index) {
-        final character = characters[index];
-        return ListTile(
-          title: Text(character.name),
-          onTap: () {},
-        );
-      },
+    return GridView.extent(
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      padding: const EdgeInsets.all(8),
+      maxCrossAxisExtent: 200,
+      childAspectRatio: 3 / 4,
+      children: characters
+          .map(
+            (character) => Card.outlined(
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () {
+                  context.go('/characters/${character.id}');
+                },
+                child: Center(
+                  child: Text(
+                    character.name,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:char_creator/views/settings_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'features/5e/character/character_5e_page.dart';
 import 'features/5e/character/edit_character_5e_page.dart';
 import 'features/5e/character/list_of_characters_page.dart';
 import 'features/5e/main_menu.dart';
@@ -28,8 +29,8 @@ class Navigation {
                 routes: [
                   GoRoute(
                     path: '/:id',
-                    builder: (context, state) => CardPage(
-                      slug: state.pathParameters['id']!,
+                    builder: (context, state) => SpellCardPage(
+                      id: state.pathParameters['id']!,
                     ),
                   ),
                 ],
@@ -45,6 +46,15 @@ class Navigation {
                   GoRoute(
                     path: '/new',
                     builder: (context, state) => EditCharacter5ePage(),
+                  ),
+                  GoRoute(
+                    path: '/:id',
+                    builder: (context, state) {
+                      final characterId = state.pathParameters['id']!;
+                      return Character5ePage(
+                        characterId: characterId,
+                      );
+                    },
                   ),
                 ],
               ),

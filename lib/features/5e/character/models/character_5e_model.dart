@@ -1,4 +1,5 @@
 import 'package:char_creator/common/interfaces/identifiable.dart';
+import 'package:collection/equality.dart';
 
 class Character5eModel implements Identifiable {
   @override
@@ -58,5 +59,24 @@ class Character5eModel implements Identifiable {
       spellIds: List<String>.from(json['spellIds']).toSet(),
       classIds: List<String>.from(json['classIds']).toSet(),
     );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is Character5eModel &&
+        other.id == id &&
+        other._name == _name &&
+        other.raceId == raceId &&
+        const DeepCollectionEquality().equals(other.spellIds, spellIds) &&
+        const DeepCollectionEquality().equals(other.classIds, classIds);
+  }
+    
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        _name.hashCode ^
+        raceId.hashCode ^
+        const DeepCollectionEquality().hash(spellIds) ^
+        const DeepCollectionEquality().hash(classIds);
   }
 }
