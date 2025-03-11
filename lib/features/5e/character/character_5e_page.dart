@@ -1,11 +1,9 @@
-import 'package:char_creator/features/5e/spells/open5e/open_5e_spell_model.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../spells/open5e/open_5e_spells_repository.dart';
-import '../spells/spell_images/spell_images_repository.dart';
+import '../spells/view_models/spell_view_model.dart';
 import 'models/character_5e_model.dart';
 import 'repository/character_repository.dart';
 
@@ -20,15 +18,15 @@ class Character5ePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final charactersAsync = ref.watch(charactersStreamProvider);
-    final spellsAsync = ref.watch(allSRDCantripsProvider);
+    final spellsAsync = ref.watch(spellViewModelsProvider);
 
-    final List<Open5eSpellModelV1> spellsOpen5e;
+    final List<SpellViewModel> spellViewModels;
     switch (spellsAsync) {
-      case AsyncValue(value: final List<Open5eSpellModelV1> value):
-        spellsOpen5e = value;
+      case AsyncValue(value: final List<SpellViewModel> value):
+        spellViewModels = value;
         break;
       default:
-        spellsOpen5e = [];
+        spellViewModels = [];
     }
 
     final Character5eModel? character;
@@ -57,8 +55,8 @@ class Character5ePage extends HookConsumerWidget {
         );
     }
 
-    final characterSpells = spellsOpen5e
-        .where((spell) => character!.spellIds.contains(spell.toSpellModel().id))
+    final characterSpells = spellViewModels
+        .where((spell) => character!.spellIds.contains(spell.id))
         .toList();
 
     return Scaffold(
@@ -73,24 +71,22 @@ class Character5ePage extends HookConsumerWidget {
         childAspectRatio: 3 / 4,
         children: characterSpells.map(
           (spell) {
-            final spellImagePath =
-                ref.watch(spellImagePathProvider(spell.slug)).asData?.value;
             return Card(
               clipBehavior: Clip.antiAlias,
               child: InkWell(
                 onTap: () {
-                  context.push('/spells/${spell.toSpellModel().id}');
+                  context.push('/spells/${spell.id}');
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (spellImagePath != null)
+                    if (spell.imageUrl != null)
                       Flexible(
                         child: Hero(
-                          tag: spellImagePath,
+                          tag: spell.imageUrl!,
                           child: Image.asset(
-                            spellImagePath,
+                            spell.imageUrl!,
                             fit: BoxFit.fitWidth,
                             frameBuilder: (context, child, frame,
                                 wasSynchronouslyLoaded) {

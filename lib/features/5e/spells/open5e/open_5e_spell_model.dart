@@ -1,7 +1,7 @@
-import '../models/spell_model.dart';
+import '../models/spell_casting_time.dart';
 import '../models/spell_duration.dart';
 import '../models/spell_range.dart';
-import '../models/spell_casting_time.dart';
+import '../view_models/spell_view_model.dart';
 
 class Open5eSpellModelV1 {
   final String name;
@@ -55,8 +55,8 @@ class Open5eSpellModelV1 {
     );
   }
 
-  SpellModel toSpellModel() {
-    return SpellModel(
+  SpellViewModel toSpellViewModel() {
+    return SpellViewModel(
       id: slug,
       name: name,
       description: description,
@@ -67,10 +67,13 @@ class Open5eSpellModelV1 {
       requiresVerbalComponent: requiresVerbalComponent,
       requiresSomaticComponent: requiresSomaticComponent,
       requiresMaterialComponent: requiresMaterialComponent,
-      material: materialComponent?.isNotEmpty ?? false ? materialComponent : null,
+      material:
+          materialComponent?.isNotEmpty ?? false ? materialComponent : null,
       duration: duration != null ? SpellDuration.fromString(duration!) : null,
       range: range != null ? SpellRange.fromString(range!) : null,
-      castingTime: castingTime != null ? SpellCastingTime.fromString(castingTime!) : null,
+      castingTime: castingTime != null
+          ? SpellCastingTime.fromString(castingTime!)
+          : null,
     );
   }
 }

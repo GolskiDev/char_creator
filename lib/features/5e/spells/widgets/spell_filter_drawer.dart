@@ -1,13 +1,14 @@
+import 'package:char_creator/features/5e/spell_tags/tags.dart';
 import 'package:char_creator/features/5e/spells/filters/spell_model_filters_state.dart';
 import 'package:char_creator/features/5e/spells/utils/spell_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
-import '../models/spell_model.dart';
+import '../view_models/spell_view_model.dart';
 
 class SpellFilterDrawer extends HookConsumerWidget {
-  final List<SpellModel> allSpellModels;
+  final List<SpellViewModel> allSpellModels;
   final SpellModelFiltersState filters;
 
   final Function(bool? requiresConcentration) onRequiresConcentrationChanged;
@@ -23,6 +24,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
   final Function(Set<String> rangeIds) onRangeChanged;
   final Function(Set<String> durationIds) onDurationChanged;
   final Function(Set<int> spellLevels) onSpellLevelChanged;
+  final Function(Set<SpellType> spellTypes) onSpellTypesChanged;
 
   const SpellFilterDrawer({
     super.key,
@@ -38,6 +40,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
     required this.onRangeChanged,
     required this.onDurationChanged,
     required this.onSpellLevelChanged,
+    required this.onSpellTypesChanged,
   });
 
   @override
@@ -60,6 +63,8 @@ class SpellFilterDrawer extends HookConsumerWidget {
                 ),
               ),
             ),
+            Divider(),
+            _buildSpellTypeFilter(context),
             Divider(),
             _buildSpellLevelFilter(context),
             Divider(),
@@ -420,6 +425,43 @@ class SpellFilterDrawer extends HookConsumerWidget {
                   updatedSpellLevels.remove(level);
                 }
                 onSpellLevelChanged(updatedSpellLevels);
+              },
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  _buildSpellTypeFilter(BuildContext context) {
+    return ExpansionTile(
+      childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
+      title: Row(
+        children: [
+          Icon(Symbols.emoji_symbols),
+          const SizedBox(width: 16),
+          Text('Spell Type', style: Theme.of(context).textTheme.titleMedium),
+        ],
+      ),
+      children: [
+        Wrap(
+          spacing: 8,
+          alignment: WrapAlignment.start,
+          children: SpellType.values.map((type) {
+            return FilterChip(
+              visualDensity: VisualDensity.compact,
+              avatar: Icon(type.icon),
+              label: Text(type.title),
+              selected: filters.spellTypes.contains(type),
+              onSelected: (selected) {
+                final updatedSpellTypes =
+                    Set<SpellType>.from(filters.spellTypes);
+                if (selected) {
+                  updatedSpellTypes.add(type);
+                } else {
+                  updatedSpellTypes.remove(type);
+                }
+                onSpellTypesChanged(updatedSpellTypes);
               },
             );
           }).toList(),

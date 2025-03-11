@@ -1,6 +1,5 @@
 import 'package:char_creator/features/5e/character/repository/character_repository.dart';
 import 'package:char_creator/features/5e/spells/filters/spell_model_filters_state.dart';
-import 'package:char_creator/features/5e/spells/open5e/open_5e_spell_model.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -9,8 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../character/models/character_5e_model.dart';
-import 'models/spell_model.dart';
-import 'open5e/open_5e_spells_repository.dart';
+import 'view_models/spell_view_model.dart';
 import 'widgets/add_to_character_menu.dart';
 import 'widgets/spell_filter_drawer.dart';
 
@@ -19,7 +17,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allCantrips = ref.watch(allSRDCantripsProvider);
+    final allCantrips = ref.watch(spellViewModelsProvider);
     final allCharactersAsync = ref.watch(charactersStreamProvider);
 
     final spellFilters = useState(
@@ -53,7 +51,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
           )
         : [];
 
-    addToCharacterWidgetBuilder(SpellModel spell) => IconButton(
+    addToCharacterWidgetBuilder(SpellViewModel spell) => IconButton(
           icon: selectedCharacter != null &&
                   selectedCharacter.spellIds.contains(spell.id)
               ? const Icon(Symbols.person_check)
@@ -78,6 +76,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
             }
           },
         );
+
     final isAddToCharacterEnabled = selectedCharacter != null;
 
     final searchController = useTextEditingController(
@@ -212,8 +211,8 @@ class ListOfSpellsPage extends HookConsumerWidget {
             ),
       body: allCantrips.when(
         data: (cantrips) {
-          final filteredCantrips = spellFilters.value
-              .filterSpells(cantrips.map((e) => e.toSpellModel()).toList());
+          final filteredCantrips =
+              spellFilters.value.filterSpells(cantrips.map((e) => e).toList());
           return SafeArea(
             child: Stack(
               children: [
@@ -260,11 +259,11 @@ class ListOfSpellsPage extends HookConsumerWidget {
   }
 
   SpellFilterDrawer spellFilterDrawer(
-      AsyncValue<List<Open5eSpellModelV1>> allCantrips,
+      AsyncValue<List<SpellViewModel>> allCantrips,
       ValueNotifier<SpellModelFiltersState> spellFilters) {
     return SpellFilterDrawer(
       allSpellModels: allCantrips.when(
-        data: (cantrips) => cantrips.map((e) => e.toSpellModel()).toList(),
+        data: (cantrips) => cantrips.toList(),
         loading: () => [],
         error: (error, stack) => [],
       ),
@@ -327,6 +326,11 @@ class ListOfSpellsPage extends HookConsumerWidget {
       onSpellLevelChanged: (spellLevels) {
         spellFilters.value = spellFilters.value.copyWith(
           spellLevels: spellLevels,
+        );
+      },
+      onSpellTypesChanged: (spellTypes) {
+        spellFilters.value = spellFilters.value.copyWith(
+          spellTypes: spellTypes,
         );
       },
     );

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 import 'open_5e.dart';
 import 'open_5e_spell_model.dart';
-import 'package:http/http.dart' as http;
 
 final open5eSpellsRepositoryProvider = Provider<Open5eSpellsRepository>(
   (ref) {

@@ -1,4 +1,5 @@
-import '../models/spell_model.dart';
+import '../../spell_tags/tags.dart';
+import '../view_models/spell_view_model.dart';
 
 class SpellModelFiltersState {
   final String? searchText;
@@ -12,6 +13,7 @@ class SpellModelFiltersState {
   final Set<String> rangeIds;
   final Set<String> durationIds;
   final Set<int> spellLevels;
+  final Set<SpellType> spellTypes;
 
   SpellModelFiltersState({
     this.searchText,
@@ -25,6 +27,7 @@ class SpellModelFiltersState {
     this.rangeIds = const {},
     this.durationIds = const {},
     this.spellLevels = const {},
+    this.spellTypes = const {},
   });
 
   SpellModelFiltersState copyWith({
@@ -39,6 +42,7 @@ class SpellModelFiltersState {
     Set<String>? rangeIds,
     Set<String>? durationIds,
     Set<int>? spellLevels,
+    Set<SpellType>? spellTypes,
   }) {
     return SpellModelFiltersState(
       searchText: searchTextSetter != null ? searchTextSetter() : searchText,
@@ -62,6 +66,7 @@ class SpellModelFiltersState {
       rangeIds: rangeIds ?? this.rangeIds,
       durationIds: durationIds ?? this.durationIds,
       spellLevels: spellLevels ?? this.spellLevels,
+      spellTypes: spellTypes ?? this.spellTypes,
     );
   }
 
@@ -165,8 +170,19 @@ class SpellModelFiltersState {
     return level != null && spellLevels.contains(level);
   }
 
-  List<SpellModel> filterSpells(
-    List<SpellModel> spells,
+  bool spellInType(Set<SpellType>? types) {
+    if (spellTypes.isEmpty) {
+      return true;
+    }
+
+    return types != null &&
+        spellTypes.containsAll(
+          types,
+        );
+  }
+
+  List<SpellViewModel> filterSpells(
+    List<SpellViewModel> spells,
   ) {
     return spells.where(
       (spell) {
@@ -181,7 +197,8 @@ class SpellModelFiltersState {
             spellMatchesCastingTime(spell.castingTime?.id) &&
             spellMatchesRange(spell.range?.id) &&
             spellMatchesDuration(spell.duration?.id) &&
-            spellMatchesLevel(spell.spellLevel);
+            spellMatchesLevel(spell.spellLevel) &&
+            spellInType(spell.spellTypes);
       },
     ).toList();
   }

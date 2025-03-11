@@ -1,11 +1,10 @@
-import 'package:char_creator/features/5e/spells/open5e/open_5e_spells_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'open5e/open_5e_spell_model.dart';
+import 'view_models/spell_view_model.dart';
 import 'widgets/card_widget.dart';
 
 class SpellCardPage extends HookConsumerWidget {
@@ -18,12 +17,12 @@ class SpellCardPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spellsAsync = ref.watch(allSRDCantripsProvider);
+    final spellsAsync = ref.watch(spellViewModelsProvider);
 
-    final List<Open5eSpellModelV1> spells;
+    final List<SpellViewModel> spells;
 
     switch (spellsAsync) {
-      case AsyncValue(value: List<Open5eSpellModelV1> loadedSpells):
+      case AsyncValue(value: List<SpellViewModel> loadedSpells):
         spells = loadedSpells;
         break;
       case AsyncValue(error: final error, hasError: true):
@@ -41,7 +40,7 @@ class SpellCardPage extends HookConsumerWidget {
     }
 
     final spell = spells.firstWhereOrNull(
-      (open5eSpellModel) => open5eSpellModel.slug == id,
+      (spellViewModel) => spellViewModel.id == id,
     );
 
     if (spell == null) {

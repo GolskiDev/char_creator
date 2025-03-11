@@ -1,10 +1,8 @@
-import 'package:char_creator/features/5e/spells/models/spell_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
-import '../open5e/open_5e_spell_model.dart';
-import '../spell_images/spell_images_repository.dart';
+import '../view_models/spell_view_model.dart';
 
 class SpellCardWidget extends ConsumerWidget {
   const SpellCardWidget({
@@ -12,28 +10,13 @@ class SpellCardWidget extends ConsumerWidget {
     required this.spell,
   });
 
-  final Open5eSpellModelV1 spell;
+  final SpellViewModel spell;
 
   @override
   Widget build(
     BuildContext context,
     WidgetRef ref,
   ) {
-    final spellImagePathAsync = ref.watch(spellImagePathProvider(spell.slug));
-
-    final String? spellImagePath;
-    switch (spellImagePathAsync) {
-      case AsyncValue(value: final String? path, hasValue: true):
-        spellImagePath = path;
-        break;
-      default:
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-    }
-
-    final spellModel = spell.toSpellModel();
-
     var components = Center(
       child: ListTile(
         titleAlignment: ListTileTitleAlignment.center,
@@ -54,7 +37,7 @@ class SpellCardWidget extends ConsumerWidget {
             children: [
               TableRow(
                   children: [
-                if (spellModel.requiresVerbalComponent == true)
+                if (spell.requiresVerbalComponent == true)
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -68,7 +51,7 @@ class SpellCardWidget extends ConsumerWidget {
                       ),
                     ],
                   ),
-                if (spellModel.requiresSomaticComponent == true)
+                if (spell.requiresSomaticComponent == true)
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -82,7 +65,7 @@ class SpellCardWidget extends ConsumerWidget {
                       ),
                     ],
                   ),
-                if (spellModel.requiresMaterialComponent == true)
+                if (spell.requiresMaterialComponent == true)
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,49 +101,49 @@ class SpellCardWidget extends ConsumerWidget {
       ListTile(
         visualDensity: VisualDensity.compact,
         leading: Icon(Icons.star),
-        title: Text(spellModel.spellLevelString),
+        title: Text(spell.spellLevelString),
         subtitle: Text('Spell Level'),
       ),
-      if (spellModel.castingTime != null)
+      if (spell.castingTime != null)
         ListTile(
           visualDensity: VisualDensity.compact,
           leading: Icon(Icons.schedule),
-          title: Text(spellModel.castingTime.toString()),
+          title: Text(spell.castingTime.toString()),
           subtitle: Text('Casting Time'),
         ),
-      if (spellModel.range != null)
+      if (spell.range != null)
         ListTile(
           visualDensity: VisualDensity.compact,
           leading: Icon(Symbols.target),
-          title: Text(spellModel.range.toString()),
+          title: Text(spell.range.toString()),
           subtitle: Text('Range'),
         ),
-      if (spellModel.duration != null)
+      if (spell.duration != null)
         ListTile(
           visualDensity: VisualDensity.compact,
           leading: Icon(Icons.timer),
-          title: Text(spellModel.duration.toString()),
+          title: Text(spell.duration.toString()),
           subtitle: Text('Duration'),
         ),
-      if (spellModel.requiresConcentration != null)
+      if (spell.requiresConcentration != null)
         ListTile(
           visualDensity: VisualDensity.compact,
           leading: Icon(Symbols.mindfulness),
-          title: Text(spellModel.requiresConcentration! ? 'Yes' : 'No'),
+          title: Text(spell.requiresConcentration! ? 'Yes' : 'No'),
           subtitle: Text('Requires Concentration'),
         ),
-      if (spellModel.canBeCastAsRitual != null)
+      if (spell.canBeCastAsRitual != null)
         ListTile(
           visualDensity: VisualDensity.compact,
           leading: Icon(Symbols.person_celebrate),
-          title: Text(spellModel.canBeCastAsRitual! ? 'Yes' : 'No'),
+          title: Text(spell.canBeCastAsRitual! ? 'Yes' : 'No'),
           subtitle: Text('Can be Cast as Ritual'),
         ),
-      if (spellModel.requiresMaterialComponent != null ||
-          spellModel.requiresSomaticComponent != null ||
-          spellModel.requiresVerbalComponent != null)
+      if (spell.requiresMaterialComponent != null ||
+          spell.requiresSomaticComponent != null ||
+          spell.requiresVerbalComponent != null)
         components,
-      if (spellModel.material != null)
+      if (spell.material != null)
         ListTile(
           visualDensity: VisualDensity.compact,
           titleAlignment: ListTileTitleAlignment.center,
@@ -169,15 +152,15 @@ class SpellCardWidget extends ConsumerWidget {
             textAlign: TextAlign.center,
           ),
           subtitle: Text(
-            spellModel.material!,
+            spell.material!,
             textAlign: TextAlign.center,
           ),
         ),
-      if (spellModel.school != null)
+      if (spell.school != null)
         ListTile(
           visualDensity: VisualDensity.compact,
           leading: Icon(Icons.book),
-          title: Text(spellModel.school!),
+          title: Text(spell.school!),
           subtitle: Text('School'),
         ),
     ]
@@ -198,7 +181,7 @@ class SpellCardWidget extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (spellImagePath != null)
+              if (spell.imageUrl != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -209,9 +192,9 @@ class SpellCardWidget extends ConsumerWidget {
                     child: AspectRatio(
                       aspectRatio: 3 / 4,
                       child: Hero(
-                        tag: spellImagePath,
+                        tag: spell.imageUrl!,
                         child: Image.asset(
-                          spellImagePath,
+                          spell.imageUrl!,
                           fit: BoxFit.cover,
                           frameBuilder:
                               (context, child, frame, wasSynchronouslyLoaded) {
@@ -241,7 +224,7 @@ class SpellCardWidget extends ConsumerWidget {
                         vertical: 8,
                       ),
                       child: Text(
-                        spellModel.name,
+                        spell.name,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
@@ -286,7 +269,7 @@ class SpellCardWidget extends ConsumerWidget {
                         vertical: 8,
                       ),
                       child: Text(
-                        spellModel.description,
+                        spell.description,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ),
