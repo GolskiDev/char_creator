@@ -1,6 +1,6 @@
+import 'package:char_creator/features/5e/character/widgets/grouped_spells_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../spells/view_models/spell_view_model.dart';
@@ -60,65 +60,69 @@ class Character5ePage extends HookConsumerWidget {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(character.name),
-      ),
-      body: GridView.extent(
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        padding: const EdgeInsets.all(8),
-        maxCrossAxisExtent: 200,
-        childAspectRatio: 3 / 4,
-        children: characterSpells.map(
-          (spell) {
-            return Card(
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: () {
-                  context.push('/spells/${spell.id}');
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (spell.imageUrl != null)
-                      Flexible(
-                        child: Hero(
-                          tag: spell.imageUrl!,
-                          child: Image.asset(
-                            spell.imageUrl!,
-                            fit: BoxFit.fitWidth,
-                            frameBuilder: (context, child, frame,
-                                wasSynchronouslyLoaded) {
-                              if (wasSynchronouslyLoaded) {
-                                return child;
-                              }
-                              return AnimatedOpacity(
-                                duration: Durations.long1,
-                                curve: Curves.easeIn,
-                                opacity: frame == null ? 0 : 1,
-                                child: child,
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Flexible(
-                        child: Text(
-                          spell.name,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ).toList(),
-      ),
-    );
+        appBar: AppBar(
+          title: Text(character.name),
+        ),
+        body: GroupedSpellsWidget(
+          characterSpells: characterSpells,
+        )
+        // GridView.extent(
+        //   mainAxisSpacing: 8,
+        //   crossAxisSpacing: 8,
+        //   padding: const EdgeInsets.all(8),
+        //   maxCrossAxisExtent: 200,
+        //   childAspectRatio: 3 / 4,
+        //   children:
+        // characterSpells.map(
+        //   (spell) {
+        //     return Card(
+        //       clipBehavior: Clip.antiAlias,
+        //       child: InkWell(
+        //         onTap: () {
+        //           context.push('/spells/${spell.id}');
+        //         },
+        //         child: Column(
+        //           crossAxisAlignment: CrossAxisAlignment.stretch,
+        //           mainAxisAlignment: MainAxisAlignment.center,
+        //           children: [
+        //             if (spell.imageUrl != null)
+        //               Flexible(
+        //                 child: Hero(
+        //                   tag: spell.imageUrl!,
+        //                   child: Image.asset(
+        //                     spell.imageUrl!,
+        //                     fit: BoxFit.fitWidth,
+        //                     frameBuilder: (context, child, frame,
+        //                         wasSynchronouslyLoaded) {
+        //                       if (wasSynchronouslyLoaded) {
+        //                         return child;
+        //                       }
+        //                       return AnimatedOpacity(
+        //                         duration: Durations.long1,
+        //                         curve: Curves.easeIn,
+        //                         opacity: frame == null ? 0 : 1,
+        //                         child: child,
+        //                       );
+        //                     },
+        //                   ),
+        //                 ),
+        //               ),
+        //             Padding(
+        //               padding: const EdgeInsets.all(8.0),
+        //               child: Flexible(
+        //                 child: Text(
+        //                   spell.name,
+        //                   style: Theme.of(context).textTheme.titleLarge,
+        //                 ),
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //     );
+        //   },
+        // ).toList(),
+        // ),
+        );
   }
 }
