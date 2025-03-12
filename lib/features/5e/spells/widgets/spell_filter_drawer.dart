@@ -104,15 +104,20 @@ class SpellFilterDrawer extends HookConsumerWidget {
       trailing: SegmentedButton<bool?>(
         emptySelectionAllowed: true,
         multiSelectionEnabled: false,
+        showSelectedIcon: false,
         selected: {filters.requiresConcentration},
         segments: [
           ButtonSegment(
             value: true,
-            label: Text('Yes', textAlign: TextAlign.center),
+            label: Text(
+              'Yes',
+            ),
           ),
           ButtonSegment(
             value: false,
-            label: Text('No', textAlign: TextAlign.center),
+            label: Text(
+              'No',
+            ),
           ),
         ],
         onSelectionChanged: (p0) =>
@@ -131,15 +136,20 @@ class SpellFilterDrawer extends HookConsumerWidget {
       trailing: SegmentedButton<bool?>(
         emptySelectionAllowed: true,
         multiSelectionEnabled: false,
+        showSelectedIcon: false,
         selected: {filters.canBeCastAsRitual},
         segments: [
           ButtonSegment(
             value: true,
-            label: Text('Yes', textAlign: TextAlign.center),
+            label: Text(
+              'Yes',
+            ),
           ),
           ButtonSegment(
             value: false,
-            label: Text('No', textAlign: TextAlign.center),
+            label: Text(
+              'No',
+            ),
           ),
         ],
         onSelectionChanged: (p0) => onCanBeCastAsRitualChanged(p0.firstOrNull),
@@ -157,15 +167,20 @@ class SpellFilterDrawer extends HookConsumerWidget {
       trailing: SegmentedButton<bool?>(
         emptySelectionAllowed: true,
         multiSelectionEnabled: false,
+        showSelectedIcon: false,
         selected: {filters.requiresVerbalComponent},
         segments: [
           ButtonSegment(
             value: true,
-            label: Text('Yes', textAlign: TextAlign.center),
+            label: Text(
+              'Yes',
+            ),
           ),
           ButtonSegment(
             value: false,
-            label: Text('No', textAlign: TextAlign.center),
+            label: Text(
+              'No',
+            ),
           ),
         ],
         onSelectionChanged: (p0) =>
@@ -184,15 +199,20 @@ class SpellFilterDrawer extends HookConsumerWidget {
       trailing: SegmentedButton<bool?>(
         emptySelectionAllowed: true,
         multiSelectionEnabled: false,
+        showSelectedIcon: false,
         selected: {filters.requiresSomaticComponent},
         segments: [
           ButtonSegment(
             value: true,
-            label: Text('Yes', textAlign: TextAlign.center),
+            label: Text(
+              'Yes',
+            ),
           ),
           ButtonSegment(
             value: false,
-            label: Text('No', textAlign: TextAlign.center),
+            label: Text(
+              'No',
+            ),
           ),
         ],
         onSelectionChanged: (p0) =>
@@ -211,15 +231,20 @@ class SpellFilterDrawer extends HookConsumerWidget {
       trailing: SegmentedButton<bool?>(
         emptySelectionAllowed: true,
         multiSelectionEnabled: false,
+        showSelectedIcon: false,
         selected: {filters.requiresMaterialComponent},
         segments: [
           ButtonSegment(
             value: true,
-            label: Text('Yes', textAlign: TextAlign.center),
+            label: Text(
+              'Yes',
+            ),
           ),
           ButtonSegment(
             value: false,
-            label: Text('No', textAlign: TextAlign.center),
+            label: Text(
+              'No',
+            ),
           ),
         ],
         onSelectionChanged: (p0) =>

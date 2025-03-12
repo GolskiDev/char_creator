@@ -40,7 +40,9 @@ class AppTheme {
   }) =>
       ThemeData(
         useMaterial3: true,
-        colorScheme: isDarkMode ? DarkColorScheme().colorScheme : LightColorScheme().colorScheme,
+        colorScheme: isDarkMode
+            ? DarkColorScheme().colorScheme
+            : LightColorScheme().colorScheme,
         fontFamily: font.fontFamily,
         visualDensity: VisualDensity(
           horizontal: VisualDensity.minimumDensity,
@@ -57,7 +59,6 @@ class AppTheme {
         ),
         segmentedButtonTheme: SegmentedButtonThemeData(
           style: ButtonStyle(
-            iconSize: WidgetStatePropertyAll(14),
             shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(

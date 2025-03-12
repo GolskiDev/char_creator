@@ -102,7 +102,6 @@ class ListOfSpellsPage extends HookConsumerWidget {
     final appBarTitle = Builder(
       builder: (context) {
         return Stack(
-          fit: StackFit.passthrough,
           children: [
             Visibility(
               visible: !isSearchVisible,

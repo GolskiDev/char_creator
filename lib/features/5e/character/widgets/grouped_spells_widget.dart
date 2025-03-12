@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../spell_tags/tags.dart';
 import '../../spells/view_models/spell_view_model.dart';
 
 class GroupedSpellsWidget extends HookConsumerWidget {
@@ -20,6 +21,7 @@ class GroupedSpellsWidget extends HookConsumerWidget {
     final groupedSpells = _groupSpells(characterSpells, selectedGrouping.value);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildGroupingSelector(selectedGrouping),
         Expanded(
@@ -32,10 +34,24 @@ class GroupedSpellsWidget extends HookConsumerWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        entry.key,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
+                      child: switch (entry.key) {
+                        SpellType type => Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            spacing: 8,
+                            children: [
+                              Icon(type.icon),
+                              Text(
+                                type.title,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ],
+                          ),
+                        Object something => Text(
+                            something.toString(),
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                      },
                     ),
                     if (entry.key == 'All Spells')
                       GridView.builder(
@@ -174,25 +190,26 @@ class GroupedSpellsWidget extends HookConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SegmentedButton<String>(
-        segments: const [
+        showSelectedIcon: false,
+        segments: [
           ButtonSegment(
+            tooltip: 'All Spells',
             value: 'All',
-            label: Text('All Spells'),
             icon: Icon(Icons.all_inclusive),
           ),
           ButtonSegment(
             value: 'Type',
-            label: Text('Spell Type'),
+            tooltip: 'Spell Type',
             icon: Icon(Symbols.emoji_symbols),
           ),
           ButtonSegment(
             value: 'Casting Time',
-            label: Text('Casting Time'),
+            tooltip: 'Casting Time',
             icon: Icon(Icons.timer),
           ),
           ButtonSegment(
             value: 'Level',
-            label: Text('Level'),
+            tooltip: 'Level',
             icon: Icon(Icons.star),
           ),
         ],
@@ -206,7 +223,7 @@ class GroupedSpellsWidget extends HookConsumerWidget {
     );
   }
 
-  Map<String, List<SpellViewModel>> _groupSpells(
+  Map<Object, List<SpellViewModel>> _groupSpells(
     List<SpellViewModel> spells,
     String grouping,
   ) {
@@ -222,10 +239,11 @@ class GroupedSpellsWidget extends HookConsumerWidget {
     }
   }
 
-  Map<String, List<SpellViewModel>> _groupByType(List<SpellViewModel> spells) {
-    final Map<String, List<SpellViewModel>> groupedSpells = {};
+  Map<SpellType, List<SpellViewModel>> _groupByType(
+      List<SpellViewModel> spells) {
+    final Map<SpellType, List<SpellViewModel>> groupedSpells = {};
     for (final spell in spells) {
-      final types = spell.spellTypes?.map((type) => type.name).toList() ?? [];
+      final types = spell.spellTypes?.toList() ?? [];
       for (final type in types) {
         if (!groupedSpells.containsKey(type)) {
           groupedSpells[type] = [];
