@@ -11,7 +11,7 @@ import '../utils/spell_utils.dart';
 
 final spellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
   (ref) async {
-    final open5eSpellModels = await ref.watch(allSRDCantripsProvider.future);
+    final open5eSpellModels = await ref.watch(allSRDSpellsProvider.future);
     final spellTypes = SpellTags.cantripSpellTypes;
 
     final spellViewModelsFutures = open5eSpellModels.map(

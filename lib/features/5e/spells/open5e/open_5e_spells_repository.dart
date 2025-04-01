@@ -1,21 +1,17 @@
-import 'dart:convert';
-
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:http/http.dart' as http;
 
-import 'open_5e.dart';
 import 'open_5e_spell_model.dart';
+import 'open_5e_spells_local_cache.dart';
+import 'open_5e_spells_remote_data_source.dart';
 
 final open5eSpellsRepositoryProvider = Provider<Open5eSpellsRepository>(
   (ref) {
-    return Open5eSpellsRepository();
-  },
-);
-
-final allSpellProvider = FutureProvider.autoDispose<List<Open5eSpellModelV1>>(
-  (ref) async {
-    final repository = ref.read(open5eSpellsRepositoryProvider);
-    return repository.allSpells();
+    final remoteDataSource = ref.watch(open5eSpellsRemoteDataSourceProvider);
+    final localCache = ref.watch(open5eSpellsLocalCacheProvider);
+    return Open5eSpellsRepository(
+      remoteDataSource: remoteDataSource,
+      localCache: localCache,
+    );
   },
 );
 
@@ -27,55 +23,26 @@ final allSRDSpellsProvider =
   },
 );
 
-final allSRDCantripsProvider = FutureProvider<List<Open5eSpellModelV1>>(
-  (ref) async {
-    final repository = ref.read(open5eSpellsRepositoryProvider);
-    return repository.allSRDCantrips();
-  },
-);
-
 class Open5eSpellsRepository {
-  Future<List<Open5eSpellModelV1>> allSpells({
-    int limit = 50,
-  }) async {
-    final result = await http.get(
-      Uri.parse('${Open5e.baseUrl}spells/?limit=$limit'),
-    );
+  final Open5eSpellsRemoteDataSource _remoteDataSource;
+  final Open5eSpellsLocalCache _localCache;
 
-    final map = jsonDecode(result.body);
-
-    return List<Open5eSpellModelV1>.from(
-      map['results'].map(
-        (element) => Open5eSpellModelV1.fromJson(element),
-      ),
-    );
-  }
+  Open5eSpellsRepository({
+    required Open5eSpellsRemoteDataSource remoteDataSource,
+    required Open5eSpellsLocalCache localCache,
+  })  : _remoteDataSource = remoteDataSource,
+        _localCache = localCache;
 
   Future<List<Open5eSpellModelV1>> allSRDSpells() async {
-    final result = await http.get(
-      Uri.parse('${Open5e.baseUrl}spells/?document__slug=wotc-srd'),
-    );
+    final cachedSpells = await _localCache.getSpellsCache();
 
-    final map = jsonDecode(result.body);
+    if (cachedSpells != null) {
+      return cachedSpells;
+    }
 
-    return List<Open5eSpellModelV1>.from(
-      map['results'].map(
-        (element) => Open5eSpellModelV1.fromJson(element),
-      ),
-    );
-  }
+    final remoteSpells = await _remoteDataSource.fetchSpells();
+    await _localCache.setSpellsCache(remoteSpells);
 
-  Future<List<Open5eSpellModelV1>> allSRDCantrips() async {
-    final result = await http.get(
-      Uri.parse('${Open5e.baseUrl}spells/?document__slug=wotc-srd&level_int=0'),
-    );
-
-    final map = jsonDecode(result.body);
-
-    return List<Open5eSpellModelV1>.from(
-      map['results'].map(
-        (element) => Open5eSpellModelV1.fromJson(element),
-      ),
-    );
+    return remoteSpells;
   }
 }

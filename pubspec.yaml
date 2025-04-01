@@ -27,6 +27,7 @@ dependencies:
   path: 
   flutter_svg: 
   material_symbols_icons:
+  flutter_cache_manager:
 
 dev_dependencies:
   flutter_test:

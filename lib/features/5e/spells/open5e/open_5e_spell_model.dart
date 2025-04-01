@@ -55,6 +55,25 @@ class Open5eSpellModelV1 {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'slug': slug,
+      'name': name,
+      'desc': description,
+      'level_int': level,
+      'school': school,
+      'requires_concentration': concentration,
+      'can_be_cast_as_ritual': ritual,
+      'requires_verbal_components': requiresVerbalComponent,
+      'requires_somatic_components': requiresSomaticComponent,
+      'requires_material_components': requiresMaterialComponent,
+      'material': materialComponent,
+      'duration': duration,
+      'range': range,
+      'casting_time': castingTime,
+    };
+  }
+
   SpellViewModel toSpellViewModel() {
     return SpellViewModel(
       id: slug,
