@@ -9,31 +9,36 @@ import 'widgets/card_widget.dart';
 
 class SpellCardPage extends HookConsumerWidget {
   final String id;
+  final Future<List<SpellViewModel>> spellsFuture;
 
   const SpellCardPage({
     super.key,
+    required this.spellsFuture,
     required this.id,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spellsAsync = ref.watch(spellViewModelsProvider);
+    final spellsAsync = useFuture(spellsFuture);
 
     final List<SpellViewModel> spells;
 
     switch (spellsAsync) {
-      case AsyncValue(value: List<SpellViewModel> loadedSpells):
+      case AsyncSnapshot(
+          data: final List<SpellViewModel> loadedSpells,
+        ):
         spells = loadedSpells;
         break;
-      case AsyncValue(error: final error, hasError: true):
+      case AsyncError error:
         return Scaffold(
           body: Center(
-            child: Text('Error: $error'),
+            child: Text('Error: ${error.error}'),
           ),
         );
       default:
         return Scaffold(
-          body: Center(
+          appBar: AppBar(),
+          body: const Center(
             child: CircularProgressIndicator(),
           ),
         );

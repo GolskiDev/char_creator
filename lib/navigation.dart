@@ -1,3 +1,4 @@
+import 'package:char_creator/features/5e/spells/view_models/spell_view_model.dart';
 import 'package:char_creator/views/document_page.dart';
 import 'package:char_creator/views/settings_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,8 +30,15 @@ class Navigation {
                 routes: [
                   GoRoute(
                     path: '/:id',
-                    builder: (context, state) => SpellCardPage(
-                      id: state.pathParameters['id']!,
+                    builder: (context, state) => Consumer(
+                      builder: (context, ref, child) {
+                        final spellsFuture =
+                            ref.read(spellViewModelsProvider.future);
+                        return SpellCardPage(
+                          id: state.pathParameters['id']!,
+                          spellsFuture: spellsFuture,
+                        );
+                      },
                     ),
                   ),
                 ],

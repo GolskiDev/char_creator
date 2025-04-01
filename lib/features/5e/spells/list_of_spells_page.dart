@@ -3,11 +3,11 @@ import 'package:char_creator/features/5e/spells/filters/spell_model_filters_stat
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../character/models/character_5e_model.dart';
+import 'cards_page.dart';
 import 'view_models/spell_view_model.dart';
 import 'widgets/add_to_character_menu.dart';
 import 'widgets/spell_filter_drawer.dart';
@@ -210,7 +210,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
             ),
       body: allCantrips.when(
         data: (cantrips) {
-          final filteredCantrips =
+          final filteredSpells =
               spellFilters.value.filterSpells(cantrips.map((e) => e).toList());
           return SafeArea(
             child: Stack(
@@ -219,18 +219,28 @@ class ListOfSpellsPage extends HookConsumerWidget {
                   padding: EdgeInsets.symmetric(
                     horizontal: 8,
                   ),
-                  itemCount: filteredCantrips.length,
+                  itemCount: filteredSpells.length,
                   itemBuilder: (context, index) {
-                    final cantrip = filteredCantrips[index];
+                    final spellViewModel = filteredSpells[index];
                     return Card.outlined(
                       clipBehavior: Clip.antiAlias,
                       child: ListTile(
                         leading: isAddToCharacterEnabled
-                            ? addToCharacterWidgetBuilder(cantrip)
+                            ? addToCharacterWidgetBuilder(spellViewModel)
                             : null,
-                        title: Text(cantrip.name),
+                        title: Text(spellViewModel.name),
                         onTap: () {
-                          context.go('/spells/${cantrip.id}');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return SpellCardPage(
+                                  id: spellViewModel.id,
+                                  spellsFuture: Future.value(filteredSpells),
+                                );
+                              },
+                            ),
+                          );
                         },
                       ),
                     );
