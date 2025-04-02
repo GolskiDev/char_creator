@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../features/5e/spells/view_models/spell_view_model.dart';
+import '../features/5e/spells/open5e/open_5e_spells_repository.dart';
 
 class UtilsPage extends HookConsumerWidget {
   const UtilsPage({super.key});
@@ -16,9 +16,9 @@ class UtilsPage extends HookConsumerWidget {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('Print all slugs'),
+            title: const Text('print'),
             onTap: () {
-              printAllSlugs(context, ref);
+              print(context, ref);
             },
           ),
         ],
@@ -26,18 +26,13 @@ class UtilsPage extends HookConsumerWidget {
     );
   }
 
-  printAllSlugs(
+  print(
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final spells = await ref.read(spellViewModelsProvider.future);
-    final slugs = spells
-        .where(
-          (element) => element.spellLevel < 5,
-        )
-        .map((spell) => spell.id)
-        .toList();
-    final json = jsonEncode(slugs);
+    final spells = await ref.read(allSRDSpellsProvider.future);
+    final durations = spells.map((e) => e.range).toSet();
+    final json = jsonEncode(durations.toList());
     log(json);
   }
 }
