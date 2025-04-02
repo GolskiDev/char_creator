@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../spell_tags/tags.dart';
+import '../../spells/cards_page.dart';
 import '../../spells/view_models/spell_view_model.dart';
 
 class GroupedSpellsWidget extends HookConsumerWidget {
@@ -71,7 +71,14 @@ class GroupedSpellsWidget extends HookConsumerWidget {
                             clipBehavior: Clip.antiAlias,
                             child: InkWell(
                               onTap: () {
-                                context.push('/spells/${spell.id}');
+                                final spellsInGrouped = groupedSpells.entries
+                                    .expand((e) => e.value)
+                                    .toList();
+                                showSpell(
+                                  context: context,
+                                  spellId: spell.id,
+                                  spells: spellsInGrouped,
+                                );
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -127,7 +134,15 @@ class GroupedSpellsWidget extends HookConsumerWidget {
                                   clipBehavior: Clip.antiAlias,
                                   child: InkWell(
                                     onTap: () {
-                                      context.push('/spells/${spell.id}');
+                                      final spellsInGrouped = groupedSpells
+                                          .entries
+                                          .expand((e) => e.value)
+                                          .toList();
+                                      showSpell(
+                                        context: context,
+                                        spellId: spell.id,
+                                        spells: spellsInGrouped,
+                                      );
                                     },
                                     child: Column(
                                       crossAxisAlignment:
@@ -277,5 +292,21 @@ class GroupedSpellsWidget extends HookConsumerWidget {
       groupedSpells[level]!.add(spell);
     }
     return groupedSpells;
+  }
+
+  showSpell({
+    required BuildContext context,
+    required String spellId,
+    required List<SpellViewModel> spells,
+  }) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SpellCardPage(
+          id: spellId,
+          spellsFuture: Future.value(spells),
+        ),
+      ),
+    );
   }
 }
