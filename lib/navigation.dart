@@ -10,6 +10,7 @@ import 'features/5e/character/list_of_characters_page.dart';
 import 'features/5e/main_menu.dart';
 import 'features/5e/spells/cards_page.dart';
 import 'features/5e/spells/list_of_spells_page.dart';
+import 'utils/utils_page.dart';
 import 'views/chat_page.dart';
 import 'views/list_of_documents_page.dart';
 
@@ -24,6 +25,10 @@ class Navigation {
             path: '/',
             builder: (context, state) => const MainMenuPage(),
             routes: [
+              GoRoute(
+                path: '/utils',
+                builder: (context, state) => const UtilsPage(),
+              ),
               GoRoute(
                 path: '/spells',
                 builder: (context, state) => const ListOfSpellsPage(),
