@@ -1,4 +1,5 @@
-import '../../spell_tags/tags.dart';
+import '../../classes/character_class.dart';
+import '../../tags.dart';
 import '../view_models/spell_view_model.dart';
 
 class SpellModelFiltersState {
@@ -14,6 +15,7 @@ class SpellModelFiltersState {
   final Set<String> durationIds;
   final Set<int> spellLevels;
   final Set<SpellType> spellTypes;
+  final Set<CharacterClass> characterClasses;
 
   SpellModelFiltersState({
     this.searchText,
@@ -28,6 +30,7 @@ class SpellModelFiltersState {
     this.durationIds = const {},
     this.spellLevels = const {},
     this.spellTypes = const {},
+    this.characterClasses = const {},
   });
 
   SpellModelFiltersState copyWith({
@@ -43,6 +46,7 @@ class SpellModelFiltersState {
     Set<String>? durationIds,
     Set<int>? spellLevels,
     Set<SpellType>? spellTypes,
+    Set<CharacterClass>? characterClasses,
   }) {
     return SpellModelFiltersState(
       searchText: searchTextSetter != null ? searchTextSetter() : searchText,
@@ -67,6 +71,7 @@ class SpellModelFiltersState {
       durationIds: durationIds ?? this.durationIds,
       spellLevels: spellLevels ?? this.spellLevels,
       spellTypes: spellTypes ?? this.spellTypes,
+      characterClasses: characterClasses ?? this.characterClasses,
     );
   }
 
@@ -181,6 +186,16 @@ class SpellModelFiltersState {
         );
   }
 
+  bool spellMatchesCharacterClasses(Set<CharacterClass>? classes) {
+    if (characterClasses.isEmpty) {
+      return true;
+    }
+
+    return classes != null &&
+        characterClasses
+            .any((characterClass) => classes.contains(characterClass));
+  }
+
   List<SpellViewModel> filterSpells(
     List<SpellViewModel> spells,
   ) {
@@ -198,7 +213,8 @@ class SpellModelFiltersState {
             spellMatchesRange(spell.range?.id) &&
             spellMatchesDuration(spell.duration?.id) &&
             spellMatchesLevel(spell.spellLevel) &&
-            spellInType(spell.spellTypes);
+            spellInType(spell.spellTypes) &&
+            spellMatchesCharacterClasses(spell.characterClasses);
       },
     ).toList();
   }

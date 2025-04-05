@@ -1,10 +1,11 @@
-import 'package:char_creator/features/5e/spell_tags/tags.dart';
 import 'package:char_creator/features/5e/spells/filters/spell_model_filters_state.dart';
 import 'package:char_creator/features/5e/spells/utils/spell_utils.dart';
+import 'package:char_creator/features/5e/tags.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
+import '../../classes/character_class.dart';
 import '../view_models/spell_view_model.dart';
 
 class SpellFilterDrawer extends HookConsumerWidget {
@@ -25,6 +26,8 @@ class SpellFilterDrawer extends HookConsumerWidget {
   final Function(Set<String> durationIds) onDurationChanged;
   final Function(Set<int> spellLevels) onSpellLevelChanged;
   final Function(Set<SpellType> spellTypes) onSpellTypesChanged;
+  final Function(Set<CharacterClass> characterClasses)
+      onCharacterClassesChanged;
 
   const SpellFilterDrawer({
     super.key,
@@ -41,6 +44,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
     required this.onDurationChanged,
     required this.onSpellLevelChanged,
     required this.onSpellTypesChanged,
+    required this.onCharacterClassesChanged,
   });
 
   @override
@@ -48,12 +52,12 @@ class SpellFilterDrawer extends HookConsumerWidget {
     return Drawer(
       width: 350,
       child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SafeArea(
-              child: Padding(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16.0,
                 ),
@@ -62,30 +66,32 @@ class SpellFilterDrawer extends HookConsumerWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
-            ),
-            Divider(),
-            _buildSpellTypeFilter(context),
-            Divider(),
-            _buildSpellLevelFilter(context),
-            Divider(),
-            _buildCastingTimeFilter(context),
-            Divider(),
-            _buildRangeFilter(context),
-            Divider(),
-            _buildDurationFilter(context),
-            Divider(),
-            _buildConcentrationFilter(),
-            Divider(),
-            _buildVerbalComponentFilter(),
-            Divider(),
-            _buildSomaticComponentFilter(),
-            Divider(),
-            _buildMaterialComponentFilter(),
-            Divider(),
-            _buildRitualFilter(),
-            Divider(),
-            _buildSchoolFilter(context),
-          ],
+              Divider(),
+              _buildSpellTypeFilter(context),
+              Divider(),
+              _buildSpellLevelFilter(context),
+              Divider(),
+              _buildClassTypeFilter(context),
+              Divider(),
+              _buildCastingTimeFilter(context),
+              Divider(),
+              _buildRangeFilter(context),
+              Divider(),
+              _buildDurationFilter(context),
+              Divider(),
+              _buildConcentrationFilter(),
+              Divider(),
+              _buildVerbalComponentFilter(),
+              Divider(),
+              _buildSomaticComponentFilter(),
+              Divider(),
+              _buildMaterialComponentFilter(),
+              Divider(),
+              _buildRitualFilter(),
+              Divider(),
+              _buildSchoolFilter(context),
+            ],
+          ),
         ),
       ),
     );
@@ -487,6 +493,45 @@ class SpellFilterDrawer extends HookConsumerWidget {
                   updatedSpellTypes.remove(type);
                 }
                 onSpellTypesChanged(updatedSpellTypes);
+              },
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  _buildClassTypeFilter(BuildContext context) {
+    return ExpansionTile(
+      childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
+      title: Row(
+        children: [
+          Icon(Symbols.identity_platform),
+          const SizedBox(width: 16),
+          Text('Class', style: Theme.of(context).textTheme.titleMedium),
+        ],
+      ),
+      children: [
+        Wrap(
+          spacing: 8,
+          alignment: WrapAlignment.start,
+          children: allSpellModels
+              .expand((spell) => spell.characterClasses.toSet())
+              .toSet()
+              .map((characterClass) {
+            return FilterChip(
+              visualDensity: VisualDensity.compact,
+              label: Text(characterClass.toString()),
+              selected: filters.characterClasses.contains(characterClass),
+              onSelected: (selected) {
+                final updatedClasses =
+                    Set<CharacterClass>.from(filters.characterClasses);
+                if (selected) {
+                  updatedClasses.add(characterClass);
+                } else {
+                  updatedClasses.remove(characterClass);
+                }
+                onCharacterClassesChanged(updatedClasses);
               },
             );
           }).toList(),

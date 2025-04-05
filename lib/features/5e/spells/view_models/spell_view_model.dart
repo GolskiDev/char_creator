@@ -1,7 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../../spell_tags/tags.dart';
+import '../../classes/character_class.dart';
+import '../../tags.dart';
 import '../models/spell_casting_time.dart';
 import '../models/spell_duration.dart';
 import '../models/spell_range.dart';
@@ -30,6 +31,13 @@ final spellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
         return spellViewModel.copyWith(
           imageUrl: spellImageUrl,
           spellTypes: spellType,
+          classes: CharacterClass.values.where(
+            (characterClass) {
+              return characterClass.classSpellsIds.contains(
+                spellViewModel.id,
+              );
+            },
+          ).toSet(),
         );
       },
     ).toList();
@@ -64,7 +72,8 @@ class SpellViewModel {
 
   final String? imageUrl;
 
-  final Set<SpellType>? spellTypes;
+  final Set<SpellType> spellTypes;
+  final Set<CharacterClass> characterClasses;
 
   SpellViewModel({
     required this.id,
@@ -82,7 +91,8 @@ class SpellViewModel {
     this.range,
     this.castingTime,
     this.imageUrl,
-    this.spellTypes,
+    this.spellTypes = const {},
+    this.characterClasses = const {},
   });
 
   SpellViewModel copyWith({
@@ -102,6 +112,7 @@ class SpellViewModel {
     SpellCastingTime? castingTime,
     String? imageUrl,
     Set<SpellType>? spellTypes,
+    Set<CharacterClass>? classes,
   }) {
     return SpellViewModel(
       id: id ?? this.id,
@@ -124,6 +135,7 @@ class SpellViewModel {
       castingTime: castingTime ?? this.castingTime,
       imageUrl: imageUrl ?? this.imageUrl,
       spellTypes: spellTypes ?? this.spellTypes,
+      characterClasses: classes ?? this.characterClasses,
     );
   }
 }
