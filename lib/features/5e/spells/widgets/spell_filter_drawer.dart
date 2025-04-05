@@ -263,6 +263,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
     BuildContext context,
   ) {
     return ExpansionTile(
+      initiallyExpanded: filters.selectedSchools.isNotEmpty,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
@@ -306,6 +307,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
     BuildContext context,
   ) {
     return ExpansionTile(
+      initiallyExpanded: filters.castingTimeIds.isNotEmpty,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
@@ -348,6 +350,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
     BuildContext context,
   ) {
     return ExpansionTile(
+      initiallyExpanded: filters.rangeIds.isNotEmpty,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
@@ -389,6 +392,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
     BuildContext context,
   ) {
     return ExpansionTile(
+      initiallyExpanded: filters.durationIds.isNotEmpty,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
@@ -431,6 +435,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
     BuildContext context,
   ) {
     return ExpansionTile(
+      initiallyExpanded: filters.spellLevels.isNotEmpty,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
@@ -466,6 +471,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
 
   _buildSpellTypeFilter(BuildContext context) {
     return ExpansionTile(
+      initiallyExpanded: filters.spellTypes.isNotEmpty,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
@@ -503,6 +509,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
 
   _buildClassTypeFilter(BuildContext context) {
     return ExpansionTile(
+      initiallyExpanded: filters.characterClasses.isNotEmpty,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
