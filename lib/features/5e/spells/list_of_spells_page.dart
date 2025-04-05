@@ -7,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../character/models/character_5e_model.dart';
-import 'cards_page.dart';
+import 'spell_card_page.dart';
 import 'view_models/spell_view_model.dart';
 import 'widgets/add_to_character_menu.dart';
 import 'widgets/spell_filter_drawer.dart';

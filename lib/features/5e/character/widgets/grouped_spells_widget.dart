@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../spell_tags/tags.dart';
-import '../../spells/cards_page.dart';
+import '../../spells/spell_card_page.dart';
 import '../../spells/view_models/spell_view_model.dart';
 
 class GroupedSpellsWidget extends HookConsumerWidget {

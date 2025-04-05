@@ -64,6 +64,19 @@ class SpellCardPage extends HookConsumerWidget {
     );
 
     return Scaffold(
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
       body: PageView(
         controller: pageController,
         dragStartBehavior: DragStartBehavior.down,
