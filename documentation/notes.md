@@ -1,0 +1,6 @@
+# Main Objectives
+
+## User Creating character however he wants
+User should be able to start creating his character with different approaches.
+- I decided that user can create an empty character with level without putting his levels into any of the classes
+  - It is also usefull when user is using a class out of the premade classes
