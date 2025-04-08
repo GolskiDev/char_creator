@@ -5,25 +5,19 @@ class Character5eModel implements Identifiable {
   @override
   final String id;
   final String? _name;
-  final String? raceId;
   final Set<String> spellIds;
-  final Set<String> classIds;
 
   String get name => _name ?? 'Unnamed Character';
 
   Character5eModel._({
     required this.id,
     required String? name,
-    this.raceId,
     required this.spellIds,
-    required this.classIds,
   }) : _name = name;
 
   Character5eModel.empty({
     required String name,
-    this.raceId,
     this.spellIds = const {},
-    this.classIds = const {},
   })  : _name = name,
         id = IdGenerator.generateId(Character5eModel);
 
@@ -31,14 +25,11 @@ class Character5eModel implements Identifiable {
     String? name,
     String? raceId,
     Set<String>? spellIds,
-    Set<String>? classIds,
   }) {
     return Character5eModel._(
       id: id,
       name: name ?? _name,
-      raceId: raceId ?? this.raceId,
       spellIds: spellIds ?? this.spellIds,
-      classIds: classIds ?? this.classIds,
     );
   }
 
@@ -46,9 +37,7 @@ class Character5eModel implements Identifiable {
     return {
       'id': id,
       'name': _name,
-      'raceId': raceId,
       'spellIds': spellIds.toList(),
-      'classIds': classIds.toList(),
     };
   }
 
@@ -56,9 +45,7 @@ class Character5eModel implements Identifiable {
     return Character5eModel._(
       id: json['id'],
       name: json['name'],
-      raceId: json['raceId'],
       spellIds: List<String>.from(json['spellIds']).toSet(),
-      classIds: List<String>.from(json['classIds']).toSet(),
     );
   }
 
@@ -67,17 +54,13 @@ class Character5eModel implements Identifiable {
     return other is Character5eModel &&
         other.id == id &&
         other._name == _name &&
-        other.raceId == raceId &&
-        const DeepCollectionEquality().equals(other.spellIds, spellIds) &&
-        const DeepCollectionEquality().equals(other.classIds, classIds);
+        const DeepCollectionEquality().equals(other.spellIds, spellIds);
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
         _name.hashCode ^
-        raceId.hashCode ^
-        const DeepCollectionEquality().hash(spellIds) ^
-        const DeepCollectionEquality().hash(classIds);
+        const DeepCollectionEquality().hash(spellIds);
   }
 }
