@@ -1,4 +1,4 @@
-import '../../classes/character_class.dart';
+import '../../srd_classes/srd_character_class.dart';
 import '../../tags.dart';
 import '../view_models/spell_view_model.dart';
 

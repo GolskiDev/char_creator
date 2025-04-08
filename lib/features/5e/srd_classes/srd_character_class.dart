@@ -1,4 +1,4 @@
-import 'package:char_creator/features/5e/classes/class_spells.dart';
+import 'package:char_creator/features/5e/srd_classes/srd_class_spells.dart';
 
 enum CharacterClass {
   barbarian,

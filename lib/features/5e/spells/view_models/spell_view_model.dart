@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../../classes/character_class.dart';
+import '../../srd_classes/srd_character_class.dart';
 import '../../tags.dart';
 import '../models/spell_casting_time.dart';
 import '../models/spell_duration.dart';
