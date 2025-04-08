@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../spells/view_models/spell_view_model.dart';
 import 'models/character_5e_model.dart';
 import 'repository/character_repository.dart';
+import 'widgets/character_sheet_widget.dart';
 
 class Character5ePage extends HookConsumerWidget {
   final String characterId;
@@ -63,8 +64,26 @@ class Character5ePage extends HookConsumerWidget {
       appBar: AppBar(
         title: Text(character.name),
       ),
-      body: GroupedSpellsWidget(
-        characterSpells: characterSpells,
+      body: Column(
+        children: [
+          // text buttton open character sheet widget
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CharacterSheetWidget(),
+                ),
+              );
+            },
+            child: const Text('Open Character Sheet'),
+          ),
+          Flexible(
+            child: GroupedSpellsWidget(
+              characterSpells: characterSpells,
+            ),
+          ),
+        ],
       ),
     );
   }
