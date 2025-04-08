@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../spells/view_models/spell_view_model.dart';
-import 'models/character_5e_model.dart';
+import 'models/character_5e_model_v1.dart';
 import 'repository/character_repository.dart';
 
 class Character5ePage extends HookConsumerWidget {
@@ -29,9 +29,9 @@ class Character5ePage extends HookConsumerWidget {
         spellViewModels = [];
     }
 
-    final Character5eModel? character;
+    final Character5eModelV1? character;
     switch (charactersAsync) {
-      case AsyncValue(value: final List<Character5eModel> characters):
+      case AsyncValue(value: final List<Character5eModelV1> characters):
         character = characters
             .firstWhereOrNull((character) => character.id == characterId);
         if (character == null) {

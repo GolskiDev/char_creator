@@ -6,7 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../character/models/character_5e_model.dart';
+import '../character/models/character_5e_model_v1.dart';
 import '../srd_classes/srd_character_class.dart';
 import 'spell_card_page.dart';
 import 'view_models/spell_view_model.dart';
@@ -27,9 +27,9 @@ class ListOfSpellsPage extends HookConsumerWidget {
 
     final selectedCharacterId = useState<String?>(null);
 
-    final List<Character5eModel> characters;
+    final List<Character5eModelV1> characters;
     switch (allCharactersAsync) {
-      case AsyncValue(value: final List<Character5eModel> loadedCharacters):
+      case AsyncValue(value: final List<Character5eModelV1> loadedCharacters):
         characters = loadedCharacters;
         break;
       default:

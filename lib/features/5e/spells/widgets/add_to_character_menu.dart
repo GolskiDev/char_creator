@@ -1,10 +1,10 @@
-import 'package:char_creator/features/5e/character/models/character_5e_model.dart';
+import 'package:char_creator/features/5e/character/models/character_5e_model_v1.dart';
 import 'package:flutter/material.dart';
 
 class AddToCharacterMenu {
   List<RadioMenuButton> generateMenuEntries(
     BuildContext context,
-    List<Character5eModel> characters,
+    List<Character5eModelV1> characters,
     String? selectedCharacterId,
     Function(String? newId) onChanged,
   ) {
