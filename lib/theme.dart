@@ -57,6 +57,9 @@ class AppTheme {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
+        inputDecorationTheme: InputDecorationTheme(
+          floatingLabelAlignment: FloatingLabelAlignment.center,
+        ),
         segmentedButtonTheme: SegmentedButtonThemeData(
           style: ButtonStyle(
             shape: WidgetStatePropertyAll(
