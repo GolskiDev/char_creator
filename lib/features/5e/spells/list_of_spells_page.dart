@@ -54,13 +54,13 @@ class ListOfSpellsPage extends HookConsumerWidget {
 
     addToCharacterWidgetBuilder(SpellViewModel spell) => IconButton(
           icon: selectedCharacter != null &&
-                  selectedCharacter.spellIds.contains(spell.id)
+                  selectedCharacter.knownSpells.contains(spell.id)
               ? const Icon(Symbols.person_check)
               : const Icon(Symbols.add),
           onPressed: () async {
             if (selectedCharacter != null) {
               final updatedCharacter = selectedCharacter.copyWith(
-                spellIds: selectedCharacter.spellIds.union({spell.id}),
+                customSpellIds: selectedCharacter.customSpellIds..add(spell.id),
               );
               await ref
                   .read(characterRepositoryProvider)

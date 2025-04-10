@@ -1,30 +1,66 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'models/character_5e_class_model_v1.dart';
+import 'models/character_5e_class_state_model_v1.dart';
 import 'models/character_5e_model_v1.dart';
 import 'repository/character_repository.dart';
+import 'widgets/edit_character_classes_widget.dart';
 
 class EditCharacter5ePage extends HookConsumerWidget {
-  final Character5eModelV1? character;
+  final String? characterId;
 
   const EditCharacter5ePage({
     super.key,
-    this.character,
+    this.characterId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final charactersAsync = ref.watch(charactersStreamProvider);
+
+    final Character5eModelV1? character;
+    switch (charactersAsync) {
+      case AsyncValue(value: final List<Character5eModelV1> characters):
+        final foundCharacter = characters
+            .firstWhereOrNull((character) => character.id == characterId);
+        character = foundCharacter;
+      default:
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Character'),
+          ),
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+    }
+
     final _formKey = GlobalKey<FormState>();
     final isNewCharacter = character == null;
 
     final nameController = useTextEditingController(text: character?.name);
+    final selectedClasses = useState<Set<ICharacter5eClassModelV1>>(
+      character?.classes.map((classState) => classState.classModel).toSet() ??
+          const {},
+    );
 
     save() async {
       if (_formKey.currentState!.validate()) {
+        final classes = selectedClasses.value.map((classModel) {
+          return Character5eClassStateModelV1.empty(
+            id: classModel.id,
+            classModel: classModel,
+            classLevel: 1,
+          );
+        }).toSet();
+
         if (isNewCharacter) {
           final newCharacter = Character5eModelV1.empty(
             name: nameController.text,
+            classes: classes,
           );
           await ref
               .read(characterRepositoryProvider)
@@ -32,6 +68,7 @@ class EditCharacter5ePage extends HookConsumerWidget {
         } else {
           final updatedCharacter = character!.copyWith(
             name: nameController.text,
+            classes: classes,
           );
           await ref
               .read(characterRepositoryProvider)
@@ -63,6 +100,14 @@ class EditCharacter5ePage extends HookConsumerWidget {
                     return 'Please enter a name';
                   }
                   return null;
+                },
+              ),
+              SizedBox(height: 20),
+              Text('Select Classes'),
+              EditCharacterClassesWidget(
+                selectedClasses: selectedClasses.value,
+                onSelectionChanged: (updatedSelection) {
+                  selectedClasses.value = updatedSelection;
                 },
               ),
               SizedBox(height: 20),

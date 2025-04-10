@@ -1,6 +1,7 @@
 import 'package:char_creator/features/5e/character/widgets/grouped_spells_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../spells/view_models/spell_view_model.dart';
@@ -29,12 +30,12 @@ class Character5ePage extends HookConsumerWidget {
         spellViewModels = [];
     }
 
-    final Character5eModelV1? character;
+    final Character5eModelV1 character;
     switch (charactersAsync) {
       case AsyncValue(value: final List<Character5eModelV1> characters):
-        character = characters
+        final foundCharacter = characters
             .firstWhereOrNull((character) => character.id == characterId);
-        if (character == null) {
+        if (foundCharacter == null) {
           return Scaffold(
             appBar: AppBar(
               title: Text('Character'),
@@ -44,6 +45,7 @@ class Character5ePage extends HookConsumerWidget {
             ),
           );
         }
+        character = foundCharacter;
       default:
         return Scaffold(
           appBar: AppBar(
@@ -56,12 +58,22 @@ class Character5ePage extends HookConsumerWidget {
     }
 
     final characterSpells = spellViewModels
-        .where((spell) => character!.spellIds.contains(spell.id))
+        .where((spell) => character!.preparedSpells.contains(spell.id))
         .toList();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(character.name),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              context.go(
+                '/characters/${character.id}/edit',
+              );
+            },
+          ),
+        ],
       ),
       body: GroupedSpellsWidget(
         characterSpells: characterSpells,

@@ -68,6 +68,17 @@ class Navigation {
                         characterId: characterId,
                       );
                     },
+                    routes: [
+                      GoRoute(
+                        path: '/edit',
+                        builder: (context, state) {
+                          final characterId = state.pathParameters['id']!;
+                          return EditCharacter5ePage(
+                            characterId: characterId,
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
