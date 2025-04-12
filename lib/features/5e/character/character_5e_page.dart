@@ -1,3 +1,4 @@
+import 'package:char_creator/features/5e/character/widgets/character_classes_widget.dart';
 import 'package:char_creator/features/5e/character/widgets/grouped_spells_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ class Character5ePage extends HookConsumerWidget {
     }
 
     final characterSpells = spellViewModels
-        .where((spell) => character!.preparedSpells.contains(spell.id))
+        .where((spell) => character.knownSpells.contains(spell.id))
         .toList();
 
     return Scaffold(
@@ -75,9 +76,36 @@ class Character5ePage extends HookConsumerWidget {
           ),
         ],
       ),
-      body: GroupedSpellsWidget(
-        characterSpells: characterSpells,
+      body: Column(
+        children: [
+          if (character.classes.isNotEmpty) _characterClassesWidget(character),
+          Flexible(
+            child: GroupedSpellsWidget(
+              characterSpells: characterSpells,
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  _characterClassesWidget(Character5eModelV1 character) {
+    final classes =
+        character.classes.map((classState) => classState.classModel).toList();
+    final classesWidget = CharacterClassesWidget.viewing(
+      selectedClasses: classes.toSet(),
+    );
+    final title = Text('Classes');
+    if (classes.length <= 3) {
+      return ListTile(
+        title: title,
+        trailing: classesWidget,
+      );
+    } else {
+      return ListTile(
+        title: title,
+        subtitle: classesWidget,
+      );
+    }
   }
 }

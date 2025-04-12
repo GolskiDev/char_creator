@@ -7,7 +7,7 @@ import 'models/character_5e_class_model_v1.dart';
 import 'models/character_5e_class_state_model_v1.dart';
 import 'models/character_5e_model_v1.dart';
 import 'repository/character_repository.dart';
-import 'widgets/edit_character_classes_widget.dart';
+import 'widgets/character_classes_widget.dart';
 
 class EditCharacter5ePage extends HookConsumerWidget {
   final String? characterId;
@@ -103,8 +103,8 @@ class EditCharacter5ePage extends HookConsumerWidget {
                 },
               ),
               SizedBox(height: 20),
-              Text('Select Classes'),
-              EditCharacterClassesWidget(
+              Text('Classes'),
+              CharacterClassesWidget.editing(
                 selectedClasses: selectedClasses.value,
                 onSelectionChanged: (updatedSelection) {
                   selectedClasses.value = updatedSelection;
