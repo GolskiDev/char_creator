@@ -60,6 +60,7 @@ class Character5eModelV1 implements Identifiable {
   Character5eModelV1 copyWith({
     String? name,
     int? level,
+    Set<Character5eClassStateModelV1>? classesStates,
     Set<String>? customSpellIds,
     Set<String>? preparedCustomSpellIds,
   }) {
@@ -74,7 +75,7 @@ class Character5eModelV1 implements Identifiable {
     );
   }
 
-  Character5eClassStateModelV1 addOrUpdateClass(
+  Character5eModelV1 addOrUpdateClass(
     Character5eClassStateModelV1 classState,
   ) {
     final existingClass = _classesStates.firstWhereOrNull(
@@ -88,35 +89,130 @@ class Character5eModelV1 implements Identifiable {
       );
       _classesStates.remove(existingClass);
       _classesStates.add(updatedClass);
-      return updatedClass;
+      return copyWith(
+        classesStates: _classesStates,
+      );
     } else {
       _classesStates.add(classState);
-      return classState;
+      return copyWith(
+        classesStates: _classesStates,
+      );
     }
   }
 
-  Character5eModelV1 addSpellForCharacter(String spellId) {
+  Character5eModelV1 removeClass(
+    Character5eClassStateModelV1 classState,
+  ) {
+    final existingClass = _classesStates.firstWhereOrNull(
+      (element) => element.classModel.id == classState.classModel.id,
+    );
+    if (existingClass != null) {
+      _classesStates.remove(existingClass);
+      return copyWith(
+        classesStates: _classesStates,
+      );
+    } else {
+      throw Exception('Class not found');
+    }
+  }
+
+  Character5eModelV1 addSpellForCharacter({
+    required String spellId,
+    String? classId,
+  }) {
     if (classesStates.isNotEmpty) {
       final classesWithSpell = classesStates.where(
         (classesStates) =>
             classesStates.classModel.availableSpells.contains(spellId),
       );
       if (classesWithSpell.length > 1) {
-        /// TODO: Handle this case
-        throw Exception('Spell $spellId is known by multiple classes');
+        if (classId == null) {
+          throw Exception(
+            'Multiple classes have the spell $spellId, please specify a classId',
+          );
+        }
+
+        /// if character doesn't have the class
+        if (!classesWithSpell
+            .any((element) => element.classModel.id == classId)) {
+          throw Exception(
+            'Character does not have the class $classId',
+          );
+        }
+
+        /// if character has the class
+        /// but the class doesn't have the spell
+        /// This case - probably won't happen
+        if (!classesWithSpell
+            .firstWhere((element) => element.classModel.id == classId)
+            .classModel
+            .availableSpells
+            .contains(spellId)) {
+          throw Exception(
+            'Class $classId does not have the spell $spellId',
+          );
+        }
+        final classState = classesWithSpell
+            .firstWhere((element) => element.classModel.id == classId);
+        final updatedClass = classState.copyWith(
+          knownSpells: {...classState.knownSpells, spellId},
+          preparedSpells: {...classState.preparedSpells, spellId},
+        );
+        return addOrUpdateClass(updatedClass);
       }
       if (classesWithSpell.length == 1) {
         final classState = classesWithSpell.first;
-        classState.copyWith(
-          knownSpells: classState.knownSpells..add(spellId),
-          preparedSpells: classState.preparedSpells..add(spellId),
+        final updatedClass = classState.copyWith(
+          knownSpells: {...classState.knownSpells, spellId},
+          preparedSpells: {...classState.preparedSpells, spellId},
         );
+        return addOrUpdateClass(updatedClass);
       }
     }
     return copyWith(
-      customSpellIds: customSpellIds..add(spellId),
-      preparedCustomSpellIds: preparedCustomSpellIds..add(spellId),
+      customSpellIds: {...customSpellIds, spellId},
+      preparedCustomSpellIds: {
+        ...preparedCustomSpellIds,
+        spellId,
+      },
     );
+  }
+
+  Character5eModelV1 removeSpellForCharacter({
+    required String spellId,
+    required String? classId,
+    required bool onlyUnprepare,
+  }) {
+    if (classId != null) {
+      final classState = classesStates.firstWhereOrNull(
+        (element) => element.classModel.id == classId,
+      );
+      if (classState == null) {
+        throw Exception('Class $classId not found');
+      }
+      if (onlyUnprepare) {
+        final updatedClass = classState.copyWith(
+          preparedSpells: {...classState.preparedSpells}..remove(spellId),
+        );
+        return addOrUpdateClass(updatedClass);
+      }
+      final updatedClass = classState.copyWith(
+        knownSpells: {...classState.knownSpells}..remove(spellId),
+        preparedSpells: {...classState.preparedSpells}..remove(spellId),
+      );
+      return addOrUpdateClass(updatedClass);
+    } else {
+      if (onlyUnprepare) {
+        return copyWith(
+          preparedCustomSpellIds: {...preparedCustomSpellIds}..remove(spellId),
+        );
+      } else {
+        return copyWith(
+          customSpellIds: {...customSpellIds}..remove(spellId),
+          preparedCustomSpellIds: {...preparedCustomSpellIds}..remove(spellId),
+        );
+      }
+    }
   }
 
   Map<String, dynamic> toJson() {
