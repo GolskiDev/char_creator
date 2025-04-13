@@ -52,31 +52,80 @@ class ListOfSpellsPage extends HookConsumerWidget {
           )
         : [];
 
-    addToCharacterWidgetBuilder(SpellViewModel spell) => IconButton(
-          icon: selectedCharacter != null &&
-                  selectedCharacter.knownSpells.contains(spell.id)
-              ? const Icon(Symbols.person_check)
-              : const Icon(Symbols.add),
-          onPressed: () async {
-            if (selectedCharacter != null) {
-              final updatedCharacter = selectedCharacter.copyWith(
-                customSpellIds: selectedCharacter.customSpellIds..add(spell.id),
+    addToCharacterWidgetBuilder(SpellViewModel spell) {
+      final isSpellAdded = selectedCharacter != null &&
+          selectedCharacter.knownSpells.contains(spell.id);
+      return IconButton(
+        icon: isSpellAdded
+            ? const Icon(Symbols.person_check)
+            : const Icon(Symbols.add),
+        onPressed: () async {
+          if (selectedCharacter != null) {
+            Character5eModelV1 updatedCharacter;
+            if (isSpellAdded) {
+              updatedCharacter = selectedCharacter.removeSpellForCharacter(
+                spellId: spell.id,
+                onlyUnprepare: false,
               );
-              await ref
-                  .read(characterRepositoryProvider)
-                  .updateCharacter(updatedCharacter);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Added ${spell.name} to ${selectedCharacter.name}',
-                    ),
-                  ),
+            } else {
+              try {
+                updatedCharacter = selectedCharacter.addSpellForCharacter(
+                  spellId: spell.id,
+                );
+              } on MultipleClassesWithSpellFoundException catch (_) {
+                // showDialogToPickClass
+                final selectedClassId = await showDialog<String?>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Select Class'),
+                      content: SingleChildScrollView(
+                        child: ListBody(
+                          children: selectedCharacter.classesStates.map(
+                            (classState) {
+                              final classModel = classState.classModel;
+                              return RadioListTile<String>(
+                                title: Text(classModel.className ?? ''),
+                                value: classModel.id,
+                                groupValue: selectedCharacterId.value,
+                                onChanged: (value) {
+                                  Navigator.of(context).pop(value);
+                                },
+                              );
+                            },
+                          ).toList(),
+                        ),
+                      ),
+                    );
+                  },
+                );
+                if (selectedClassId == null) {
+                  return;
+                }
+                updatedCharacter = selectedCharacter.addSpellForCharacter(
+                  spellId: spell.id,
+                  classId: selectedClassId,
                 );
               }
             }
-          },
-        );
+            await ref
+                .read(characterRepositoryProvider)
+                .updateCharacter(updatedCharacter);
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    isSpellAdded
+                        ? 'Removed ${spell.name} from ${selectedCharacter.name}'
+                        : 'Added ${spell.name} to ${selectedCharacter.name}',
+                  ),
+                ),
+              );
+            }
+          }
+        },
+      );
+    }
 
     final isAddToCharacterEnabled = selectedCharacter != null;
 

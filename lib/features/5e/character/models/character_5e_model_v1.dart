@@ -3,6 +3,11 @@ import 'package:collection/collection.dart';
 
 import 'character_5e_class_state_model_v1.dart';
 
+class MultipleClassesWithSpellFoundException implements Exception {
+  final String message;
+  MultipleClassesWithSpellFoundException(this.message);
+}
+
 class Character5eModelV1 implements Identifiable {
   @override
   final String id;
@@ -116,6 +121,10 @@ class Character5eModelV1 implements Identifiable {
     }
   }
 
+  /// First tries to add the spell to the class
+  /// then adds the spell to the character
+  /// if the class doesn't have the spell
+  /// throws [MultipleClassesWithSpellFoundException] if multiple classes with the same spell are found
   Character5eModelV1 addSpellForCharacter({
     required String spellId,
     String? classId,
@@ -127,8 +136,8 @@ class Character5eModelV1 implements Identifiable {
       );
       if (classesWithSpell.length > 1) {
         if (classId == null) {
-          throw Exception(
-            'Multiple classes have the spell $spellId, please specify a classId',
+          throw MultipleClassesWithSpellFoundException(
+            'Multiple classes with spell $spellId found. Please specify classId.',
           );
         }
 
@@ -180,16 +189,14 @@ class Character5eModelV1 implements Identifiable {
 
   Character5eModelV1 removeSpellForCharacter({
     required String spellId,
-    required String? classId,
     required bool onlyUnprepare,
   }) {
-    if (classId != null) {
-      final classState = classesStates.firstWhereOrNull(
-        (element) => element.classModel.id == classId,
-      );
-      if (classState == null) {
-        throw Exception('Class $classId not found');
-      }
+    final classState = classesStates.firstWhereOrNull(
+      (classesStates) =>
+          classesStates.knownSpells.contains(spellId) ||
+          classesStates.preparedSpells.contains(spellId),
+    );
+    if (classState != null) {
       if (onlyUnprepare) {
         final updatedClass = classState.copyWith(
           preparedSpells: {...classState.preparedSpells}..remove(spellId),
@@ -201,17 +208,17 @@ class Character5eModelV1 implements Identifiable {
         preparedSpells: {...classState.preparedSpells}..remove(spellId),
       );
       return addOrUpdateClass(updatedClass);
+    }
+
+    if (onlyUnprepare) {
+      return copyWith(
+        preparedCustomSpellIds: {...preparedCustomSpellIds}..remove(spellId),
+      );
     } else {
-      if (onlyUnprepare) {
-        return copyWith(
-          preparedCustomSpellIds: {...preparedCustomSpellIds}..remove(spellId),
-        );
-      } else {
-        return copyWith(
-          customSpellIds: {...customSpellIds}..remove(spellId),
-          preparedCustomSpellIds: {...preparedCustomSpellIds}..remove(spellId),
-        );
-      }
+      return copyWith(
+        customSpellIds: {...customSpellIds}..remove(spellId),
+        preparedCustomSpellIds: {...preparedCustomSpellIds}..remove(spellId),
+      );
     }
   }
 

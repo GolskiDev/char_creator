@@ -22,180 +22,175 @@ class GroupedSpellsWidget extends HookConsumerWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _buildGroupingSelector(selectedGrouping),
-        Expanded(
-          child: ListView(
-            shrinkWrap: true,
-            children: groupedSpells.entries.map(
-              (entry) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: switch (entry.key) {
-                        SpellType type => Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            spacing: 8,
-                            children: [
-                              Icon(type.icon),
-                              Text(
-                                type.title,
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                            ],
-                          ),
-                        Object something => Text(
-                            something.toString(),
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                      },
-                    ),
-                    if (entry.key == 'All Spells')
-                      GridView.builder(
-                        padding: const EdgeInsets.all(8),
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 8,
-                          childAspectRatio: 3 / 4,
-                        ),
-                        itemCount: entry.value.length,
-                        itemBuilder: (context, index) {
-                          final spell = entry.value[index];
-                          return Card(
-                            clipBehavior: Clip.antiAlias,
-                            child: InkWell(
-                              onTap: () {
-                                final spellsInGrouped = groupedSpells.entries
-                                    .expand((e) => e.value)
-                                    .toList();
-                                showSpell(
-                                  context: context,
-                                  spellId: spell.id,
-                                  spells: spellsInGrouped,
-                                );
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (spell.imageUrl != null)
-                                    Flexible(
-                                      child: Hero(
-                                        tag: spell.imageUrl!,
-                                        child: Image.asset(
-                                          spell.imageUrl!,
-                                          fit: BoxFit.cover,
-                                          frameBuilder: (context, child, frame,
-                                              wasSynchronouslyLoaded) {
-                                            if (wasSynchronouslyLoaded) {
-                                              return child;
-                                            }
-                                            return AnimatedOpacity(
-                                              duration: Durations.long1,
-                                              curve: Curves.easeIn,
-                                              opacity: frame == null ? 0 : 1,
-                                              child: child,
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      spell.name,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge,
-                                    ),
-                                  ),
-                                ],
-                              ),
+        ListView(
+          shrinkWrap: true,
+          primary: false,
+          children: groupedSpells.entries.map(
+            (entry) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: switch (entry.key) {
+                      SpellType type => Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          spacing: 8,
+                          children: [
+                            Icon(type.icon),
+                            Text(
+                              type.title,
+                              style: Theme.of(context).textTheme.titleLarge,
                             ),
-                          );
-                        },
-                      )
-                    else
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: entry.value.map(
-                            (spell) {
-                              return Container(
-                                width: 200,
-                                margin: const EdgeInsets.all(8.0),
-                                child: Card(
-                                  clipBehavior: Clip.antiAlias,
-                                  child: InkWell(
-                                    onTap: () {
-                                      final spellsInGrouped = groupedSpells
-                                          .entries
-                                          .expand((e) => e.value)
-                                          .toList();
-                                      showSpell(
-                                        context: context,
-                                        spellId: spell.id,
-                                        spells: spellsInGrouped,
-                                      );
-                                    },
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        if (spell.imageUrl != null)
-                                          Hero(
-                                            tag: spell.imageUrl!,
-                                            child: Image.asset(
-                                              spell.imageUrl!,
-                                              fit: BoxFit.fitWidth,
-                                              frameBuilder: (context,
-                                                  child,
-                                                  frame,
-                                                  wasSynchronouslyLoaded) {
-                                                if (wasSynchronouslyLoaded) {
-                                                  return child;
-                                                }
-                                                return AnimatedOpacity(
-                                                  duration: Durations.long1,
-                                                  curve: Curves.easeIn,
-                                                  opacity:
-                                                      frame == null ? 0 : 1,
-                                                  child: child,
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            spell.name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleLarge,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                          ],
+                        ),
+                      Object something => Text(
+                          something.toString(),
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                    },
+                  ),
+                  if (entry.key == 'All Spells')
+                    GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                        childAspectRatio: 3 / 4,
+                      ),
+                      itemCount: entry.value.length,
+                      itemBuilder: (context, index) {
+                        final spell = entry.value[index];
+                        return Card(
+                          clipBehavior: Clip.antiAlias,
+                          child: InkWell(
+                            onTap: () {
+                              final spellsInGrouped = groupedSpells.entries
+                                  .expand((e) => e.value)
+                                  .toList();
+                              showSpell(
+                                context: context,
+                                spellId: spell.id,
+                                spells: spellsInGrouped,
                               );
                             },
-                          ).toList(),
-                        ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (spell.imageUrl != null)
+                                  Flexible(
+                                    child: Hero(
+                                      tag: spell.imageUrl!,
+                                      child: Image.asset(
+                                        spell.imageUrl!,
+                                        fit: BoxFit.cover,
+                                        frameBuilder: (context, child, frame,
+                                            wasSynchronouslyLoaded) {
+                                          if (wasSynchronouslyLoaded) {
+                                            return child;
+                                          }
+                                          return AnimatedOpacity(
+                                            duration: Durations.long1,
+                                            curve: Curves.easeIn,
+                                            opacity: frame == null ? 0 : 1,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    spell.name,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  else
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: entry.value.map(
+                          (spell) {
+                            return Container(
+                              width: 200,
+                              margin: const EdgeInsets.all(8.0),
+                              child: Card(
+                                clipBehavior: Clip.antiAlias,
+                                child: InkWell(
+                                  onTap: () {
+                                    final spellsInGrouped = groupedSpells
+                                        .entries
+                                        .expand((e) => e.value)
+                                        .toList();
+                                    showSpell(
+                                      context: context,
+                                      spellId: spell.id,
+                                      spells: spellsInGrouped,
+                                    );
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      if (spell.imageUrl != null)
+                                        Hero(
+                                          tag: spell.imageUrl!,
+                                          child: Image.asset(
+                                            spell.imageUrl!,
+                                            fit: BoxFit.fitWidth,
+                                            frameBuilder: (context, child,
+                                                frame, wasSynchronouslyLoaded) {
+                                              if (wasSynchronouslyLoaded) {
+                                                return child;
+                                              }
+                                              return AnimatedOpacity(
+                                                duration: Durations.long1,
+                                                curve: Curves.easeIn,
+                                                opacity: frame == null ? 0 : 1,
+                                                child: child,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          spell.name,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ).toList(),
                       ),
-                  ],
-                );
-              },
-            ).toList(),
-          ),
+                    ),
+                ],
+              );
+            },
+          ).toList(),
         ),
       ],
     );

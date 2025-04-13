@@ -1,13 +1,15 @@
 import 'package:char_creator/features/5e/character/widgets/character_classes_widget.dart';
-import 'package:char_creator/features/5e/character/widgets/grouped_spells_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../spells/view_models/spell_view_model.dart';
 import 'models/character_5e_model_v1.dart';
 import 'repository/character_repository.dart';
+import 'widgets/grouped_spells_widget.dart';
 
 class Character5ePage extends HookConsumerWidget {
   final String characterId;
@@ -62,6 +64,8 @@ class Character5ePage extends HookConsumerWidget {
         .where((spell) => character.knownSpells.contains(spell.id))
         .toList();
 
+    final spellOpenedState = useState(false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(character.name),
@@ -76,16 +80,40 @@ class Character5ePage extends HookConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          if (character.classesStates.isNotEmpty)
-            _characterClassesWidget(character),
-          Flexible(
-            child: GroupedSpellsWidget(
-              characterSpells: characterSpells,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            if (character.classesStates.isNotEmpty) ...[
+              _characterClassesWidget(character),
+              const Divider(),
+            ],
+            ExpansionPanelList(
+              expansionCallback: (panelIndex, isExpanded) {
+                spellOpenedState.value = !spellOpenedState.value;
+              },
+              children: [
+                ExpansionPanel(
+                  isExpanded: spellOpenedState.value,
+                  headerBuilder: (context, isExpanded) {
+                    return ListTile(
+                      leading: const Icon(Symbols.magic_button),
+                      title: Text('Spells'),
+                      trailing: isExpanded
+                          ? IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {},
+                            )
+                          : null,
+                    );
+                  },
+                  body: GroupedSpellsWidget(
+                    characterSpells: characterSpells,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
