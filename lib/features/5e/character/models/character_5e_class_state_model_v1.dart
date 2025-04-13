@@ -16,7 +16,6 @@ class Character5eClassStateModelV1 {
   });
 
   Character5eClassStateModelV1.empty({
-    required String id,
     required ICharacter5eClassModelV1 classModel,
     int classLevel = 1,
     Set<String>? knownSpells,

@@ -73,7 +73,7 @@ class Character5eModelV1 implements Identifiable {
       id: id,
       level: level ?? _level,
       name: name ?? _name,
-      classesStates: _classesStates,
+      classesStates: classesStates ?? _classesStates,
       customSpellIds: customSpellIds ?? this.customSpellIds,
       preparedCustomSpellIds:
           preparedCustomSpellIds ?? this.preparedCustomSpellIds,

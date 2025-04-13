@@ -53,7 +53,6 @@ class EditCharacter5ePage extends HookConsumerWidget {
       if (_formKey.currentState!.validate()) {
         final classes = selectedClasses.value.map((classModel) {
           return Character5eClassStateModelV1.empty(
-            id: classModel.id,
             classModel: classModel,
             classLevel: 1,
           );
@@ -70,6 +69,7 @@ class EditCharacter5ePage extends HookConsumerWidget {
         } else {
           final updatedCharacter = character!.copyWith(
             name: nameController.text,
+            classesStates: classes,
           );
           await ref
               .read(characterRepositoryProvider)
