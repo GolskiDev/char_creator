@@ -78,7 +78,8 @@ class Character5ePage extends HookConsumerWidget {
       ),
       body: Column(
         children: [
-          if (character.classes.isNotEmpty) _characterClassesWidget(character),
+          if (character.classesStates.isNotEmpty)
+            _characterClassesWidget(character),
           Flexible(
             child: GroupedSpellsWidget(
               characterSpells: characterSpells,
@@ -90,8 +91,9 @@ class Character5ePage extends HookConsumerWidget {
   }
 
   _characterClassesWidget(Character5eModelV1 character) {
-    final classes =
-        character.classes.map((classState) => classState.classModel).toList();
+    final classes = character.classesStates
+        .map((classState) => classState.classModel)
+        .toList();
     final classesWidget = CharacterClassesWidget.viewing(
       selectedClasses: classes.toSet(),
     );

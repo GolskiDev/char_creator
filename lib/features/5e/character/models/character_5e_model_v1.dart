@@ -8,8 +8,8 @@ class Character5eModelV1 implements Identifiable {
   final String id;
   final String? _name;
   final int? _level;
-  final Set<Character5eClassStateModelV1> _classes;
-  Set<Character5eClassStateModelV1> get classes => _classes;
+  final Set<Character5eClassStateModelV1> _classesStates;
+  Set<Character5eClassStateModelV1> get classesStates => _classesStates;
 
   /// Custom spells for character not saved in class
   final Set<String> customSpellIds;
@@ -17,13 +17,15 @@ class Character5eModelV1 implements Identifiable {
 
   Set<String> get knownSpells {
     return {
-      ..._classes.map((e) => e.knownSpells).expand((element) => element),
+      ..._classesStates.map((e) => e.knownSpells).expand((element) => element),
       ...customSpellIds,
     };
   }
 
   Set<String> get preparedSpells => {
-        ..._classes.map((e) => e.preparedSpells).expand((element) => element),
+        ..._classesStates
+            .map((e) => e.preparedSpells)
+            .expand((element) => element),
         ...preparedCustomSpellIds,
       };
 
@@ -33,12 +35,12 @@ class Character5eModelV1 implements Identifiable {
     required this.id,
     required String? name,
     int? level,
-    Set<Character5eClassStateModelV1>? classes,
+    Set<Character5eClassStateModelV1>? classesStates,
     this.customSpellIds = const {},
     this.preparedCustomSpellIds = const {},
   })  : _level = level,
         _name = name,
-        _classes = classes ?? const {};
+        _classesStates = classesStates ?? const {};
 
   Character5eModelV1.empty({
     required String name,
@@ -50,7 +52,7 @@ class Character5eModelV1 implements Identifiable {
           id: IdGenerator.generateId(Character5eModelV1),
           name: name,
           level: level,
-          classes: classes ?? const {},
+          classesStates: classes ?? const {},
           customSpellIds: customSpellIds ?? const {},
           preparedCustomSpellIds: preparedCustomSpellIds ?? const {},
         );
@@ -58,7 +60,6 @@ class Character5eModelV1 implements Identifiable {
   Character5eModelV1 copyWith({
     String? name,
     int? level,
-    Set<Character5eClassStateModelV1>? classes,
     Set<String>? customSpellIds,
     Set<String>? preparedCustomSpellIds,
   }) {
@@ -66,10 +67,55 @@ class Character5eModelV1 implements Identifiable {
       id: id,
       level: level ?? _level,
       name: name ?? _name,
-      classes: classes ?? _classes,
+      classesStates: _classesStates,
       customSpellIds: customSpellIds ?? this.customSpellIds,
       preparedCustomSpellIds:
           preparedCustomSpellIds ?? this.preparedCustomSpellIds,
+    );
+  }
+
+  Character5eClassStateModelV1 addOrUpdateClass(
+    Character5eClassStateModelV1 classState,
+  ) {
+    final existingClass = _classesStates.firstWhereOrNull(
+      (element) => element.classModel.id == classState.classModel.id,
+    );
+    if (existingClass != null) {
+      final updatedClass = existingClass.copyWith(
+        classLevel: classState.classLevel,
+        knownSpells: classState.knownSpells,
+        preparedSpells: classState.preparedSpells,
+      );
+      _classesStates.remove(existingClass);
+      _classesStates.add(updatedClass);
+      return updatedClass;
+    } else {
+      _classesStates.add(classState);
+      return classState;
+    }
+  }
+
+  Character5eModelV1 addSpellForCharacter(String spellId) {
+    if (classesStates.isNotEmpty) {
+      final classesWithSpell = classesStates.where(
+        (classesStates) =>
+            classesStates.classModel.availableSpells.contains(spellId),
+      );
+      if (classesWithSpell.length > 1) {
+        /// TODO: Handle this case
+        throw Exception('Spell $spellId is known by multiple classes');
+      }
+      if (classesWithSpell.length == 1) {
+        final classState = classesWithSpell.first;
+        classState.copyWith(
+          knownSpells: classState.knownSpells..add(spellId),
+          preparedSpells: classState.preparedSpells..add(spellId),
+        );
+      }
+    }
+    return copyWith(
+      customSpellIds: customSpellIds..add(spellId),
+      preparedCustomSpellIds: preparedCustomSpellIds..add(spellId),
     );
   }
 
@@ -78,7 +124,7 @@ class Character5eModelV1 implements Identifiable {
       'id': id,
       'level': _level,
       'name': _name,
-      'classes': _classes.map((e) => e.toMap()).toList(),
+      'classes': _classesStates.map((e) => e.toMap()).toList(),
       'customSpellIds': customSpellIds.toList(),
       'preparedCustomSpellIds': preparedCustomSpellIds.toList(),
     };
@@ -89,7 +135,7 @@ class Character5eModelV1 implements Identifiable {
       id: json['id'],
       level: json['level'],
       name: json['name'],
-      classes: (json['classes'] as List?)
+      classesStates: (json['classes'] as List?)
           ?.map((e) => Character5eClassStateModelV1.fromMap(e))
           .toSet(),
       customSpellIds: Set<String>.from(json['customSpellIds'] ?? {}),
@@ -104,7 +150,7 @@ class Character5eModelV1 implements Identifiable {
         other.id == id &&
         other._level == _level &&
         other._name == _name &&
-        SetEquality().equals(other._classes, _classes) &&
+        SetEquality().equals(other._classesStates, _classesStates) &&
         SetEquality().equals(other.customSpellIds, customSpellIds) &&
         SetEquality()
             .equals(other.preparedCustomSpellIds, preparedCustomSpellIds);
@@ -115,7 +161,7 @@ class Character5eModelV1 implements Identifiable {
     return id.hashCode ^
         _level.hashCode ^
         _name.hashCode ^
-        SetEquality().hash(_classes) ^
+        SetEquality().hash(_classesStates) ^
         SetEquality().hash(customSpellIds) ^
         SetEquality().hash(preparedCustomSpellIds);
   }

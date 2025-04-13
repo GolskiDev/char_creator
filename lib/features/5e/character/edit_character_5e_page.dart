@@ -43,7 +43,9 @@ class EditCharacter5ePage extends HookConsumerWidget {
 
     final nameController = useTextEditingController(text: character?.name);
     final selectedClasses = useState<Set<ICharacter5eClassModelV1>>(
-      character?.classes.map((classState) => classState.classModel).toSet() ??
+      character?.classesStates
+              .map((classState) => classState.classModel)
+              .toSet() ??
           const {},
     );
 
@@ -68,7 +70,6 @@ class EditCharacter5ePage extends HookConsumerWidget {
         } else {
           final updatedCharacter = character!.copyWith(
             name: nameController.text,
-            classes: classes,
           );
           await ref
               .read(characterRepositoryProvider)
