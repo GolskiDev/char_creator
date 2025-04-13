@@ -14,18 +14,22 @@ import 'widgets/add_to_character_menu.dart';
 import 'widgets/spell_filter_drawer.dart';
 
 class ListOfSpellsPage extends HookConsumerWidget {
-  const ListOfSpellsPage({super.key});
+  final String? targetCharacterId;
+  const ListOfSpellsPage({
+    this.targetCharacterId,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allCantrips = ref.watch(spellViewModelsProvider);
+    final allSpells = ref.watch(spellViewModelsProvider);
     final allCharactersAsync = ref.watch(charactersStreamProvider);
 
     final spellFilters = useState(
       SpellModelFiltersState(),
     );
 
-    final selectedCharacterId = useState<String?>(null);
+    final selectedCharacterId = useState<String?>(targetCharacterId);
 
     final List<Character5eModelV1> characters;
     switch (allCharactersAsync) {
@@ -217,7 +221,8 @@ class ListOfSpellsPage extends HookConsumerWidget {
 
     return Scaffold(
       endDrawer: spellFilterDrawer(
-        allCantrips,
+        allSpells,
+        characters,
         spellFilters,
       ),
       appBar: AppBar(
@@ -258,7 +263,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
               },
               child: const Icon(Icons.search),
             ),
-      body: allCantrips.when(
+      body: allSpells.when(
         data: (cantrips) {
           final filteredSpells =
               spellFilters.value.filterSpells(cantrips.map((e) => e).toList());
@@ -318,14 +323,18 @@ class ListOfSpellsPage extends HookConsumerWidget {
   }
 
   SpellFilterDrawer spellFilterDrawer(
-      AsyncValue<List<SpellViewModel>> allCantrips,
-      ValueNotifier<SpellModelFiltersState> spellFilters) {
+    AsyncValue<List<SpellViewModel>> allCantrips,
+    List<Character5eModelV1> characters,
+    ValueNotifier<SpellModelFiltersState> spellFilters,
+  ) {
     return SpellFilterDrawer(
       allSpellModels: allCantrips.when(
+        skipLoadingOnReload: true,
         data: (cantrips) => cantrips.toList(),
         loading: () => [],
         error: (error, stack) => [],
       ),
+      characters: characters,
       filters: spellFilters.value,
       onRequiresConcentrationChanged: (requiresConcentration) {
         spellFilters.value = spellFilters.value.copyWith(
@@ -396,6 +405,11 @@ class ListOfSpellsPage extends HookConsumerWidget {
           (Set<ICharacter5eClassModelV1> characterClasses) {
         spellFilters.value = spellFilters.value.copyWith(
           characterClasses: characterClasses,
+        );
+      },
+      onCharacterChanged: (character) {
+        spellFilters.value = spellFilters.value.copyWith(
+          characterSetter: () => character,
         );
       },
     );

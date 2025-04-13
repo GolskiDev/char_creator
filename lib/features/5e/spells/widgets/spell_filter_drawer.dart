@@ -6,10 +6,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 import '../../character/models/character_5e_class_model_v1.dart';
+import '../../character/models/character_5e_model_v1.dart';
 import '../view_models/spell_view_model.dart';
 
 class SpellFilterDrawer extends HookConsumerWidget {
   final List<SpellViewModel> allSpellModels;
+  final List<Character5eModelV1> characters;
   final SpellModelFiltersState filters;
 
   final Function(bool? requiresConcentration) onRequiresConcentrationChanged;
@@ -28,10 +30,12 @@ class SpellFilterDrawer extends HookConsumerWidget {
   final Function(Set<SpellType> spellTypes) onSpellTypesChanged;
   final Function(Set<ICharacter5eClassModelV1> characterClasses)
       onCharacterClassesChanged;
+  final Function(Character5eModelV1? character) onCharacterChanged;
 
   const SpellFilterDrawer({
     super.key,
     required this.allSpellModels,
+    required this.characters,
     required this.filters,
     required this.onRequiresConcentrationChanged,
     required this.onCanBeCastAsRitualChanged,
@@ -45,6 +49,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
     required this.onSpellLevelChanged,
     required this.onSpellTypesChanged,
     required this.onCharacterClassesChanged,
+    required this.onCharacterChanged,
   });
 
   @override
@@ -66,6 +71,10 @@ class SpellFilterDrawer extends HookConsumerWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
+              if (characters.isNotEmpty) ...[
+                Divider(),
+                _buildCharacterFilter(context),
+              ],
               Divider(),
               _buildSpellTypeFilter(context),
               Divider(),
@@ -95,6 +104,44 @@ class SpellFilterDrawer extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildCharacterFilter(
+    BuildContext context,
+  ) {
+    return ExpansionTile(
+      initiallyExpanded: filters.characterClasses.isNotEmpty,
+      childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
+      title: Row(
+        children: [
+          Icon(Symbols.person),
+          const SizedBox(width: 16),
+          Text('Character', style: Theme.of(context).textTheme.titleMedium),
+        ],
+      ),
+      children: [
+        Wrap(
+          spacing: 8,
+          alignment: WrapAlignment.start,
+          children: characters
+              .map(
+                (character) => FilterChip(
+                  visualDensity: VisualDensity.compact,
+                  label: Text(character.name),
+                  selected: filters.character == character,
+                  onSelected: (selected) {
+                    onCharacterChanged(selected ? character : null);
+                  },
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+
+  bool get _isCharacterFilterUsed {
+    return filters.character != null;
   }
 
   Widget _buildConcentrationFilter() {
@@ -509,6 +556,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
 
   _buildClassTypeFilter(BuildContext context) {
     return ExpansionTile(
+      enabled: !_isCharacterFilterUsed,
       initiallyExpanded: filters.characterClasses.isNotEmpty,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(

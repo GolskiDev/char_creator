@@ -1,3 +1,5 @@
+import 'package:char_creator/features/5e/character/models/character_5e_model_v1.dart';
+
 import '../../character/models/character_5e_class_model_v1.dart';
 import '../../tags.dart';
 import '../view_models/spell_view_model.dart';
@@ -16,6 +18,7 @@ class SpellModelFiltersState {
   final Set<int> spellLevels;
   final Set<SpellType> spellTypes;
   final Set<ICharacter5eClassModelV1> characterClasses;
+  final Character5eModelV1? character;
 
   SpellModelFiltersState({
     this.searchText,
@@ -31,6 +34,7 @@ class SpellModelFiltersState {
     this.spellLevels = const {},
     this.spellTypes = const {},
     this.characterClasses = const {},
+    this.character,
   });
 
   SpellModelFiltersState copyWith({
@@ -47,6 +51,7 @@ class SpellModelFiltersState {
     Set<int>? spellLevels,
     Set<SpellType>? spellTypes,
     Set<ICharacter5eClassModelV1>? characterClasses,
+    Character5eModelV1? Function()? characterSetter,
   }) {
     return SpellModelFiltersState(
       searchText: searchTextSetter != null ? searchTextSetter() : searchText,
@@ -72,6 +77,7 @@ class SpellModelFiltersState {
       spellLevels: spellLevels ?? this.spellLevels,
       spellTypes: spellTypes ?? this.spellTypes,
       characterClasses: characterClasses ?? this.characterClasses,
+      character: characterSetter != null ? characterSetter() : character,
     );
   }
 
@@ -196,9 +202,21 @@ class SpellModelFiltersState {
             .any((characterClass) => classes.contains(characterClass));
   }
 
+  bool spellIsForCharacter(SpellViewModel spell) {
+    if (character == null) {
+      return true;
+    }
+
+    final spellIsAvailableForAnyCharacterClass = character!.classesStates.any(
+      (classState) => classState.classModel.availableSpells.contains(spell.id),
+    );
+    return spellIsAvailableForAnyCharacterClass;
+  }
+
   List<SpellViewModel> filterSpells(
     List<SpellViewModel> spells,
   ) {
+    final isCharacterFilterUsed = character != null;
     return spells.where(
       (spell) {
         return (spellNameContainsSearchText(spell.name) ||
@@ -214,7 +232,9 @@ class SpellModelFiltersState {
             spellMatchesDuration(spell.duration?.id) &&
             spellMatchesLevel(spell.spellLevel) &&
             spellInType(spell.spellTypes) &&
-            spellMatchesCharacterClasses(spell.characterClasses);
+            (isCharacterFilterUsed
+                ? spellIsForCharacter(spell)
+                : spellMatchesCharacterClasses(spell.characterClasses));
       },
     ).toList();
   }
