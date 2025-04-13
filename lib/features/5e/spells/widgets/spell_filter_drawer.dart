@@ -110,7 +110,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
     BuildContext context,
   ) {
     return ExpansionTile(
-      initiallyExpanded: filters.characterClasses.isNotEmpty,
+      initiallyExpanded: filters.character != null,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [

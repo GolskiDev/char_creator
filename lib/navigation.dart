@@ -78,6 +78,15 @@ class Navigation {
                           );
                         },
                       ),
+                      GoRoute(
+                        path: '/addSpells',
+                        builder: (context, state) {
+                          final characterId = state.pathParameters['id']!;
+                          return ListOfSpellsPage(
+                            targetCharacterId: characterId,
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ],

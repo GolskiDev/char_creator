@@ -25,10 +25,6 @@ class ListOfSpellsPage extends HookConsumerWidget {
     final allSpells = ref.watch(spellViewModelsProvider);
     final allCharactersAsync = ref.watch(charactersStreamProvider);
 
-    final spellFilters = useState(
-      SpellModelFiltersState(),
-    );
-
     final selectedCharacterId = useState<String?>(targetCharacterId);
 
     final List<Character5eModelV1> characters;
@@ -43,6 +39,12 @@ class ListOfSpellsPage extends HookConsumerWidget {
 
     final selectedCharacter = characters.firstWhereOrNull(
       (element) => element.id == selectedCharacterId.value,
+    );
+
+    final spellFilters = useState(
+      SpellModelFiltersState(
+        character: targetCharacterId != null ? selectedCharacter : null,
+      ),
     );
 
     final List<RadioMenuButton> addToCharacterEntries = characters.isNotEmpty

@@ -101,7 +101,11 @@ class Character5ePage extends HookConsumerWidget {
                       trailing: isExpanded
                           ? IconButton(
                               icon: const Icon(Icons.edit),
-                              onPressed: () {},
+                              onPressed: () {
+                                context.go(
+                                  '/characters/${character.id}/addSpells',
+                                );
+                              },
                             )
                           : null,
                     );
