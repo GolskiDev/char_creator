@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:char_creator/features/5e/character/repository/character_classes_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -13,7 +17,7 @@ class UtilsPage extends HookConsumerWidget {
           ListTile(
             title: const Text('print'),
             onTap: () {
-              print(context, ref);
+              debugPrint(context, ref);
             },
           ),
         ],
@@ -21,8 +25,17 @@ class UtilsPage extends HookConsumerWidget {
     );
   }
 
-  print(
+  debugPrint(
     BuildContext context,
     WidgetRef ref,
-  ) async {}
+  ) async {
+    final characterClasses =
+        await ref.read(characterClassesStreamProvider.future);
+    characterClasses.forEach(
+      (element) {
+        final json = jsonEncode(element.toMap());
+        log(json);
+      },
+    );
+  }
 }

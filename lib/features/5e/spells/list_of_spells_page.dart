@@ -6,8 +6,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../character/models/character_5e_class_model_v1.dart';
 import '../character/models/character_5e_model_v1.dart';
-import '../srd_classes/srd_character_class.dart';
 import 'spell_card_page.dart';
 import 'view_models/spell_view_model.dart';
 import 'widgets/add_to_character_menu.dart';
@@ -392,7 +392,8 @@ class ListOfSpellsPage extends HookConsumerWidget {
           spellTypes: spellTypes,
         );
       },
-      onCharacterClassesChanged: (Set<CharacterClass> characterClasses) {
+      onCharacterClassesChanged:
+          (Set<ICharacter5eClassModelV1> characterClasses) {
         spellFilters.value = spellFilters.value.copyWith(
           characterClasses: characterClasses,
         );

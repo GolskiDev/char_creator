@@ -1,7 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../../srd_classes/srd_character_class.dart';
+import '../../character/models/character_5e_class_model_v1.dart';
+import '../../character/repository/character_classes_repository.dart';
 import '../../tags.dart';
 import '../models/spell_casting_time.dart';
 import '../models/spell_duration.dart';
@@ -13,6 +14,8 @@ import '../utils/spell_utils.dart';
 final spellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
   (ref) async {
     final open5eSpellModels = await ref.watch(allSRDSpellsProvider.future);
+    final characterClasses =
+        await ref.watch(characterClassesStreamProvider.future);
     final spellTypes = SpellTags.spellTypes;
 
     final spellViewModelsFutures = open5eSpellModels.map(
@@ -31,9 +34,9 @@ final spellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
         return spellViewModel.copyWith(
           imageUrl: spellImageUrl,
           spellTypes: spellType,
-          classes: CharacterClass.values.where(
+          classes: characterClasses.where(
             (characterClass) {
-              return characterClass.classSpellsIds.contains(
+              return characterClass.availableSpells.contains(
                 spellViewModel.id,
               );
             },
@@ -73,7 +76,7 @@ class SpellViewModel {
   final String? imageUrl;
 
   final Set<SpellType> spellTypes;
-  final Set<CharacterClass> characterClasses;
+  final Set<ICharacter5eClassModelV1> characterClasses;
 
   SpellViewModel({
     required this.id,
@@ -112,7 +115,7 @@ class SpellViewModel {
     SpellCastingTime? castingTime,
     String? imageUrl,
     Set<SpellType>? spellTypes,
-    Set<CharacterClass>? classes,
+    Set<ICharacter5eClassModelV1>? classes,
   }) {
     return SpellViewModel(
       id: id ?? this.id,

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
-import '../../srd_classes/srd_character_class.dart';
+import '../../character/models/character_5e_class_model_v1.dart';
 import '../view_models/spell_view_model.dart';
 
 class SpellFilterDrawer extends HookConsumerWidget {
@@ -26,7 +26,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
   final Function(Set<String> durationIds) onDurationChanged;
   final Function(Set<int> spellLevels) onSpellLevelChanged;
   final Function(Set<SpellType> spellTypes) onSpellTypesChanged;
-  final Function(Set<CharacterClass> characterClasses)
+  final Function(Set<ICharacter5eClassModelV1> characterClasses)
       onCharacterClassesChanged;
 
   const SpellFilterDrawer({
@@ -528,11 +528,11 @@ class SpellFilterDrawer extends HookConsumerWidget {
               .map((characterClass) {
             return FilterChip(
               visualDensity: VisualDensity.compact,
-              label: Text(characterClass.toString()),
+              label: Text(characterClass.className.toString()),
               selected: filters.characterClasses.contains(characterClass),
               onSelected: (selected) {
-                final updatedClasses =
-                    Set<CharacterClass>.from(filters.characterClasses);
+                final updatedClasses = Set<ICharacter5eClassModelV1>.from(
+                    filters.characterClasses);
                 if (selected) {
                   updatedClasses.add(characterClass);
                 } else {

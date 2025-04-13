@@ -1,4 +1,4 @@
-import '../../srd_classes/srd_character_class.dart';
+import '../../character/models/character_5e_class_model_v1.dart';
 import '../../tags.dart';
 import '../view_models/spell_view_model.dart';
 
@@ -15,7 +15,7 @@ class SpellModelFiltersState {
   final Set<String> durationIds;
   final Set<int> spellLevels;
   final Set<SpellType> spellTypes;
-  final Set<CharacterClass> characterClasses;
+  final Set<ICharacter5eClassModelV1> characterClasses;
 
   SpellModelFiltersState({
     this.searchText,
@@ -46,7 +46,7 @@ class SpellModelFiltersState {
     Set<String>? durationIds,
     Set<int>? spellLevels,
     Set<SpellType>? spellTypes,
-    Set<CharacterClass>? characterClasses,
+    Set<ICharacter5eClassModelV1>? characterClasses,
   }) {
     return SpellModelFiltersState(
       searchText: searchTextSetter != null ? searchTextSetter() : searchText,
@@ -186,7 +186,7 @@ class SpellModelFiltersState {
         );
   }
 
-  bool spellMatchesCharacterClasses(Set<CharacterClass>? classes) {
+  bool spellMatchesCharacterClasses(Set<ICharacter5eClassModelV1>? classes) {
     if (characterClasses.isEmpty) {
       return true;
     }
