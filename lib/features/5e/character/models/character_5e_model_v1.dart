@@ -1,7 +1,12 @@
 import 'package:char_creator/common/interfaces/identifiable.dart';
+import 'package:char_creator/features/5e/character/models/character_5e_ability_scores.dart';
+import 'package:char_creator/features/5e/character/models/character_5e_saving_throws.dart';
+import 'package:char_creator/features/5e/character/models/character_5e_skills.dart';
 import 'package:collection/collection.dart';
 
 import 'character_5e_class_state_model_v1.dart';
+import 'character_5e_others.dart';
+import 'conditions_5e.dart';
 
 class MultipleClassesWithSpellFoundException implements Exception {
   final String message;
@@ -15,6 +20,13 @@ class Character5eModelV1 implements Identifiable {
   final int? _level;
   final Set<Character5eClassStateModelV1> _classesStates;
   Set<Character5eClassStateModelV1> get classesStates => _classesStates;
+
+  //TODO: Add to constructors and etc
+  final Character5eAbilityScores? abilityScores;
+  final Character5eSavingThrows? character5eSavingThrows;
+  final Character5eSkills? character5eSkills;
+  final Conditions5e? conditions;
+  final Character5eOthers? others;
 
   /// Custom spells for character not saved in class
   final Set<String> customSpellIds;
@@ -43,6 +55,11 @@ class Character5eModelV1 implements Identifiable {
     Set<Character5eClassStateModelV1>? classesStates,
     this.customSpellIds = const {},
     this.preparedCustomSpellIds = const {},
+    this.abilityScores,
+    this.character5eSavingThrows,
+    this.character5eSkills,
+    this.conditions,
+    this.others,
   })  : _level = level,
         _name = name,
         _classesStates = classesStates ?? const {};
@@ -53,13 +70,23 @@ class Character5eModelV1 implements Identifiable {
     Set<Character5eClassStateModelV1>? classes,
     Set<String>? customSpellIds,
     Set<String>? preparedCustomSpellIds,
+    Character5eAbilityScores? abilityScores,
+    Character5eSavingThrows? character5eSavingThrows,
+    Character5eSkills? character5eSkills,
+    Conditions5e? conditions,
+    Character5eOthers? others,
   }) : this._(
           id: IdGenerator.generateId(Character5eModelV1),
           name: name,
           level: level,
-          classesStates: classes ?? const {},
+          classesStates: classes,
           customSpellIds: customSpellIds ?? const {},
           preparedCustomSpellIds: preparedCustomSpellIds ?? const {},
+          abilityScores: abilityScores,
+          character5eSavingThrows: character5eSavingThrows,
+          character5eSkills: character5eSkills,
+          conditions: conditions,
+          others: others,
         );
 
   Character5eModelV1 copyWith({
@@ -68,6 +95,11 @@ class Character5eModelV1 implements Identifiable {
     Set<Character5eClassStateModelV1>? classesStates,
     Set<String>? customSpellIds,
     Set<String>? preparedCustomSpellIds,
+    Character5eAbilityScores? abilityScores,
+    Character5eSavingThrows? character5eSavingThrows,
+    Character5eSkills? character5eSkills,
+    Conditions5e? conditions,
+    Character5eOthers? others,
   }) {
     return Character5eModelV1._(
       id: id,
@@ -77,6 +109,12 @@ class Character5eModelV1 implements Identifiable {
       customSpellIds: customSpellIds ?? this.customSpellIds,
       preparedCustomSpellIds:
           preparedCustomSpellIds ?? this.preparedCustomSpellIds,
+      abilityScores: abilityScores ?? this.abilityScores,
+      character5eSavingThrows:
+          character5eSavingThrows ?? this.character5eSavingThrows,
+      character5eSkills: character5eSkills ?? this.character5eSkills,
+      conditions: conditions ?? this.conditions,
+      others: others ?? this.others,
     );
   }
 
@@ -222,7 +260,7 @@ class Character5eModelV1 implements Identifiable {
     }
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
       'level': _level,
@@ -230,10 +268,15 @@ class Character5eModelV1 implements Identifiable {
       'classes': _classesStates.map((e) => e.toMap()).toList(),
       'customSpellIds': customSpellIds.toList(),
       'preparedCustomSpellIds': preparedCustomSpellIds.toList(),
+      'abilityScores': abilityScores?.toMap(),
+      'character5eSavingThrows': character5eSavingThrows?.toMap(),
+      'character5eSkills': character5eSkills?.toMap(),
+      'conditions': conditions?.toMap(),
+      'others': others?.toMap(),
     };
   }
 
-  factory Character5eModelV1.fromJson(Map<String, dynamic> json) {
+  factory Character5eModelV1.fromMap(Map<String, dynamic> json) {
     return Character5eModelV1._(
       id: json['id'],
       level: json['level'],
@@ -244,9 +287,28 @@ class Character5eModelV1 implements Identifiable {
       customSpellIds: Set<String>.from(json['customSpellIds'] ?? {}),
       preparedCustomSpellIds:
           Set<String>.from(json['preparedCustomSpellIds'] ?? {}),
+      abilityScores: json['abilityScores'] != null
+          ? Character5eAbilityScores.fromMap(
+              json['abilityScores'] as Map<String, dynamic>)
+          : null,
+      character5eSavingThrows: json['character5eSavingThrows'] != null
+          ? Character5eSavingThrows.fromMap(
+              json['character5eSavingThrows'] as Map<String, dynamic>)
+          : null,
+      character5eSkills: json['character5eSkills'] != null
+          ? Character5eSkills.fromMap(
+              json['character5eSkills'] as Map<String, dynamic>)
+          : null,
+      conditions: json['conditions'] != null
+          ? Conditions5e.fromMap(json['conditions'] as Map<String, dynamic>)
+          : null,
+      others: json['others'] != null
+          ? Character5eOthers.fromMap(json['others'] as Map<String, dynamic>)
+          : null,
     );
   }
 
+  //TODO add override for new fields
   @override
   bool operator ==(Object other) {
     return other is Character5eModelV1 &&
@@ -256,9 +318,15 @@ class Character5eModelV1 implements Identifiable {
         SetEquality().equals(other._classesStates, _classesStates) &&
         SetEquality().equals(other.customSpellIds, customSpellIds) &&
         SetEquality()
-            .equals(other.preparedCustomSpellIds, preparedCustomSpellIds);
+            .equals(other.preparedCustomSpellIds, preparedCustomSpellIds) &&
+        other.abilityScores == abilityScores &&
+        other.character5eSavingThrows == character5eSavingThrows &&
+        other.character5eSkills == character5eSkills &&
+        other.conditions == conditions &&
+        other.others == others;
   }
 
+  //TODO add override for new fields
   @override
   int get hashCode {
     return id.hashCode ^
@@ -266,6 +334,11 @@ class Character5eModelV1 implements Identifiable {
         _name.hashCode ^
         SetEquality().hash(_classesStates) ^
         SetEquality().hash(customSpellIds) ^
-        SetEquality().hash(preparedCustomSpellIds);
+        SetEquality().hash(preparedCustomSpellIds) ^
+        abilityScores.hashCode ^
+        character5eSavingThrows.hashCode ^
+        character5eSkills.hashCode ^
+        conditions.hashCode ^
+        others.hashCode;
   }
 }

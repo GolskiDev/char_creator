@@ -28,13 +28,13 @@ class CharacterRepository {
   }
 
   String _encodeCharacter(Character5eModelV1 character) {
-    final Map<String, dynamic> characterMap = character.toJson();
+    final Map<String, dynamic> characterMap = character.toMap();
     return json.encode(characterMap);
   }
 
   Character5eModelV1 _decodeCharacter(String encodedCharacter) {
     final Map<String, dynamic> characterMap = json.decode(encodedCharacter);
-    return Character5eModelV1.fromJson(characterMap);
+    return Character5eModelV1.fromMap(characterMap);
   }
 
   Future<void> saveCharacter(Character5eModelV1 character) async {
@@ -66,7 +66,7 @@ class CharacterRepository {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> characters = prefs.getStringList(_storageKey) ?? [];
     final int index = characters.indexWhere((c) =>
-        Character5eModelV1.fromJson(json.decode(c)).id == updatedCharacter.id);
+        Character5eModelV1.fromMap(json.decode(c)).id == updatedCharacter.id);
     if (index != -1) {
       characters[index] = _encodeCharacter(updatedCharacter);
       await prefs.setStringList(_storageKey, characters);
@@ -79,7 +79,7 @@ class CharacterRepository {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> characters = prefs.getStringList(_storageKey) ?? [];
     characters.removeWhere(
-        (c) => Character5eModelV1.fromJson(json.decode(c)).id == characterId);
+        (c) => Character5eModelV1.fromMap(json.decode(c)).id == characterId);
     await prefs.setStringList(_storageKey, characters);
 
     await _refreshStream();
