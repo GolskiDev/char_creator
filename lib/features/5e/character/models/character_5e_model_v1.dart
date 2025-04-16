@@ -82,7 +82,7 @@ class Character5eModelV1 implements Identifiable {
           classesStates: classes,
           customSpellIds: customSpellIds ?? const {},
           preparedCustomSpellIds: preparedCustomSpellIds ?? const {},
-          abilityScores: abilityScores,
+          abilityScores: abilityScores ?? Character5eAbilityScores.empty(),
           character5eSavingThrows: character5eSavingThrows,
           character5eSkills: character5eSkills,
           conditions: conditions,

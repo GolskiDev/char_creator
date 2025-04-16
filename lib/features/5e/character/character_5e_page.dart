@@ -1,3 +1,4 @@
+import 'package:char_creator/features/5e/character/models/character_5e_ability_scores.dart';
 import 'package:char_creator/features/5e/character/widgets/character_classes_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../spells/view_models/spell_view_model.dart';
 import 'models/character_5e_model_v1.dart';
 import 'repository/character_repository.dart';
+import 'widgets/character_ability_scores_widget.dart';
 import 'widgets/grouped_spells_widget.dart';
 
 class Character5ePage extends HookConsumerWidget {
@@ -64,7 +66,57 @@ class Character5ePage extends HookConsumerWidget {
         .where((spell) => character.knownSpells.contains(spell.id))
         .toList();
 
-    final spellOpenedState = useState(false);
+    final openedExpansionPanelsIndexes = useState<List<String>>([]);
+
+    final mapOfExpansionPanels = {
+      "spells": ExpansionPanel(
+        isExpanded: openedExpansionPanelsIndexes.value.contains("spells"),
+        headerBuilder: (context, isExpanded) {
+          return ListTile(
+            leading: const Icon(Symbols.magic_button),
+            title: Text('Spells'),
+            trailing: isExpanded
+                ? IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      context.go(
+                        '/characters/${character.id}/addSpells',
+                      );
+                    },
+                  )
+                : null,
+          );
+        },
+        body: GroupedSpellsWidget(
+          characterSpells: characterSpells,
+        ),
+      ),
+      if (character.abilityScores != null) ...{
+        "abilityScores": ExpansionPanel(
+          isExpanded:
+              openedExpansionPanelsIndexes.value.contains("abilityScores"),
+          headerBuilder: (context, isExpanded) {
+            return ListTile(
+              leading: const Icon(Icons.bar_chart),
+              title: Text('Ability Scores'),
+            );
+          },
+          body: CharacterAbilityScoresWidget.editing(
+            abilityScores: character.abilityScores!,
+            onChanged: (updatedAbilityScores) {
+              final updatedCharacter = character.copyWith(
+                abilityScores: updatedAbilityScores,
+              );
+              ref
+                  .read(characterRepositoryProvider)
+                  .updateCharacter(updatedCharacter);
+            },
+          ),
+        ),
+      }
+    };
+
+    final expansionPanels = mapOfExpansionPanels.values.toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -89,33 +141,39 @@ class Character5ePage extends HookConsumerWidget {
             ],
             ExpansionPanelList(
               expansionCallback: (panelIndex, isExpanded) {
-                spellOpenedState.value = !spellOpenedState.value;
+                final panelKey =
+                    mapOfExpansionPanels.keys.elementAt(panelIndex);
+                if (openedExpansionPanelsIndexes.value.contains(panelKey)) {
+                  openedExpansionPanelsIndexes.value =
+                      openedExpansionPanelsIndexes.value
+                          .where((key) => key != panelKey)
+                          .toList();
+                } else {
+                  openedExpansionPanelsIndexes.value = [
+                    ...openedExpansionPanelsIndexes.value,
+                    panelKey,
+                  ];
+                }
               },
-              children: [
-                ExpansionPanel(
-                  isExpanded: spellOpenedState.value,
-                  headerBuilder: (context, isExpanded) {
-                    return ListTile(
-                      leading: const Icon(Symbols.magic_button),
-                      title: Text('Spells'),
-                      trailing: isExpanded
-                          ? IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                context.go(
-                                  '/characters/${character.id}/addSpells',
-                                );
-                              },
-                            )
-                          : null,
-                    );
-                  },
-                  body: GroupedSpellsWidget(
-                    characterSpells: characterSpells,
-                  ),
-                ),
-              ],
+              children: expansionPanels,
             ),
+            if (character.abilityScores == null) ...[
+              const Divider(),
+              ListTile(
+                title: Text('Add Ability Scores'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    final updatedCharacter = character.copyWith(
+                      abilityScores: Character5eAbilityScores.empty(),
+                    );
+                    ref
+                        .read(characterRepositoryProvider)
+                        .updateCharacter(updatedCharacter);
+                  },
+                ),
+              ),
+            ],
           ],
         ),
       ),
