@@ -12,19 +12,19 @@ class GameSystemViewModel {
   );
   static final constitution = GameSystemViewModelItem(
     name: 'Constitution',
-    icon: Icons.health_and_safety,
+    icon: Icons.health_and_safety_outlined,
   );
   static final intelligence = GameSystemViewModelItem(
     name: 'Intelligence',
-    icon: Icons.psychology,
+    icon: Icons.psychology_outlined,
   );
   static final wisdom = GameSystemViewModelItem(
     name: 'Wisdom',
-    icon: Icons.lightbulb,
+    icon: Icons.lightbulb_outline,
   );
   static final charisma = GameSystemViewModelItem(
     name: 'Charisma',
-    icon: Icons.star,
+    icon: Symbols.sentiment_very_satisfied,
   );
   static final armorClass = GameSystemViewModelItem(
     name: 'Armor Class',
@@ -51,7 +51,6 @@ class GameSystemViewModel {
     icon: Icons.security,
   );
 
-  // Additional items based on SpellFilterDrawer and CardWidget
   static final spellLevel = GameSystemViewModelItem(
     name: 'Spell Level',
     icon: Icons.star,
@@ -101,7 +100,6 @@ class GameSystemViewModel {
     icon: Symbols.identity_platform,
   );
 
-  // New items based on additional filters and traits
   static final character = GameSystemViewModelItem(
     name: 'Character',
     icon: Symbols.person,
