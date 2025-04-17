@@ -12,6 +12,7 @@ import 'models/character_5e_model_v1.dart';
 import 'repository/character_repository.dart';
 import 'widgets/character_ability_scores_widget.dart';
 import 'widgets/character_skills_widget.dart';
+import 'widgets/conditions_5e_widget.dart';
 import 'widgets/grouped_spells_widget.dart';
 
 class Character5ePage extends HookConsumerWidget {
@@ -129,16 +130,36 @@ class Character5ePage extends HookConsumerWidget {
             skills: character.character5eSkills!,
             abilityScores: character.abilityScores!,
             onChanged: (updatedSkills) {
-              final updatedCharacter = character.copyWith(
-                character5eSkills: updatedSkills,
-              );
+              final updatedCharacter = character.copyWith();
               ref
                   .read(characterRepositoryProvider)
                   .updateCharacter(updatedCharacter);
             },
           ),
         )
-      }
+      },
+      if (character.conditions != null) ...{
+        "classes": ExpansionPanel(
+          isExpanded: openedExpansionPanelsIndexes.value.contains("classes"),
+          headerBuilder: (context, isExpanded) {
+            return ListTile(
+              leading: Icon(GameSystemViewModel.conditions.icon),
+              title: Text(GameSystemViewModel.conditions.name),
+            );
+          },
+          body: Conditions5eWidget(
+            conditions: character.conditions!,
+            onChanged: (updatedConditions) {
+              final updatedCharacter = character.copyWith(
+                conditions: updatedConditions,
+              );
+              ref
+                  .read(characterRepositoryProvider)
+                  .updateCharacter(updatedCharacter);
+            },
+          ),
+        ),
+      },
     };
 
     final expansionPanels = mapOfExpansionPanels.values.toList();

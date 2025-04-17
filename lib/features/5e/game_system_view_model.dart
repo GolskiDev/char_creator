@@ -197,6 +197,97 @@ class GameSystemViewModel {
     name: 'Persuasion',
     icon: Symbols.thumb_up,
   );
+
+  static final conditions = GameSystemViewModelItem(
+    name: 'Conditions',
+    icon: Symbols.warning_amber,
+  );
+
+  static final blinded = GameSystemViewModelItem(
+    name: 'Blinded',
+    icon: Symbols.visibility_off,
+  );
+  static final charmed = GameSystemViewModelItem(
+    name: 'Charmed',
+    icon: Symbols.favorite,
+  );
+  static final deafened = GameSystemViewModelItem(
+    name: 'Deafened',
+    icon: Symbols.hearing_disabled,
+  );
+  static final frightened = GameSystemViewModelItem(
+    name: 'Frightened',
+    icon: Symbols.warning,
+  );
+  static final grappled = GameSystemViewModelItem(
+    name: 'Grappled',
+    icon: Symbols.sports_mma,
+  );
+  static final incapacitated = GameSystemViewModelItem(
+    name: 'Incapacitated',
+    icon: Symbols.bed,
+  );
+  static final invisible = GameSystemViewModelItem(
+    name: 'Invisible',
+    icon: Symbols.visibility,
+  );
+  static final paralyzed = GameSystemViewModelItem(
+    name: 'Paralyzed',
+    icon: Symbols.accessibility_new,
+  );
+  static final petrified = GameSystemViewModelItem(
+    name: 'Petrified',
+    icon: Icons.terrain,
+  );
+  static final poisoned = GameSystemViewModelItem(
+    name: 'Poisoned',
+    icon: Symbols.science,
+  );
+  static final prone = GameSystemViewModelItem(
+    name: 'Prone',
+    icon: Symbols.airline_seat_flat,
+  );
+  static final restrained = GameSystemViewModelItem(
+    name: 'Restrained',
+    icon: Symbols.lock,
+  );
+  static final stunned = GameSystemViewModelItem(
+    name: 'Stunned',
+    icon: Symbols.flash_on,
+  );
+  static final unconscious = GameSystemViewModelItem(
+    name: 'Unconscious',
+    icon: Symbols.hotel,
+  );
+
+  static final exhaustionLevel0 = GameSystemViewModelItem(
+    name: 'No Exhaustion',
+    icon: Symbols.sentiment_very_satisfied,
+  );
+  static final exhaustionLevel1 = GameSystemViewModelItem(
+    name: 'Exhaustion Level 1',
+    icon: Symbols.directions_walk,
+  );
+  static final exhaustionLevel2 = GameSystemViewModelItem(
+    name: 'Exhaustion Level 2',
+    icon: Symbols.stairs,
+  );
+  static final exhaustionLevel3 = GameSystemViewModelItem(
+    name: 'Exhaustion Level 3',
+    icon: Symbols.airline_seat_recline_extra,
+  );
+  static final exhaustionLevel4 = GameSystemViewModelItem(
+    name: 'Exhaustion Level 4',
+    icon: Symbols.battery_low,
+  );
+  static final exhaustionLevel5 = GameSystemViewModelItem(
+    name: 'Exhaustion Level 5',
+    icon: Symbols.battery_alert,
+  );
+  static final exhaustionLevel6 = GameSystemViewModelItem(
+    name: 'Exhaustion Level 6',
+    icon: Symbols.cancel,
+  );
 }
 
 class GameSystemViewModelItem {

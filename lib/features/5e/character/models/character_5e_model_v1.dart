@@ -84,7 +84,7 @@ class Character5eModelV1 implements Identifiable {
           abilityScores: abilityScores ?? Character5eAbilityScores.empty(),
           character5eSavingThrows: character5eSavingThrows,
           character5eSkills: character5eSkills ?? Character5eSkills.empty(),
-          conditions: conditions,
+          conditions: conditions ?? Conditions5e(),
           others: others,
         );
 
