@@ -119,6 +119,84 @@ class GameSystemViewModel {
     name: 'Modifier',
     icon: Icons.add_circle_outline,
   );
+
+  static final skills = GameSystemViewModelItem(
+    name: 'Skills',
+    icon: Symbols.emoji_objects,
+  );
+
+  static final athletics = GameSystemViewModelItem(
+    name: 'Athletics',
+    icon: Symbols.sports_gymnastics,
+  );
+  static final acrobatics = GameSystemViewModelItem(
+    name: 'Acrobatics',
+    icon: Symbols.sports_kabaddi,
+  );
+  static final sleightOfHand = GameSystemViewModelItem(
+    name: 'Sleight of Hand',
+    icon: Symbols.handshake,
+  );
+  static final stealth = GameSystemViewModelItem(
+    name: 'Stealth',
+    icon: Symbols.visibility_off,
+  );
+  static final arcana = GameSystemViewModelItem(
+    name: 'Arcana',
+    icon: Symbols.auto_awesome,
+  );
+  static final history = GameSystemViewModelItem(
+    name: 'History',
+    icon: Symbols.history_edu,
+  );
+  static final investigation = GameSystemViewModelItem(
+    name: 'Investigation',
+    icon: Symbols.search,
+  );
+  static final nature = GameSystemViewModelItem(
+    name: 'Nature',
+    icon: Symbols.park,
+  );
+  static final religion = GameSystemViewModelItem(
+    name: 'Religion',
+    icon: Symbols.temple_hindu,
+  );
+  static final animalHandling = GameSystemViewModelItem(
+    name: 'Animal Handling',
+    icon: Symbols.pets,
+  );
+  static final insight = GameSystemViewModelItem(
+    name: 'Insight',
+    icon: Symbols.lightbulb,
+  );
+  static final medicine = GameSystemViewModelItem(
+    name: 'Medicine',
+    icon: Symbols.medical_services,
+  );
+  static final perception = GameSystemViewModelItem(
+    name: 'Perception',
+    icon: Symbols.visibility,
+  );
+  static final survival = GameSystemViewModelItem(
+    name: 'Survival',
+    icon: Symbols.camping,
+  );
+  static final deception = GameSystemViewModelItem(
+    name: 'Deception',
+    icon: Symbols.mood_bad,
+  );
+  static final intimidation = GameSystemViewModelItem(
+    name: 'Intimidation',
+    icon: Symbols.warning,
+  );
+  static final performance = GameSystemViewModelItem(
+    name: 'Performance',
+    icon: Symbols.theater_comedy,
+  );
+  static final persuasion = GameSystemViewModelItem(
+    name: 'Persuasion',
+    icon: Symbols.thumb_up,
+  );
 }
 
 class GameSystemViewModelItem {

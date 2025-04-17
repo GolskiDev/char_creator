@@ -22,20 +22,22 @@ enum Character5eAbilityScoreType {
 }
 
 class Character5eAbilityScores {
-  Map<Character5eAbilityScoreType, AbilityScore> get abilityScores =>
+  Map<Character5eAbilityScoreType, Character5eAbilityScore> get abilityScores =>
       _abilityScores;
 
-  final Map<Character5eAbilityScoreType, AbilityScore> _abilityScores;
+  final Map<Character5eAbilityScoreType, Character5eAbilityScore>
+      _abilityScores;
 
   Character5eAbilityScores._({
-    required Map<Character5eAbilityScoreType, AbilityScore> abilityScores,
+    required Map<Character5eAbilityScoreType, Character5eAbilityScore>
+        abilityScores,
   }) : _abilityScores = abilityScores;
 
   factory Character5eAbilityScores.empty() {
     return Character5eAbilityScores._(
       abilityScores: {
         for (var abilityType in Character5eAbilityScoreType.values)
-          abilityType: AbilityScore(
+          abilityType: Character5eAbilityScore(
             abilityScoreType: abilityType,
             value: null,
           ),
@@ -44,7 +46,7 @@ class Character5eAbilityScores {
   }
 
   Character5eAbilityScores copyWith({
-    Map<Character5eAbilityScoreType, AbilityScore>? abilityScores,
+    Map<Character5eAbilityScoreType, Character5eAbilityScore>? abilityScores,
   }) {
     return Character5eAbilityScores._(
       abilityScores: abilityScores ?? _abilityScores,
@@ -55,7 +57,7 @@ class Character5eAbilityScores {
     final abilityScores = (map['abilityScores'] as Map<String, dynamic>).map(
       (key, value) => MapEntry(
         Character5eAbilityScoreType.fromString(key),
-        AbilityScore.fromMap(value),
+        Character5eAbilityScore.fromMap(value),
       ),
     );
     return Character5eAbilityScores._(
@@ -86,7 +88,7 @@ class Character5eAbilityScores {
   }
 }
 
-class AbilityScore {
+class Character5eAbilityScore {
   final Character5eAbilityScoreType abilityScoreType;
   final int? value;
 
@@ -103,7 +105,7 @@ class AbilityScore {
   //manually set modifier
   final int? _modifier;
 
-  const AbilityScore({
+  const Character5eAbilityScore({
     required this.abilityScoreType,
     required this.value,
     int? modifier,
@@ -113,11 +115,11 @@ class AbilityScore {
   GameSystemViewModelItem get gameSystemViewModel =>
       abilityScoreType.gameSystemViewModel;
 
-  AbilityScore copyWith({
+  Character5eAbilityScore copyWith({
     int? value,
     int? Function()? manuallySetModifier,
   }) {
-    return AbilityScore(
+    return Character5eAbilityScore(
       abilityScoreType: abilityScoreType,
       value: value ?? this.value,
       modifier: manuallySetModifier != null ? manuallySetModifier() : _modifier,
@@ -126,7 +128,7 @@ class AbilityScore {
 
   @override
   bool operator ==(Object other) {
-    return other is AbilityScore &&
+    return other is Character5eAbilityScore &&
         other.abilityScoreType == abilityScoreType &&
         other.value == value &&
         other._modifier == _modifier;
@@ -145,8 +147,8 @@ class AbilityScore {
     };
   }
 
-  factory AbilityScore.fromMap(Map<String, dynamic> map) {
-    return AbilityScore(
+  factory Character5eAbilityScore.fromMap(Map<String, dynamic> map) {
+    return Character5eAbilityScore(
       abilityScoreType:
           Character5eAbilityScoreType.fromString(map['abilityScoreType']),
       value: map['value'] as int?,
@@ -170,7 +172,7 @@ extension AbilityScoreGameSystemViewModel on Character5eAbilityScoreType {
   }
 }
 
-class AbilityScoreModifier {
+class Modifier {
   static String display(int? modifier) {
     if (modifier == null) {
       return '';

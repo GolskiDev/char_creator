@@ -11,6 +11,7 @@ import '../spells/view_models/spell_view_model.dart';
 import 'models/character_5e_model_v1.dart';
 import 'repository/character_repository.dart';
 import 'widgets/character_ability_scores_widget.dart';
+import 'widgets/character_skills_widget.dart';
 import 'widgets/grouped_spells_widget.dart';
 
 class Character5ePage extends HookConsumerWidget {
@@ -113,6 +114,30 @@ class Character5ePage extends HookConsumerWidget {
             },
           ),
         ),
+      },
+      if (character.character5eSkills != null &&
+          character.abilityScores != null) ...{
+        "skills": ExpansionPanel(
+          isExpanded: openedExpansionPanelsIndexes.value.contains("skills"),
+          headerBuilder: (context, isExpanded) {
+            return ListTile(
+              leading: Icon(GameSystemViewModel.skills.icon),
+              title: Text(GameSystemViewModel.skills.name),
+            );
+          },
+          body: CharacterSkillsWidget.editing(
+            skills: character.character5eSkills!,
+            abilityScores: character.abilityScores!,
+            onChanged: (updatedSkills) {
+              final updatedCharacter = character.copyWith(
+                character5eSkills: updatedSkills,
+              );
+              ref
+                  .read(characterRepositoryProvider)
+                  .updateCharacter(updatedCharacter);
+            },
+          ),
+        )
       }
     };
 

@@ -30,7 +30,7 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
             text: abilityScore.value?.toString() ?? '',
           );
           final modifierEditingController = useTextEditingController(
-            text: AbilityScoreModifier.display(
+            text: Modifier.display(
               abilityScore.modifier,
             ),
           );
@@ -98,7 +98,7 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                       abilityScoresState.value = updatedAbilityScores;
                       if (intValue != null) {
                         modifierEditingController.text =
-                            AbilityScoreModifier.display(intValue);
+                            Modifier.display(intValue);
                       }
                     },
                     onSubmitted: (_) {

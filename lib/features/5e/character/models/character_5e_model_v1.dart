@@ -83,7 +83,7 @@ class Character5eModelV1 implements Identifiable {
           preparedCustomSpellIds: preparedCustomSpellIds ?? const {},
           abilityScores: abilityScores ?? Character5eAbilityScores.empty(),
           character5eSavingThrows: character5eSavingThrows,
-          character5eSkills: character5eSkills,
+          character5eSkills: character5eSkills ?? Character5eSkills.empty(),
           conditions: conditions,
           others: others,
         );
@@ -307,7 +307,6 @@ class Character5eModelV1 implements Identifiable {
     );
   }
 
-  //TODO add override for new fields
   @override
   bool operator ==(Object other) {
     return other is Character5eModelV1 &&
@@ -325,7 +324,6 @@ class Character5eModelV1 implements Identifiable {
         other.others == others;
   }
 
-  //TODO add override for new fields
   @override
   int get hashCode {
     return id.hashCode ^
