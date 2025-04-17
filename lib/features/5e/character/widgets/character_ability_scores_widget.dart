@@ -34,6 +34,11 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
               abilityScore.modifier,
             ),
           );
+          final savingThrowModifierEditingController = useTextEditingController(
+            text: Modifier.display(
+              abilityScore.savingThrowModifier,
+            ),
+          );
           return ListTile(
             title: Text(abilityScore.gameSystemViewModel.name),
             leading: Icon(abilityScore.gameSystemViewModel.icon),
@@ -92,6 +97,43 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                           ...abilityScoresState.value.abilityScores,
                           abilityScoreType: abilityScore.copyWith(
                             manuallySetModifier: () => intValue,
+                          ),
+                        },
+                      );
+                      abilityScoresState.value = updatedAbilityScores;
+                      if (intValue != null) {
+                        modifierEditingController.text =
+                            Modifier.display(intValue);
+                      }
+                    },
+                    onSubmitted: (_) {
+                      onChanged?.call(abilityScoresState.value);
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+                SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: TextField(
+                    controller: savingThrowModifierEditingController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'^[-+]?[0-9]*$'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      final intValue = int.tryParse(value);
+                      final updatedAbilityScores =
+                          abilityScoresState.value.copyWith(
+                        abilityScores: {
+                          ...abilityScoresState.value.abilityScores,
+                          abilityScoreType: abilityScore.copyWith(
+                            manuallySetSavingThrowModifier: () => intValue,
                           ),
                         },
                       );

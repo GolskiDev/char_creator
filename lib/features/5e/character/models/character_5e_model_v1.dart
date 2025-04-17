@@ -1,6 +1,5 @@
 import 'package:char_creator/common/interfaces/identifiable.dart';
 import 'package:char_creator/features/5e/character/models/character_5e_ability_scores.dart';
-import 'package:char_creator/features/5e/character/models/character_5e_saving_throws.dart';
 import 'package:char_creator/features/5e/character/models/character_5e_skills.dart';
 import 'package:collection/collection.dart';
 
@@ -22,7 +21,6 @@ class Character5eModelV1 implements Identifiable {
   Set<Character5eClassStateModelV1> get classesStates => _classesStates;
 
   final Character5eAbilityScores? abilityScores;
-  final Character5eSavingThrows? character5eSavingThrows;
   final Character5eSkills? character5eSkills;
   final Conditions5e? conditions;
   final Character5eOthers? others;
@@ -55,7 +53,6 @@ class Character5eModelV1 implements Identifiable {
     this.customSpellIds = const {},
     this.preparedCustomSpellIds = const {},
     this.abilityScores,
-    this.character5eSavingThrows,
     this.character5eSkills,
     this.conditions,
     this.others,
@@ -70,7 +67,6 @@ class Character5eModelV1 implements Identifiable {
     Set<String>? customSpellIds,
     Set<String>? preparedCustomSpellIds,
     Character5eAbilityScores? abilityScores,
-    Character5eSavingThrows? character5eSavingThrows,
     Character5eSkills? character5eSkills,
     Conditions5e? conditions,
     Character5eOthers? others,
@@ -82,7 +78,6 @@ class Character5eModelV1 implements Identifiable {
           customSpellIds: customSpellIds ?? const {},
           preparedCustomSpellIds: preparedCustomSpellIds ?? const {},
           abilityScores: abilityScores ?? Character5eAbilityScores.empty(),
-          character5eSavingThrows: character5eSavingThrows,
           character5eSkills: character5eSkills ?? Character5eSkills.empty(),
           conditions: conditions ?? Conditions5e(),
           others: others,
@@ -95,7 +90,6 @@ class Character5eModelV1 implements Identifiable {
     Set<String>? customSpellIds,
     Set<String>? preparedCustomSpellIds,
     Character5eAbilityScores? abilityScores,
-    Character5eSavingThrows? character5eSavingThrows,
     Character5eSkills? character5eSkills,
     Conditions5e? conditions,
     Character5eOthers? others,
@@ -109,8 +103,6 @@ class Character5eModelV1 implements Identifiable {
       preparedCustomSpellIds:
           preparedCustomSpellIds ?? this.preparedCustomSpellIds,
       abilityScores: abilityScores ?? this.abilityScores,
-      character5eSavingThrows:
-          character5eSavingThrows ?? this.character5eSavingThrows,
       character5eSkills: character5eSkills ?? this.character5eSkills,
       conditions: conditions ?? this.conditions,
       others: others ?? this.others,
@@ -268,7 +260,6 @@ class Character5eModelV1 implements Identifiable {
       'customSpellIds': customSpellIds.toList(),
       'preparedCustomSpellIds': preparedCustomSpellIds.toList(),
       'abilityScores': abilityScores?.toMap(),
-      'character5eSavingThrows': character5eSavingThrows?.toMap(),
       'character5eSkills': character5eSkills?.toMap(),
       'conditions': conditions?.toMap(),
       'others': others?.toMap(),
@@ -289,10 +280,6 @@ class Character5eModelV1 implements Identifiable {
       abilityScores: json['abilityScores'] != null
           ? Character5eAbilityScores.fromMap(
               json['abilityScores'] as Map<String, dynamic>)
-          : null,
-      character5eSavingThrows: json['character5eSavingThrows'] != null
-          ? Character5eSavingThrows.fromMap(
-              json['character5eSavingThrows'] as Map<String, dynamic>)
           : null,
       character5eSkills: json['character5eSkills'] != null
           ? Character5eSkills.fromMap(
@@ -318,7 +305,6 @@ class Character5eModelV1 implements Identifiable {
         SetEquality()
             .equals(other.preparedCustomSpellIds, preparedCustomSpellIds) &&
         other.abilityScores == abilityScores &&
-        other.character5eSavingThrows == character5eSavingThrows &&
         other.character5eSkills == character5eSkills &&
         other.conditions == conditions &&
         other.others == others;
@@ -333,7 +319,6 @@ class Character5eModelV1 implements Identifiable {
         SetEquality().hash(customSpellIds) ^
         SetEquality().hash(preparedCustomSpellIds) ^
         abilityScores.hashCode ^
-        character5eSavingThrows.hashCode ^
         character5eSkills.hashCode ^
         conditions.hashCode ^
         others.hashCode;

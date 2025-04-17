@@ -102,14 +102,28 @@ class Character5eAbilityScore {
     return ((value! - 10) / 2).floor();
   }
 
+  int? get savingThrowModifier {
+    if (_savingThrowModifier != null) {
+      return _savingThrowModifier;
+    }
+    if (modifier == null) {
+      return null;
+    }
+    return modifier;
+  }
+
   //manually set modifier
   final int? _modifier;
+  //manually set saving throw
+  final int? _savingThrowModifier;
 
   const Character5eAbilityScore({
     required this.abilityScoreType,
     required this.value,
     int? modifier,
-  }) : _modifier = modifier;
+    int? savingThrowModifier,
+  })  : _modifier = modifier,
+        _savingThrowModifier = savingThrowModifier;
 
   /// Shortcut
   GameSystemViewModelItem get gameSystemViewModel =>
@@ -118,11 +132,15 @@ class Character5eAbilityScore {
   Character5eAbilityScore copyWith({
     int? value,
     int? Function()? manuallySetModifier,
+    int? Function()? manuallySetSavingThrowModifier,
   }) {
     return Character5eAbilityScore(
       abilityScoreType: abilityScoreType,
       value: value ?? this.value,
       modifier: manuallySetModifier != null ? manuallySetModifier() : _modifier,
+      savingThrowModifier: manuallySetSavingThrowModifier != null
+          ? manuallySetSavingThrowModifier()
+          : _savingThrowModifier,
     );
   }
 
@@ -131,12 +149,16 @@ class Character5eAbilityScore {
     return other is Character5eAbilityScore &&
         other.abilityScoreType == abilityScoreType &&
         other.value == value &&
-        other._modifier == _modifier;
+        other._modifier == _modifier &&
+        other._savingThrowModifier == _savingThrowModifier;
   }
 
   @override
   int get hashCode {
-    return abilityScoreType.hashCode ^ value.hashCode ^ _modifier.hashCode;
+    return abilityScoreType.hashCode ^
+        value.hashCode ^
+        _modifier.hashCode ^
+        _savingThrowModifier.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -144,6 +166,7 @@ class Character5eAbilityScore {
       "abilityScoreType": abilityScoreType.name,
       "modifier": _modifier,
       "value": value,
+      "savingThrowModifier": _savingThrowModifier,
     };
   }
 

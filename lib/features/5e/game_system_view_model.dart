@@ -120,6 +120,11 @@ class GameSystemViewModel {
     icon: Icons.add_circle_outline,
   );
 
+  static final savingThrowModifier = GameSystemViewModelItem(
+    name: 'Saving Throw',
+    icon: Icons.security,
+  );
+
   static final skills = GameSystemViewModelItem(
     name: 'Skills',
     icon: Symbols.emoji_objects,
