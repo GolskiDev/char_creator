@@ -3,10 +3,10 @@ import 'package:char_creator/features/5e/spells/utils/spell_utils.dart';
 import 'package:char_creator/features/5e/tags.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 import '../../character/models/character_5e_class_model_v1.dart';
 import '../../character/models/character_5e_model_v1.dart';
+import '../../game_system_view_model.dart';
 import '../view_models/spell_view_model.dart';
 
 class SpellFilterDrawer extends HookConsumerWidget {
@@ -114,9 +114,10 @@ class SpellFilterDrawer extends HookConsumerWidget {
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
-          Icon(Symbols.person),
+          Icon(GameSystemViewModel.character.icon),
           const SizedBox(width: 16),
-          Text('Character', style: Theme.of(context).textTheme.titleMedium),
+          Text(GameSystemViewModel.character.name,
+              style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
       children: [
@@ -147,11 +148,11 @@ class SpellFilterDrawer extends HookConsumerWidget {
   Widget _buildConcentrationFilter() {
     return ListTile(
       leading: Tooltip(
-        message: 'Requires Concentration',
-        child: Icon(Symbols.mindfulness),
+        message: GameSystemViewModel.concentration.name,
+        child: Icon(GameSystemViewModel.concentration.icon),
       ),
       title: Text(
-        'Requires Concentration',
+        GameSystemViewModel.concentration.name,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: SegmentedButton<bool?>(
@@ -181,9 +182,9 @@ class SpellFilterDrawer extends HookConsumerWidget {
 
   Widget _buildRitualFilter() {
     return ListTile(
-      leading: Icon(Symbols.person_celebrate),
+      leading: Icon(GameSystemViewModel.ritual.icon),
       title: Text(
-        'Can Be Cast As Ritual',
+        GameSystemViewModel.ritual.name,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: SegmentedButton<bool?>(
@@ -212,9 +213,9 @@ class SpellFilterDrawer extends HookConsumerWidget {
 
   Widget _buildVerbalComponentFilter() {
     return ListTile(
-      leading: Icon(Icons.record_voice_over),
+      leading: Icon(GameSystemViewModel.verbalComponent.icon),
       title: Text(
-        'Verbal Component',
+        GameSystemViewModel.verbalComponent.name,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: SegmentedButton<bool?>(
@@ -244,9 +245,9 @@ class SpellFilterDrawer extends HookConsumerWidget {
 
   Widget _buildSomaticComponentFilter() {
     return ListTile(
-      leading: Icon(Icons.waving_hand),
+      leading: Icon(GameSystemViewModel.somaticComponent.icon),
       title: Text(
-        'Somatic Component',
+        GameSystemViewModel.somaticComponent.name,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: SegmentedButton<bool?>(
@@ -276,9 +277,9 @@ class SpellFilterDrawer extends HookConsumerWidget {
 
   Widget _buildMaterialComponentFilter() {
     return ListTile(
-      leading: Icon(Icons.category),
+      leading: Icon(GameSystemViewModel.materialComponent.icon),
       title: Text(
-        'Material Component',
+        GameSystemViewModel.materialComponent.name,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: SegmentedButton<bool?>(
@@ -314,9 +315,10 @@ class SpellFilterDrawer extends HookConsumerWidget {
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
-          Icon(Icons.book),
+          Icon(GameSystemViewModel.school.icon),
           const SizedBox(width: 16),
-          Text('School', style: Theme.of(context).textTheme.titleMedium),
+          Text(GameSystemViewModel.school.name,
+              style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
       children: [
@@ -358,9 +360,10 @@ class SpellFilterDrawer extends HookConsumerWidget {
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
-          Icon(Icons.timer),
+          Icon(GameSystemViewModel.castingTime.icon),
           const SizedBox(width: 16),
-          Text('Casting Time', style: Theme.of(context).textTheme.titleMedium),
+          Text(GameSystemViewModel.castingTime.name,
+              style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
       children: [
@@ -401,9 +404,10 @@ class SpellFilterDrawer extends HookConsumerWidget {
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
-          Icon(Icons.swap_calls),
+          Icon(GameSystemViewModel.range.icon),
           const SizedBox(width: 16),
-          Text('Range', style: Theme.of(context).textTheme.titleMedium),
+          Text(GameSystemViewModel.range.name,
+              style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
       children: [
@@ -443,9 +447,10 @@ class SpellFilterDrawer extends HookConsumerWidget {
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
-          Icon(Icons.timelapse),
+          Icon(GameSystemViewModel.duration.icon),
           const SizedBox(width: 16),
-          Text('Duration', style: Theme.of(context).textTheme.titleMedium),
+          Text(GameSystemViewModel.duration.name,
+              style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
       children: [
@@ -486,9 +491,10 @@ class SpellFilterDrawer extends HookConsumerWidget {
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
-          Icon(Icons.star),
+          Icon(GameSystemViewModel.spellLevel.icon),
           const SizedBox(width: 16),
-          Text('Spell Level', style: Theme.of(context).textTheme.titleMedium),
+          Text(GameSystemViewModel.spellLevel.name,
+              style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
       children: [
@@ -516,15 +522,16 @@ class SpellFilterDrawer extends HookConsumerWidget {
     );
   }
 
-  _buildSpellTypeFilter(BuildContext context) {
+  Widget _buildSpellTypeFilter(BuildContext context) {
     return ExpansionTile(
       initiallyExpanded: filters.spellTypes.isNotEmpty,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
-          Icon(Symbols.emoji_symbols),
+          Icon(GameSystemViewModel.spellType.icon),
           const SizedBox(width: 16),
-          Text('Spell Type', style: Theme.of(context).textTheme.titleMedium),
+          Text(GameSystemViewModel.spellType.name,
+              style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
       children: [
@@ -554,16 +561,17 @@ class SpellFilterDrawer extends HookConsumerWidget {
     );
   }
 
-  _buildClassTypeFilter(BuildContext context) {
+  Widget _buildClassTypeFilter(BuildContext context) {
     return ExpansionTile(
       enabled: !_isCharacterFilterUsed,
       initiallyExpanded: filters.characterClasses.isNotEmpty,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Row(
         children: [
-          Icon(Symbols.identity_platform),
+          Icon(GameSystemViewModel.characterClass.icon),
           const SizedBox(width: 16),
-          Text('Class', style: Theme.of(context).textTheme.titleMedium),
+          Text(GameSystemViewModel.characterClass.name,
+              style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
       children: [

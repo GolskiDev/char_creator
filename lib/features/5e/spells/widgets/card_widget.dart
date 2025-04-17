@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 
+import '../../game_system_view_model.dart';
 import '../view_models/spell_view_model.dart';
 
 class SpellCardWidget extends ConsumerWidget {
@@ -21,7 +21,7 @@ class SpellCardWidget extends ConsumerWidget {
       child: ListTile(
         titleAlignment: ListTileTitleAlignment.center,
         title: Text(
-          'Components',
+          GameSystemViewModel.materialComponent.name,
           textAlign: TextAlign.center,
         ),
         subtitle: Padding(
@@ -42,11 +42,9 @@ class SpellCardWidget extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.record_voice_over,
-                      ),
+                      Icon(GameSystemViewModel.verbalComponent.icon),
                       Text(
-                        'Verbal',
+                        GameSystemViewModel.verbalComponent.name,
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],
@@ -56,11 +54,9 @@ class SpellCardWidget extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.waving_hand,
-                      ),
+                      Icon(GameSystemViewModel.somaticComponent.icon),
                       Text(
-                        'Somatic',
+                        GameSystemViewModel.somaticComponent.name,
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],
@@ -70,12 +66,10 @@ class SpellCardWidget extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.category,
-                      ),
+                      Icon(GameSystemViewModel.materialComponent.icon),
                       FittedBox(
                         child: Text(
-                          'Material',
+                          GameSystemViewModel.materialComponent.name,
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ),
@@ -100,44 +94,44 @@ class SpellCardWidget extends ConsumerWidget {
     List<Widget> spellTraits = [
       ListTile(
         visualDensity: VisualDensity.compact,
-        leading: Icon(Icons.star),
+        leading: Icon(GameSystemViewModel.spellLevel.icon),
         title: Text(spell.spellLevelString),
-        subtitle: Text('Spell Level'),
+        subtitle: Text(GameSystemViewModel.spellLevel.name),
       ),
       if (spell.castingTime != null)
         ListTile(
           visualDensity: VisualDensity.compact,
-          leading: Icon(Icons.schedule),
+          leading: Icon(GameSystemViewModel.castingTime.icon),
           title: Text(spell.castingTime.toString()),
-          subtitle: Text('Casting Time'),
+          subtitle: Text(GameSystemViewModel.castingTime.name),
         ),
       if (spell.range != null)
         ListTile(
           visualDensity: VisualDensity.compact,
-          leading: Icon(Symbols.target),
+          leading: Icon(GameSystemViewModel.range.icon),
           title: Text(spell.range.toString()),
-          subtitle: Text('Range'),
+          subtitle: Text(GameSystemViewModel.range.name),
         ),
       if (spell.duration != null)
         ListTile(
           visualDensity: VisualDensity.compact,
-          leading: Icon(Icons.timer),
+          leading: Icon(GameSystemViewModel.duration.icon),
           title: Text(spell.duration.toString()),
-          subtitle: Text('Duration'),
+          subtitle: Text(GameSystemViewModel.duration.name),
         ),
       if (spell.requiresConcentration != null)
         ListTile(
           visualDensity: VisualDensity.compact,
-          leading: Icon(Symbols.mindfulness),
+          leading: Icon(GameSystemViewModel.concentration.icon),
           title: Text(spell.requiresConcentration! ? 'Yes' : 'No'),
-          subtitle: Text('Requires Concentration'),
+          subtitle: Text(GameSystemViewModel.concentration.name),
         ),
       if (spell.canBeCastAsRitual != null)
         ListTile(
           visualDensity: VisualDensity.compact,
-          leading: Icon(Symbols.person_celebrate),
+          leading: Icon(GameSystemViewModel.ritual.icon),
           title: Text(spell.canBeCastAsRitual! ? 'Yes' : 'No'),
-          subtitle: Text('Can be Cast as Ritual'),
+          subtitle: Text(GameSystemViewModel.ritual.name),
         ),
       if (spell.requiresMaterialComponent != null ||
           spell.requiresSomaticComponent != null ||
@@ -148,7 +142,7 @@ class SpellCardWidget extends ConsumerWidget {
           visualDensity: VisualDensity.compact,
           titleAlignment: ListTileTitleAlignment.center,
           title: Text(
-            'Material',
+            GameSystemViewModel.materialComponent.name,
             textAlign: TextAlign.center,
           ),
           subtitle: Text(
@@ -159,9 +153,9 @@ class SpellCardWidget extends ConsumerWidget {
       if (spell.school != null)
         ListTile(
           visualDensity: VisualDensity.compact,
-          leading: Icon(Icons.book),
+          leading: Icon(GameSystemViewModel.school.icon),
           title: Text(spell.school!),
-          subtitle: Text('School'),
+          subtitle: Text(GameSystemViewModel.school.name),
         ),
     ]
         .map(
