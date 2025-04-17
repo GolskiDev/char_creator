@@ -26,39 +26,87 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
         (abilityScoreEntry) {
           final abilityScoreType = abilityScoreEntry.key;
           final abilityScore = abilityScoreEntry.value;
-          final textEditingController = useTextEditingController(
+          final abilityScoreEditingController = useTextEditingController(
             text: abilityScore.value?.toString() ?? '',
+          );
+          final modifierEditingController = useTextEditingController(
+            text: AbilityScoreModifier.display(
+              abilityScore.modifier,
+            ),
           );
           return ListTile(
             title: Text(abilityScore.gameSystemViewModel.name),
             leading: Icon(abilityScore.gameSystemViewModel.icon),
-            trailing: SizedBox(
-              width: 50,
-              height: 50,
-              child: TextField(
-                controller: textEditingController,
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(
-                    RegExp(r'^[-]?[0-9]*$'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: TextField(
+                    controller: abilityScoreEditingController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'^[-]?[0-9]*$'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      final intValue = int.tryParse(value);
+                      if (intValue != null) {
+                        final updatedAbilityScores =
+                            abilityScoresState.value.copyWith(abilityScores: {
+                          ...abilityScoresState.value.abilityScores,
+                          abilityScoreType:
+                              abilityScore.copyWith(value: intValue),
+                        });
+                        abilityScoresState.value = updatedAbilityScores;
+                      }
+                    },
+                    onSubmitted: (_) {
+                      onChanged?.call(abilityScoresState.value);
+                    },
                   ),
-                ],
-                onChanged: (value) {
-                  final intValue = int.tryParse(value);
-                  if (intValue != null) {
-                    final updatedAbilityScores =
-                        abilityScoresState.value.copyWith(abilityScores: {
-                      ...abilityScoresState.value.abilityScores,
-                      abilityScoreType: abilityScore.copyWith(value: intValue),
-                    });
-                    abilityScoresState.value = updatedAbilityScores;
-                  }
-                },
-                onSubmitted: (_) {
-                  onChanged?.call(abilityScoresState.value);
-                },
-              ),
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: TextField(
+                    controller: modifierEditingController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'^[-+]?[0-9]*$'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      final intValue = int.tryParse(value);
+                      final updatedAbilityScores =
+                          abilityScoresState.value.copyWith(
+                        abilityScores: {
+                          ...abilityScoresState.value.abilityScores,
+                          abilityScoreType: abilityScore.copyWith(
+                            manuallySetModifier: () => intValue,
+                          ),
+                        },
+                      );
+                      abilityScoresState.value = updatedAbilityScores;
+                      if (intValue != null) {
+                        modifierEditingController.text =
+                            AbilityScoreModifier.display(intValue);
+                      }
+                    },
+                    onSubmitted: (_) {
+                      onChanged?.call(abilityScoresState.value);
+                    },
+                  ),
+                ),
+              ],
             ),
           );
         },

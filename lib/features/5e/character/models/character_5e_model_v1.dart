@@ -21,7 +21,6 @@ class Character5eModelV1 implements Identifiable {
   final Set<Character5eClassStateModelV1> _classesStates;
   Set<Character5eClassStateModelV1> get classesStates => _classesStates;
 
-  //TODO: Add to constructors and etc
   final Character5eAbilityScores? abilityScores;
   final Character5eSavingThrows? character5eSavingThrows;
   final Character5eSkills? character5eSkills;

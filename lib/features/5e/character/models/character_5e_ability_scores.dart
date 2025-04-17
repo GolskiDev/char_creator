@@ -90,10 +90,24 @@ class AbilityScore {
   final Character5eAbilityScoreType abilityScoreType;
   final int? value;
 
+  int? get modifier {
+    if (_modifier != null) {
+      return _modifier;
+    }
+    if (value == null) {
+      return null;
+    }
+    return ((value! - 10) / 2).floor();
+  }
+
+  //manually set modifier
+  final int? _modifier;
+
   const AbilityScore({
     required this.abilityScoreType,
     required this.value,
-  });
+    int? modifier,
+  }) : _modifier = modifier;
 
   /// Shortcut
   GameSystemViewModelItem get gameSystemViewModel =>
@@ -101,10 +115,12 @@ class AbilityScore {
 
   AbilityScore copyWith({
     int? value,
+    int? Function()? manuallySetModifier,
   }) {
     return AbilityScore(
       abilityScoreType: abilityScoreType,
       value: value ?? this.value,
+      modifier: manuallySetModifier != null ? manuallySetModifier() : _modifier,
     );
   }
 
@@ -112,17 +128,19 @@ class AbilityScore {
   bool operator ==(Object other) {
     return other is AbilityScore &&
         other.abilityScoreType == abilityScoreType &&
-        other.value == value;
+        other.value == value &&
+        other._modifier == _modifier;
   }
 
   @override
   int get hashCode {
-    return abilityScoreType.hashCode ^ value.hashCode;
+    return abilityScoreType.hashCode ^ value.hashCode ^ _modifier.hashCode;
   }
 
   Map<String, dynamic> toMap() {
     return {
       "abilityScoreType": abilityScoreType.name,
+      "modifier": _modifier,
       "value": value,
     };
   }
@@ -132,6 +150,7 @@ class AbilityScore {
       abilityScoreType:
           Character5eAbilityScoreType.fromString(map['abilityScoreType']),
       value: map['value'] as int?,
+      modifier: map['modifier'] as int?,
     );
   }
 }
@@ -148,5 +167,20 @@ extension AbilityScoreGameSystemViewModel on Character5eAbilityScoreType {
       Character5eAbilityScoreType.wisdom => GameSystemViewModel.wisdom,
       Character5eAbilityScoreType.charisma => GameSystemViewModel.charisma,
     };
+  }
+}
+
+class AbilityScoreModifier {
+  static String display(int? modifier) {
+    if (modifier == null) {
+      return '';
+    }
+    if (modifier > 0) {
+      return '+$modifier';
+    } else if (modifier < 0) {
+      return '$modifier';
+    } else {
+      return '0';
+    }
   }
 }

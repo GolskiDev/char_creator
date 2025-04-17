@@ -116,6 +116,11 @@ class GameSystemViewModel {
     name: 'Ability Scores',
     icon: Icons.bar_chart,
   );
+
+  static final modifier = GameSystemViewModelItem(
+    name: 'Modifier',
+    icon: Icons.add_circle_outline,
+  );
 }
 
 class GameSystemViewModelItem {
