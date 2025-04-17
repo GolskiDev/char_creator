@@ -106,6 +106,16 @@ class GameSystemViewModel {
     name: 'Character',
     icon: Symbols.person,
   );
+
+  static final spells = GameSystemViewModelItem(
+    name: 'Spells',
+    icon: Symbols.magic_button,
+  );
+
+  static final abilityScores = GameSystemViewModelItem(
+    name: 'Ability Scores',
+    icon: Icons.bar_chart,
+  );
 }
 
 class GameSystemViewModelItem {

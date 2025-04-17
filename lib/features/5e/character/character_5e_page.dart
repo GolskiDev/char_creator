@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
+import '../game_system_view_model.dart';
 import '../spells/view_models/spell_view_model.dart';
 import 'models/character_5e_model_v1.dart';
 import 'repository/character_repository.dart';
@@ -73,8 +73,8 @@ class Character5ePage extends HookConsumerWidget {
         isExpanded: openedExpansionPanelsIndexes.value.contains("spells"),
         headerBuilder: (context, isExpanded) {
           return ListTile(
-            leading: const Icon(Symbols.magic_button),
-            title: Text('Spells'),
+            leading: Icon(GameSystemViewModel.spells.icon),
+            title: Text(GameSystemViewModel.spells.name),
             trailing: isExpanded
                 ? IconButton(
                     icon: const Icon(Icons.edit),
@@ -97,8 +97,8 @@ class Character5ePage extends HookConsumerWidget {
               openedExpansionPanelsIndexes.value.contains("abilityScores"),
           headerBuilder: (context, isExpanded) {
             return ListTile(
-              leading: const Icon(Icons.bar_chart),
-              title: Text('Ability Scores'),
+              leading: Icon(GameSystemViewModel.abilityScores.icon),
+              title: Text(GameSystemViewModel.abilityScores.name),
             );
           },
           body: CharacterAbilityScoresWidget.editing(
@@ -160,7 +160,7 @@ class Character5ePage extends HookConsumerWidget {
             if (character.abilityScores == null) ...[
               const Divider(),
               ListTile(
-                title: Text('Add Ability Scores'),
+                title: Text('Add ${GameSystemViewModel.abilityScores.name}'),
                 trailing: IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: () {

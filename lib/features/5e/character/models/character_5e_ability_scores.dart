@@ -1,5 +1,7 @@
 import 'package:collection/collection.dart';
 
+import '../../game_system_view_model.dart';
+
 enum Character5eAbilityScoreType {
   strength,
   dexterity,
@@ -93,6 +95,10 @@ class AbilityScore {
     required this.value,
   });
 
+  /// Shortcut
+  GameSystemViewModelItem get gameSystemViewModel =>
+      abilityScoreType.gameSystemViewModel;
+
   AbilityScore copyWith({
     int? value,
   }) {
@@ -127,5 +133,20 @@ class AbilityScore {
           Character5eAbilityScoreType.fromString(map['abilityScoreType']),
       value: map['value'] as int?,
     );
+  }
+}
+
+extension AbilityScoreGameSystemViewModel on Character5eAbilityScoreType {
+  GameSystemViewModelItem get gameSystemViewModel {
+    return switch (this) {
+      Character5eAbilityScoreType.strength => GameSystemViewModel.strength,
+      Character5eAbilityScoreType.dexterity => GameSystemViewModel.dexterity,
+      Character5eAbilityScoreType.constitution =>
+        GameSystemViewModel.constitution,
+      Character5eAbilityScoreType.intelligence =>
+        GameSystemViewModel.intelligence,
+      Character5eAbilityScoreType.wisdom => GameSystemViewModel.wisdom,
+      Character5eAbilityScoreType.charisma => GameSystemViewModel.charisma,
+    };
   }
 }

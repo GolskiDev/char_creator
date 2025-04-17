@@ -30,7 +30,8 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
             text: abilityScore.value?.toString() ?? '',
           );
           return ListTile(
-            title: Text(abilityScore.abilityScoreType.name),
+            title: Text(abilityScore.gameSystemViewModel.name),
+            leading: Icon(abilityScore.gameSystemViewModel.icon),
             trailing: SizedBox(
               width: 50,
               height: 50,
