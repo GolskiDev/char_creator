@@ -85,7 +85,7 @@ class Character5eModelV1 implements Identifiable {
           character5eSkills: character5eSkills ?? Character5eSkills.empty(),
           conditions: conditions ?? Conditions5e(),
           spellSlots: spellSlots,
-          others: others,
+          others: others ?? Character5eOtherProps.empty(),
         );
 
   Character5eModelV1 copyWith({

@@ -26,30 +26,6 @@ class GameSystemViewModel {
     name: 'Charisma',
     icon: Symbols.sentiment_very_satisfied,
   );
-  static final armorClass = GameSystemViewModelItem(
-    name: 'Armor Class',
-    icon: Icons.shield,
-  );
-  static final initiative = GameSystemViewModelItem(
-    name: 'Initiative',
-    icon: Icons.flash_on,
-  );
-  static final speed = GameSystemViewModelItem(
-    name: 'Speed',
-    icon: Symbols.directions_walk,
-  );
-  static final proficiencyBonus = GameSystemViewModelItem(
-    name: 'Proficiency Bonus',
-    icon: Icons.add_circle,
-  );
-  static final hitPoints = GameSystemViewModelItem(
-    name: 'Hit Points',
-    icon: Icons.favorite,
-  );
-  static final savingThrows = GameSystemViewModelItem(
-    name: 'Saving Throws',
-    icon: Icons.security,
-  );
 
   static final spellLevel = GameSystemViewModelItem(
     name: 'Spell Level',
@@ -297,6 +273,36 @@ class GameSystemViewModel {
   static final spellSlots = GameSystemViewModelItem(
     name: 'Spell Slots',
     icon: Symbols.water_drop,
+  );
+
+  final maxHp = GameSystemViewModelItem(
+    name: 'Max HP',
+    icon: Symbols.favorite,
+  );
+
+  final currentHp = GameSystemViewModelItem(
+    name: 'Current HP',
+    icon: Symbols.heart_broken,
+  );
+
+  final temporaryHp = GameSystemViewModelItem(
+    name: 'Temporary HP',
+    icon: Symbols.heart_plus,
+  );
+
+  final armorClass = GameSystemViewModelItem(
+    name: 'Armor Class',
+    icon: Symbols.shield,
+  );
+
+  final initiative = GameSystemViewModelItem(
+    name: 'Initiative',
+    icon: Symbols.flash_on,
+  );
+
+  final speed = GameSystemViewModelItem(
+    name: 'Speed',
+    icon: Symbols.directions_walk,
   );
 }
 

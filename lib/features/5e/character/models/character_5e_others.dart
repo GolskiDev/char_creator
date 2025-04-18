@@ -4,6 +4,7 @@ class Character5eOtherProps {
   final int? currentHP;
   final int? ac;
   final int? currentSpeed;
+  final int? initiative;
 
   Character5eOtherProps({
     required this.maxHP,
@@ -11,21 +12,32 @@ class Character5eOtherProps {
     required this.currentHP,
     required this.ac,
     required this.currentSpeed,
+    required this.initiative,
   });
 
+  Character5eOtherProps.empty()
+      : maxHP = null,
+        temporaryHP = null,
+        currentHP = null,
+        ac = null,
+        currentSpeed = null,
+        initiative = null;
+
   Character5eOtherProps copyWith({
-    int? maxHP,
-    int? temporaryHP,
-    int? currentHP,
-    int? ac,
-    int? currentSpeed,
+    int? Function()? maxHP,
+    int? Function()? temporaryHP,
+    int? Function()? currentHP,
+    int? Function()? ac,
+    int? Function()? currentSpeed,
+    int? Function()? initiative,
   }) {
     return Character5eOtherProps(
-      maxHP: maxHP ?? this.maxHP,
-      temporaryHP: temporaryHP ?? this.temporaryHP,
-      currentHP: currentHP ?? this.currentHP,
-      ac: ac ?? this.ac,
-      currentSpeed: currentSpeed ?? this.currentSpeed,
+      maxHP: maxHP != null ? maxHP() : this.maxHP,
+      temporaryHP: temporaryHP != null ? temporaryHP() : this.temporaryHP,
+      currentHP: currentHP != null ? currentHP() : this.currentHP,
+      ac: ac != null ? ac() : this.ac,
+      currentSpeed: currentSpeed != null ? currentSpeed() : this.currentSpeed,
+      initiative: initiative != null ? initiative() : this.initiative,
     );
   }
 
@@ -36,6 +48,7 @@ class Character5eOtherProps {
       currentHP: map['currentHP'] as int?,
       ac: map['ac'] as int?,
       currentSpeed: map['currentSpeed'] as int?,
+      initiative: map['initiative'] as int?,
     );
   }
 
@@ -46,6 +59,7 @@ class Character5eOtherProps {
       'currentHP': currentHP,
       'ac': ac,
       'currentSpeed': currentSpeed,
+      'initiative': initiative,
     };
   }
 
@@ -58,7 +72,8 @@ class Character5eOtherProps {
         other.temporaryHP == temporaryHP &&
         other.currentHP == currentHP &&
         other.ac == ac &&
-        other.currentSpeed == currentSpeed;
+        other.currentSpeed == currentSpeed &&
+        other.initiative == initiative;
   }
 
   @override
@@ -67,6 +82,7 @@ class Character5eOtherProps {
         temporaryHP.hashCode ^
         currentHP.hashCode ^
         ac.hashCode ^
-        currentSpeed.hashCode;
+        currentSpeed.hashCode ^
+        initiative.hashCode;
   }
 }

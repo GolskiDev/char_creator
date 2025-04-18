@@ -12,6 +12,7 @@ import '../spells/view_models/spell_view_model.dart';
 import 'models/character_5e_model_v1.dart';
 import 'repository/character_repository.dart';
 import 'widgets/character_ability_scores_widget.dart';
+import 'widgets/character_other_props_widget.dart';
 import 'widgets/character_skills_widget.dart';
 import 'widgets/character_spells_slots_widget.dart';
 import 'widgets/conditions_5e_widget.dart';
@@ -207,6 +208,20 @@ class Character5ePage extends HookConsumerWidget {
           children: [
             if (character.classesStates.isNotEmpty) ...[
               _characterClassesWidget(character),
+              const Divider(),
+            ],
+            if (character.others != null) ...[
+              CharacterOtherPropsWidget(
+                characterOtherProps: character.others!,
+                onChanged: (updatedOtherProps) {
+                  final updatedCharacter = character.copyWith(
+                    others: updatedOtherProps,
+                  );
+                  ref
+                      .read(characterRepositoryProvider)
+                      .updateCharacter(updatedCharacter);
+                },
+              ),
               const Divider(),
             ],
             ExpansionPanelList(
