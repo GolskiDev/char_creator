@@ -1,11 +1,11 @@
-class Character5eOthers {
+class Character5eOtherProps {
   final int? maxHP;
   final int? temporaryHP;
   final int? currentHP;
   final int? ac;
   final int? currentSpeed;
 
-  Character5eOthers({
+  Character5eOtherProps({
     required this.maxHP,
     required this.temporaryHP,
     required this.currentHP,
@@ -13,14 +13,14 @@ class Character5eOthers {
     required this.currentSpeed,
   });
 
-  Character5eOthers copyWith({
+  Character5eOtherProps copyWith({
     int? maxHP,
     int? temporaryHP,
     int? currentHP,
     int? ac,
     int? currentSpeed,
   }) {
-    return Character5eOthers(
+    return Character5eOtherProps(
       maxHP: maxHP ?? this.maxHP,
       temporaryHP: temporaryHP ?? this.temporaryHP,
       currentHP: currentHP ?? this.currentHP,
@@ -29,8 +29,8 @@ class Character5eOthers {
     );
   }
 
-  factory Character5eOthers.fromMap(Map<String, dynamic> map) {
-    return Character5eOthers(
+  factory Character5eOtherProps.fromMap(Map<String, dynamic> map) {
+    return Character5eOtherProps(
       maxHP: map['maxHP'] as int?,
       temporaryHP: map['temporaryHP'] as int?,
       currentHP: map['currentHP'] as int?,
@@ -53,7 +53,7 @@ class Character5eOthers {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Character5eOthers &&
+    return other is Character5eOtherProps &&
         other.maxHP == maxHP &&
         other.temporaryHP == temporaryHP &&
         other.currentHP == currentHP &&

@@ -293,6 +293,11 @@ class GameSystemViewModel {
     name: 'Exhaustion Level 6',
     icon: Symbols.cancel,
   );
+
+  static final spellSlots = GameSystemViewModelItem(
+    name: 'Spell Slots',
+    icon: Symbols.water_drop,
+  );
 }
 
 class GameSystemViewModelItem {

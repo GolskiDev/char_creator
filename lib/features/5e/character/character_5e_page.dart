@@ -1,4 +1,5 @@
 import 'package:char_creator/features/5e/character/models/character_5e_ability_scores.dart';
+import 'package:char_creator/features/5e/character/models/character_5e_spell_slots.dart';
 import 'package:char_creator/features/5e/character/widgets/character_classes_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'models/character_5e_model_v1.dart';
 import 'repository/character_repository.dart';
 import 'widgets/character_ability_scores_widget.dart';
 import 'widgets/character_skills_widget.dart';
+import 'widgets/character_spells_slots_widget.dart';
 import 'widgets/conditions_5e_widget.dart';
 import 'widgets/grouped_spells_widget.dart';
 
@@ -160,6 +162,28 @@ class Character5ePage extends HookConsumerWidget {
           ),
         ),
       },
+      if (character.spellSlots != null) ...{
+        "spellSlots": ExpansionPanel(
+          isExpanded: openedExpansionPanelsIndexes.value.contains("spellSlots"),
+          headerBuilder: (context, isExpanded) {
+            return ListTile(
+              leading: Icon(GameSystemViewModel.spellSlots.icon),
+              title: Text(GameSystemViewModel.spellSlots.name),
+            );
+          },
+          body: CharacterSpellsSlotsWidget.editing(
+            spellSlots: character.spellSlots!,
+            onChanged: (updatedSpellSlots) {
+              final updatedCharacter = character.copyWith(
+                spellSlots: updatedSpellSlots,
+              );
+              ref
+                  .read(characterRepositoryProvider)
+                  .updateCharacter(updatedCharacter);
+            },
+          ),
+        ),
+      }
     };
 
     final expansionPanels = mapOfExpansionPanels.values.toList();
@@ -212,6 +236,23 @@ class Character5ePage extends HookConsumerWidget {
                   onPressed: () {
                     final updatedCharacter = character.copyWith(
                       abilityScores: Character5eAbilityScores.empty(),
+                    );
+                    ref
+                        .read(characterRepositoryProvider)
+                        .updateCharacter(updatedCharacter);
+                  },
+                ),
+              ),
+            ],
+            if (character.spellSlots == null) ...[
+              const Divider(),
+              ListTile(
+                title: Text('Add ${GameSystemViewModel.spellSlots.name}'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    final updatedCharacter = character.copyWith(
+                      spellSlots: Character5eSpellSlots.empty(),
                     );
                     ref
                         .read(characterRepositoryProvider)
