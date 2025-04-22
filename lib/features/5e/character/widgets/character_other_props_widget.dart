@@ -20,8 +20,8 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
     return Column(
       children: [
         ListTile(
-          title: Text(GameSystemViewModel().maxHp.name),
-          leading: Icon(GameSystemViewModel().maxHp.icon),
+          title: Text(GameSystemViewModel.maxHp.name),
+          leading: Icon(GameSystemViewModel.maxHp.icon),
           trailing: SizedBox(
             width: 50,
             height: 50,
@@ -44,8 +44,8 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
           ),
         ),
         ListTile(
-          title: Text(GameSystemViewModel().temporaryHp.name),
-          leading: Icon(GameSystemViewModel().temporaryHp.icon),
+          title: Text(GameSystemViewModel.temporaryHp.name),
+          leading: Icon(GameSystemViewModel.temporaryHp.icon),
           trailing: SizedBox(
             width: 50,
             height: 50,
@@ -68,8 +68,8 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
           ),
         ),
         ListTile(
-          title: Text(GameSystemViewModel().currentHp.name),
-          leading: Icon(GameSystemViewModel().currentHp.icon),
+          title: Text(GameSystemViewModel.currentHp.name),
+          leading: Icon(GameSystemViewModel.currentHp.icon),
           trailing: SizedBox(
             width: 50,
             height: 50,
@@ -92,8 +92,8 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
           ),
         ),
         ListTile(
-          title: Text(GameSystemViewModel().armorClass.name),
-          leading: Icon(GameSystemViewModel().armorClass.icon),
+          title: Text(GameSystemViewModel.armorClass.name),
+          leading: Icon(GameSystemViewModel.armorClass.icon),
           trailing: SizedBox(
             width: 50,
             height: 50,
@@ -116,8 +116,8 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
           ),
         ),
         ListTile(
-          title: Text(GameSystemViewModel().speed.name),
-          leading: Icon(GameSystemViewModel().speed.icon),
+          title: Text(GameSystemViewModel.speed.name),
+          leading: Icon(GameSystemViewModel.speed.icon),
           trailing: SizedBox(
             width: 50,
             height: 50,
@@ -140,8 +140,8 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
           ),
         ),
         ListTile(
-          title: Text(GameSystemViewModel().initiative.name),
-          leading: Icon(GameSystemViewModel().initiative.icon),
+          title: Text(GameSystemViewModel.initiative.name),
+          leading: Icon(GameSystemViewModel.initiative.icon),
           trailing: SizedBox(
             width: 50,
             height: 50,

@@ -275,32 +275,32 @@ class GameSystemViewModel {
     icon: Symbols.water_drop,
   );
 
-  final maxHp = GameSystemViewModelItem(
+  static final maxHp = GameSystemViewModelItem(
     name: 'Max HP',
     icon: Symbols.favorite,
   );
 
-  final currentHp = GameSystemViewModelItem(
+  static final currentHp = GameSystemViewModelItem(
     name: 'Current HP',
     icon: Symbols.heart_broken,
   );
 
-  final temporaryHp = GameSystemViewModelItem(
+  static final temporaryHp = GameSystemViewModelItem(
     name: 'Temporary HP',
     icon: Symbols.heart_plus,
   );
 
-  final armorClass = GameSystemViewModelItem(
+  static final armorClass = GameSystemViewModelItem(
     name: 'Armor Class',
     icon: Symbols.shield,
   );
 
-  final initiative = GameSystemViewModelItem(
+  static final initiative = GameSystemViewModelItem(
     name: 'Initiative',
     icon: Symbols.flash_on,
   );
 
-  final speed = GameSystemViewModelItem(
+  static final speed = GameSystemViewModelItem(
     name: 'Speed',
     icon: Symbols.directions_walk,
   );
