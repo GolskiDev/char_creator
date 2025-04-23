@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class MainMenuPage extends HookConsumerWidget {
   const MainMenuPage({super.key});
@@ -27,6 +28,36 @@ class MainMenuPage extends HookConsumerWidget {
         icon: GameSystemViewModel.characterClass.icon,
         title: GameSystemViewModel.characterClass.name,
         path: '/classes',
+      ),
+      MainMenuDefaultCardWidget(
+        icon: GameSystemViewModel.armorClass.icon,
+        title: "Armors",
+        path: "/armors",
+      ),
+      MainMenuDefaultCardWidget(
+        icon: GameSystemViewModel.conditions.icon,
+        title: "Conditions",
+        path: "/conditions",
+      ),
+      MainMenuDefaultCardWidget(
+        icon: Symbols.money_bag,
+        title: "Magic Items",
+        path: "/magic-items",
+      ),
+      MainMenuDefaultCardWidget(
+        icon: Symbols.pets,
+        title: "Monsters",
+        path: "/monsters",
+      ),
+      MainMenuDefaultCardWidget(
+        icon: Symbols.ar_on_you,
+        title: "Races",
+        path: "/races",
+      ),
+      MainMenuDefaultCardWidget(
+        icon: Symbols.swords,
+        title: "Weapons",
+        path: "/weapons",
       ),
       if (kDebugMode)
         MainMenuDefaultCardWidget(

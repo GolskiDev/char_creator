@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../views/default_page_wrapper.dart';
 import '../../../game_system_view_model.dart';
+import '../open_5e_collection_repository.dart';
 
 class Open5eArmorModel {
   final String name;
@@ -119,6 +122,60 @@ class Open5eArmorWidget extends StatelessWidget {
               subtitle: Text('${armor.documentTitle} (${armor.documentSlug})'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class Open5eArmorPage extends ConsumerWidget {
+  const Open5eArmorPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final armors = ref.watch(open5eArmorsProvider.future);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Armors"),
+      ),
+      body: DefaultPageWrapper(
+        future: armors,
+        builder: (context, data) => ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: data.length,
+          separatorBuilder: (context, index) => const SizedBox(
+            height: 4,
+          ),
+          itemBuilder: (context, index) {
+            final armorModel = data[index];
+            return Card(
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                title: Text(armorModel.name),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text(armorModel.name),
+                        ),
+                        body: SafeArea(
+                          child: SingleChildScrollView(
+                            child: Open5eArmorWidget(
+                              armor: armorModel,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         ),
       ),
     );

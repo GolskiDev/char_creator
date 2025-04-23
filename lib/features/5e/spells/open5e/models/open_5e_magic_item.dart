@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../../views/default_page_wrapper.dart';
+import '../open_5e_collection_repository.dart';
 
 class Open5eMagicItem {
   final String slug;
@@ -23,7 +27,7 @@ class Open5eMagicItem {
     required this.documentUrl,
   });
 
-  factory Open5eMagicItem.fromJson(Map<String, dynamic> json) {
+  factory Open5eMagicItem.fromMap(Map<String, dynamic> json) {
     return Open5eMagicItem(
       slug: json['slug'] as String,
       name: json['name'] as String,
@@ -37,7 +41,7 @@ class Open5eMagicItem {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'slug': slug,
       'name': name,
@@ -89,6 +93,60 @@ class Open5eMagicItemWidget extends StatelessWidget {
                   '${magicItem.documentTitle} (${magicItem.documentSlug})'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class Open5eMagicItemPage extends ConsumerWidget {
+  const Open5eMagicItemPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final magicItems = ref.watch(open5eMagicItemsProvider.future);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Magic Items"),
+      ),
+      body: DefaultPageWrapper(
+        future: magicItems,
+        builder: (context, data) => ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: data.length,
+          separatorBuilder: (context, index) => const SizedBox(
+            height: 4,
+          ),
+          itemBuilder: (context, index) {
+            final magicItemModel = data[index];
+            return Card(
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                title: Text(magicItemModel.name),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text(magicItemModel.name),
+                        ),
+                        body: SafeArea(
+                          child: SingleChildScrollView(
+                            child: Open5eMagicItemWidget(
+                              magicItem: magicItemModel,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         ),
       ),
     );

@@ -8,7 +8,13 @@ import 'features/5e/character/character_5e_page.dart';
 import 'features/5e/character/edit_character_5e_page.dart';
 import 'features/5e/character/list_of_characters_page.dart';
 import 'features/5e/spells/list_of_spells_page.dart';
+import 'features/5e/spells/open5e/models/open_5e_armor_model.dart';
 import 'features/5e/spells/open5e/models/open_5e_class_model.dart';
+import 'features/5e/spells/open5e/models/open_5e_conditions.dart';
+import 'features/5e/spells/open5e/models/open_5e_magic_item.dart';
+import 'features/5e/spells/open5e/models/open_5e_monster_model.dart';
+import 'features/5e/spells/open5e/models/open_5e_race_model.dart';
+import 'features/5e/spells/open5e/models/open_5e_weapon_model.dart';
 import 'features/5e/spells/spell_card_page.dart';
 import 'features/main_menu/main_menu.dart';
 import 'utils/utils_page.dart';
@@ -30,6 +36,42 @@ class Navigation {
                 path: '/classes',
                 builder: (context, state) {
                   return Open5eClassPage();
+                },
+              ),
+              GoRoute(
+                path: '/armors',
+                builder: (context, state) {
+                  return Open5eArmorPage();
+                },
+              ),
+              GoRoute(
+                path: '/conditions',
+                builder: (context, state) {
+                  return Open5eConditionsPage();
+                },
+              ),
+              GoRoute(
+                path: '/magic-items',
+                builder: (context, state) {
+                  return Open5eMagicItemPage();
+                },
+              ),
+              GoRoute(
+                path: '/monsters',
+                builder: (context, state) {
+                  return Open5eMonsterPage();
+                },
+              ),
+              GoRoute(
+                path: '/races',
+                builder: (context, state) {
+                  return Open5eRacePage();
+                },
+              ),
+              GoRoute(
+                path: '/weapons',
+                builder: (context, state) {
+                  return Open5eWeaponPage();
                 },
               ),
               GoRoute(

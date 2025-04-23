@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../../views/default_page_wrapper.dart';
+import '../open_5e_collection_repository.dart';
 
 class Open5eWeaponModel {
   final String name;
@@ -12,7 +16,7 @@ class Open5eWeaponModel {
   final String damageDice;
   final String damageType;
   final String weight;
-  final List<String> properties;
+  final List<String>? properties;
 
   Open5eWeaponModel({
     required this.name,
@@ -29,7 +33,7 @@ class Open5eWeaponModel {
     required this.properties,
   });
 
-  factory Open5eWeaponModel.fromJson(Map<String, dynamic> json) {
+  factory Open5eWeaponModel.fromMap(Map<String, dynamic> json) {
     return Open5eWeaponModel(
       name: json['name'] as String,
       slug: json['slug'] as String,
@@ -42,11 +46,11 @@ class Open5eWeaponModel {
       damageDice: json['damage_dice'] as String,
       damageType: json['damage_type'] as String,
       weight: json['weight'] as String,
-      properties: List<String>.from(json['properties'] as List),
+      properties: List<String>.from(json['properties'] as List? ?? []),
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'name': name,
       'slug': slug,
@@ -94,16 +98,71 @@ class Open5eWeaponWidget extends StatelessWidget {
               title: Text('Cost'),
               subtitle: Text(weapon.cost),
             ),
-            ListTile(
-              title: Text('Properties'),
-              subtitle: Text(weapon.properties.join(', ')),
-            ),
+            if (weapon.properties != null)
+              ListTile(
+                title: Text('Properties'),
+                subtitle: Text(weapon.properties!.join(', ')),
+              ),
             ListTile(
               title: Text('Document'),
               subtitle:
                   Text('${weapon.documentTitle} (${weapon.documentSlug})'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class Open5eWeaponPage extends ConsumerWidget {
+  const Open5eWeaponPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final weapons = ref.watch(open5eWeaponsProvider.future);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Weapons"),
+      ),
+      body: DefaultPageWrapper(
+        future: weapons,
+        builder: (context, data) => ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: data.length,
+          separatorBuilder: (context, index) => const SizedBox(
+            height: 4,
+          ),
+          itemBuilder: (context, index) {
+            final weaponModel = data[index];
+            return Card(
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                title: Text(weaponModel.name),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text(weaponModel.name),
+                        ),
+                        body: SafeArea(
+                          child: SingleChildScrollView(
+                            child: Open5eWeaponWidget(
+                              weapon: weaponModel,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         ),
       ),
     );

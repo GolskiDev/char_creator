@@ -28,7 +28,7 @@ final open5eWeaponsProvider =
     final repository = ref.read(open5eCollectionRepositoryProvider);
     return repository.fetchCollection(
       'weapons',
-      (json) => Open5eWeaponModel.fromJson(json),
+      (json) => Open5eWeaponModel.fromMap(json),
     );
   },
 );
@@ -38,7 +38,7 @@ final open5eRacesProvider = FutureProvider.autoDispose<List<Open5eRaceModel>>(
     final repository = ref.read(open5eCollectionRepositoryProvider);
     return repository.fetchCollection(
       'races',
-      (json) => Open5eRaceModel.fromJson(json),
+      (json) => Open5eRaceModel.fromMap(json),
     );
   },
 );
@@ -60,7 +60,7 @@ final open5eMagicItemsProvider =
     final repository = ref.read(open5eCollectionRepositoryProvider);
     return repository.fetchCollection(
       'magicitems',
-      (json) => Open5eMagicItem.fromJson(json),
+      (json) => Open5eMagicItem.fromMap(json),
     );
   },
 );

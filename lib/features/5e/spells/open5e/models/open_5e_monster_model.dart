@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../views/default_page_wrapper.dart';
 import '../../../game_system_view_model.dart';
+import '../open_5e_collection_repository.dart';
 
 class Open5eMonsterModel {
   final String name;
@@ -10,9 +13,9 @@ class Open5eMonsterModel {
   final String subtype;
   final String? group;
   final String alignment;
-  final String armorClass;
+  final int armorClass;
   final String armorDescription;
-  final String hitPoints;
+  final int hitPoints;
   final String hitDice;
   final Map<String, dynamic> speed;
   final String strength;
@@ -38,12 +41,12 @@ class Open5eMonsterModel {
   final String senses;
   final String languages;
   final double cr;
-  final Map<String, dynamic>? actions;
-  final Map<String, dynamic>? legendaryActions;
-  final Map<String, dynamic>? reactions;
+  final List<dynamic>? actions;
+  final List<dynamic>? legendaryActions;
+  final List<dynamic>? reactions;
   final String? legendaryDescription;
-  final Map<String, dynamic>? legendaryActionsDescription;
-  final Map<String, dynamic>? specialAbilities;
+  final List<dynamic>? legendaryActionsDescription;
+  final List<dynamic>? specialAbilities;
 
   /// links
   final List<String> spellList;
@@ -140,25 +143,24 @@ class Open5eMonsterModel {
       languages:
           (map['languages']) != null ? (map['languages'].toString()) : '',
       cr: (map['cr'] != null) ? double.parse(map['cr'].toString()) : 0.0,
-      actions: (map['actions']) != null
-          ? Map<String, dynamic>.from(map['actions'])
-          : {},
+      actions:
+          (map['actions']) != null ? List<dynamic>.from(map['actions']) : [],
       legendaryActions: (map['legendary_actions']) != null
-          ? Map<String, dynamic>.from(map['legendary_actions'])
-          : {},
+          ? List<dynamic>.from(map['legendary_actions'])
+          : [],
       reactions: (map['reactions']) != null
-          ? Map<String, dynamic>.from(map['reactions'])
-          : {},
+          ? List<dynamic>.from(map['reactions'])
+          : [],
       legendaryDescription: (map['legendary_description'] != null)
           ? map['legendary_description']
           : '',
       legendaryActionsDescription:
           (map['legendary_actions_description'] != null)
-              ? Map<String, dynamic>.from(map['legendary_actions_description'])
-              : {},
+              ? List<dynamic>.from(map['legendary_actions_description'])
+              : [],
       specialAbilities: (map['special_abilities'] != null)
-          ? Map<String, dynamic>.from(map['special_abilities'])
-          : {},
+          ? List<dynamic>.from(map['special_abilities'])
+          : [],
       spellList: List<String>.from(map['spell_list'] ?? []),
       environments: List<String>.from(map['environments'] ?? []),
     );
@@ -233,7 +235,7 @@ class Open5eMonsterWidget extends StatelessWidget {
             ListTile(
               leading: Icon(GameSystemViewModel.maxHp.icon),
               title: Text(GameSystemViewModel.maxHp.name),
-              subtitle: Text(monster.hitPoints),
+              subtitle: Text(monster.hitPoints.toString()),
             ),
             ListTile(
               leading: Icon(GameSystemViewModel.speed.icon),
@@ -252,6 +254,60 @@ class Open5eMonsterWidget extends StatelessWidget {
                   'INT: ${monster.intelligence}, WIS: ${monster.wisdom}, CHA: ${monster.charisma}'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class Open5eMonsterPage extends ConsumerWidget {
+  const Open5eMonsterPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final monsters = ref.watch(open5eMonstersProvider.future);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Monsters"),
+      ),
+      body: DefaultPageWrapper(
+        future: monsters,
+        builder: (context, data) => ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: data.length,
+          separatorBuilder: (context, index) => const SizedBox(
+            height: 4,
+          ),
+          itemBuilder: (context, index) {
+            final monsterModel = data[index];
+            return Card(
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                title: Text(monsterModel.name),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text(monsterModel.name),
+                        ),
+                        body: SafeArea(
+                          child: SingleChildScrollView(
+                            child: Open5eMonsterWidget(
+                              monster: monsterModel,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         ),
       ),
     );

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../views/default_page_wrapper.dart';
 import '../../../game_system_view_model.dart';
+import '../open_5e_collection_repository.dart';
 
 class Open5eRaceModel {
   final String name;
@@ -17,7 +20,7 @@ class Open5eRaceModel {
   final String languages;
   final String vision;
   final String traits;
-  final List<String> subraces;
+  final List<dynamic> subraces;
   final String documentSlug;
   final String documentTitle;
   final String documentLicenseUrl;
@@ -45,25 +48,25 @@ class Open5eRaceModel {
     required this.documentUrl,
   });
 
-  factory Open5eRaceModel.fromJson(Map<String, dynamic> json) {
+  factory Open5eRaceModel.fromMap(Map<String, dynamic> json) {
     return Open5eRaceModel(
       name: json['name'],
       slug: json['slug'],
       desc: json['desc'],
       asiDesc: json['asi_desc'],
       asi: (json['asi'] as List)
-          .map((asi) => AbilityScoreIncrease.fromJson(asi))
+          .map((asi) => AbilityScoreIncrease.fromMap(asi))
           .toList(),
       age: json['age'],
       alignment: json['alignment'],
       size: json['size'],
       sizeRaw: json['size_raw'],
-      speed: Speed.fromJson(json['speed']),
+      speed: Speed.fromMap(json['speed']),
       speedDesc: json['speed_desc'],
       languages: json['languages'],
       vision: json['vision'],
       traits: json['traits'],
-      subraces: List<String>.from(json['subraces']),
+      subraces: List<dynamic>.from(json['subraces']),
       documentSlug: json['document__slug'],
       documentTitle: json['document__title'],
       documentLicenseUrl: json['document__license_url'],
@@ -71,18 +74,18 @@ class Open5eRaceModel {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'name': name,
       'slug': slug,
       'desc': desc,
       'asi_desc': asiDesc,
-      'asi': asi.map((asi) => asi.toJson()).toList(),
+      'asi': asi.map((asi) => asi.toMap()).toList(),
       'age': age,
       'alignment': alignment,
       'size': size,
       'size_raw': sizeRaw,
-      'speed': speed.toJson(),
+      'speed': speed.toMap(),
       'speed_desc': speedDesc,
       'languages': languages,
       'vision': vision,
@@ -105,14 +108,14 @@ class AbilityScoreIncrease {
     required this.value,
   });
 
-  factory AbilityScoreIncrease.fromJson(Map<String, dynamic> json) {
+  factory AbilityScoreIncrease.fromMap(Map<String, dynamic> json) {
     return AbilityScoreIncrease(
       attributes: List<String>.from(json['attributes']),
       value: json['value'],
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'attributes': attributes,
       'value': value,
@@ -125,13 +128,13 @@ class Speed {
 
   Speed({required this.walk});
 
-  factory Speed.fromJson(Map<String, dynamic> json) {
+  factory Speed.fromMap(Map<String, dynamic> json) {
     return Speed(
       walk: json['walk'],
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'walk': walk,
     };
@@ -186,6 +189,60 @@ class Open5eRaceWidget extends StatelessWidget {
               subtitle: Text('${race.documentTitle} (${race.documentSlug})'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class Open5eRacePage extends ConsumerWidget {
+  const Open5eRacePage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final races = ref.watch(open5eRacesProvider.future);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Races"),
+      ),
+      body: DefaultPageWrapper(
+        future: races,
+        builder: (context, data) => ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: data.length,
+          separatorBuilder: (context, index) => const SizedBox(
+            height: 4,
+          ),
+          itemBuilder: (context, index) {
+            final raceModel = data[index];
+            return Card(
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                title: Text(raceModel.name),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text(raceModel.name),
+                        ),
+                        body: SafeArea(
+                          child: SingleChildScrollView(
+                            child: Open5eRaceWidget(
+                              race: raceModel,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         ),
       ),
     );
