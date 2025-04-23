@@ -8,6 +8,7 @@ import 'features/5e/character/character_5e_page.dart';
 import 'features/5e/character/edit_character_5e_page.dart';
 import 'features/5e/character/list_of_characters_page.dart';
 import 'features/5e/spells/list_of_spells_page.dart';
+import 'features/5e/spells/open5e/models/open_5e_class_model.dart';
 import 'features/5e/spells/spell_card_page.dart';
 import 'features/main_menu/main_menu.dart';
 import 'utils/utils_page.dart';
@@ -25,6 +26,12 @@ class Navigation {
             path: '/',
             builder: (context, state) => const MainMenuPage(),
             routes: [
+              GoRoute(
+                path: '/classes',
+                builder: (context, state) {
+                  return Open5eClassPage();
+                },
+              ),
               GoRoute(
                 path: '/utils',
                 builder: (context, state) => const UtilsPage(),

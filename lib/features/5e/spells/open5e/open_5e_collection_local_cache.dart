@@ -32,7 +32,7 @@ class Open5eCollectionLocalCache {
   ) async {
     final cacheKey = '$cacheKeyPrefix$endpoint';
     final cacheJson =
-        jsonEncode(items.map((item) => (item as dynamic).toJson()).toList());
+        jsonEncode(items.map((item) => (item as dynamic).toMap()).toList());
     await DefaultCacheManager().putFile(
       cacheKey,
       utf8.encode(cacheJson),

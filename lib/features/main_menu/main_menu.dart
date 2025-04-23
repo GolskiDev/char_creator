@@ -23,6 +23,11 @@ class MainMenuPage extends HookConsumerWidget {
         title: GameSystemViewModel.character.name,
         path: "/characters",
       ),
+      MainMenuDefaultCardWidget(
+        icon: GameSystemViewModel.characterClass.icon,
+        title: GameSystemViewModel.characterClass.name,
+        path: '/classes',
+      ),
       if (kDebugMode)
         MainMenuDefaultCardWidget(
           icon: Icons.extension,
@@ -44,15 +49,18 @@ class MainMenuPage extends HookConsumerWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 8,
-            children: widgets
-                .map(
-                  (widget) => widget,
-                )
-                .toList(),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 8,
+              children: widgets
+                  .map(
+                    (widget) => widget,
+                  )
+                  .toList(),
+            ),
           ),
         ),
       ),

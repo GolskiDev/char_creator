@@ -28,6 +28,9 @@ dependencies:
   flutter_svg: 
   material_symbols_icons:
   flutter_cache_manager:
+  flutter_html:
+  flutter_html_table:
+  markdown:
 
 dev_dependencies:
   flutter_test:

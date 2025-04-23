@@ -1,6 +1,12 @@
+import 'package:char_creator/views/default_page_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_table/flutter_html_table.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:markdown/markdown.dart' as md;
 
 import '../../../game_system_view_model.dart';
+import '../open_5e_collection_repository.dart';
 
 class Open5eClassModel {
   final String name;
@@ -14,7 +20,7 @@ class Open5eClassModel {
   final String profTools;
   final String profSavingThrows;
   final String profSkills;
-  final String startingEquipment;
+  final String? startingEquipment;
   final String table;
   final String spellcastingAbility;
   final String subtypesName;
@@ -86,7 +92,7 @@ class Open5eClassModel {
       profTools: map['prof_tools'] as String,
       profSavingThrows: map['prof_saving_throws'] as String,
       profSkills: map['prof_skills'] as String,
-      startingEquipment: map['starting_equipment'] as String,
+      startingEquipment: map['starting_equipment'] as String?,
       table: map['table'] as String,
       spellcastingAbility: map['spellcasting_ability'] as String,
       subtypesName: map['subtypes_name'] as String,
@@ -114,6 +120,60 @@ class Open5eClassModel {
   }
 }
 
+class Open5eClassPage extends ConsumerWidget {
+  const Open5eClassPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final classes = ref.watch(open5eClassesProvider.future);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Classes"),
+      ),
+      body: DefaultPageWrapper(
+        future: classes,
+        builder: (context, data) => ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: data.length,
+          separatorBuilder: (context, index) => const SizedBox(
+            height: 4,
+          ),
+          itemBuilder: (context, index) {
+            final classModel = data[index];
+            return Card(
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                title: Text(classModel.name),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text(classModel.name),
+                        ),
+                        body: SafeArea(
+                          child: SingleChildScrollView(
+                            child: Open5eClassWidget(
+                              classModel: classModel,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
 class Open5eClassWidget extends StatelessWidget {
   final Open5eClassModel classModel;
 
@@ -122,49 +182,68 @@ class Open5eClassWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(classModel.name,
-                style: Theme.of(context).textTheme.titleLarge),
-            ListTile(
-              title: Text('Description'),
-              subtitle: Text(classModel.desc),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Html(
+              extensions: [
+                TableHtmlExtension(),
+              ],
+              data: md.markdownToHtml(
+                classModel.desc,
+                extensionSet: md.ExtensionSet.gitHubWeb,
+              ),
             ),
-            ListTile(
-              title: Text('Hit Dice'),
-              subtitle: Text(classModel.hitDice),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              primary: false,
+              scrollDirection: Axis.horizontal,
+              child: Html(
+                data: md.markdownToHtml(
+                  classModel.table,
+                  extensionSet: md.ExtensionSet.gitHubWeb,
+                ),
+                extensions: [
+                  TableHtmlExtension(),
+                ],
+              ),
             ),
-            ListTile(
-              title: Text('HP at 1st Level'),
-              subtitle: Text(classModel.hpAt1stLevel),
-            ),
-            ListTile(
-              title: Text('HP at Higher Levels'),
-              subtitle: Text(classModel.hpAtHigherLevels),
-            ),
-            ListTile(
-              title: Text('Proficiencies'),
-              subtitle: Text(
-                  'Armor: ${classModel.profArmor}, Weapons: ${classModel.profWeapons}, Tools: ${classModel.profTools}'),
-            ),
-            ListTile(
-              title: Text('Saving Throws'),
-              subtitle: Text(classModel.profSavingThrows),
-            ),
-            ListTile(
-              leading: Icon(GameSystemViewModel.skills.icon),
-              title: Text('Skills'),
-              subtitle: Text(classModel.profSkills),
-            ),
-            ListTile(
-              title: Text('Spellcasting Ability'),
-              subtitle: Text(classModel.spellcastingAbility),
-            ),
-          ],
-        ),
+          ),
+          ListTile(
+            title: Text('Hit Dice'),
+            subtitle: Text(classModel.hitDice),
+          ),
+          ListTile(
+            title: Text('HP at 1st Level'),
+            subtitle: Text(classModel.hpAt1stLevel),
+          ),
+          ListTile(
+            title: Text('HP at Higher Levels'),
+            subtitle: Text(classModel.hpAtHigherLevels),
+          ),
+          ListTile(
+            title: Text('Proficiencies'),
+            subtitle: Text(
+                'Armor: ${classModel.profArmor}, Weapons: ${classModel.profWeapons}, Tools: ${classModel.profTools}'),
+          ),
+          ListTile(
+            title: Text('Saving Throws'),
+            subtitle: Text(classModel.profSavingThrows),
+          ),
+          ListTile(
+            leading: Icon(GameSystemViewModel.skills.icon),
+            title: Text('Skills'),
+            subtitle: Text(classModel.profSkills),
+          ),
+          ListTile(
+            title: Text('Spellcasting Ability'),
+            subtitle: Text(classModel.spellcastingAbility),
+          ),
+        ],
       ),
     );
   }
