@@ -46,6 +46,7 @@ class SpellCardWidget extends ConsumerWidget {
                       Text(
                         GameSystemViewModel.verbalComponent.name,
                         style: Theme.of(context).textTheme.labelSmall,
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -55,10 +56,9 @@ class SpellCardWidget extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(GameSystemViewModel.somaticComponent.icon),
-                      Text(
-                        GameSystemViewModel.somaticComponent.name,
-                        style: Theme.of(context).textTheme.labelSmall,
-                      ),
+                      Text(GameSystemViewModel.somaticComponent.name,
+                          style: Theme.of(context).textTheme.labelSmall,
+                          textAlign: TextAlign.center),
                     ],
                   ),
                 if (spell.requiresMaterialComponent == true)
@@ -71,6 +71,7 @@ class SpellCardWidget extends ConsumerWidget {
                         child: Text(
                           GameSystemViewModel.materialComponent.name,
                           style: Theme.of(context).textTheme.labelSmall,
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ],
