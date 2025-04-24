@@ -304,6 +304,11 @@ class GameSystemViewModel {
     name: 'Speed',
     icon: Symbols.directions_walk,
   );
+
+  static final rules = GameSystemViewModelItem(
+    name: 'Rules',
+    icon: Symbols.rule,
+  );
 }
 
 class GameSystemViewModelItem {

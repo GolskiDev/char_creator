@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class MainMenuPage extends HookConsumerWidget {
   const MainMenuPage({super.key});
@@ -25,39 +24,9 @@ class MainMenuPage extends HookConsumerWidget {
         path: "/characters",
       ),
       MainMenuDefaultCardWidget(
-        icon: GameSystemViewModel.characterClass.icon,
-        title: GameSystemViewModel.characterClass.name,
-        path: '/classes',
-      ),
-      MainMenuDefaultCardWidget(
-        icon: GameSystemViewModel.armorClass.icon,
-        title: "Armors",
-        path: "/armors",
-      ),
-      MainMenuDefaultCardWidget(
-        icon: GameSystemViewModel.conditions.icon,
-        title: "Conditions",
-        path: "/conditions",
-      ),
-      MainMenuDefaultCardWidget(
-        icon: Symbols.money_bag,
-        title: "Magic Items",
-        path: "/magic-items",
-      ),
-      MainMenuDefaultCardWidget(
-        icon: Symbols.pets,
-        title: "Monsters",
-        path: "/monsters",
-      ),
-      MainMenuDefaultCardWidget(
-        icon: Symbols.ar_on_you,
-        title: "Races",
-        path: "/races",
-      ),
-      MainMenuDefaultCardWidget(
-        icon: Symbols.swords,
-        title: "Weapons",
-        path: "/weapons",
+        icon: GameSystemViewModel.rules.icon,
+        title: GameSystemViewModel.rules.name,
+        path: "/rules",
       ),
       if (kDebugMode)
         MainMenuDefaultCardWidget(
@@ -79,19 +48,22 @@ class MainMenuPage extends HookConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: 8,
-              children: widgets
-                  .map(
-                    (widget) => widget,
-                  )
-                  .toList(),
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 8,
+            children: [
+              Spacer(),
+              Text(
+                "Welcome fellow adventurer!",
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              Spacer(),
+              ...widgets,
+              Spacer(),
+            ],
           ),
         ),
       ),

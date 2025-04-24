@@ -57,6 +57,7 @@ class ListOfCharactersPage extends HookConsumerWidget {
                   context.go('/characters/${character.id}');
                 },
                 child: Center(
+                  heightFactor: 1.5,
                   child: Text(
                     character.name,
                     style: Theme.of(context).textTheme.titleLarge,

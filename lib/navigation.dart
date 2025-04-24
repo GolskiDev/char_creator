@@ -20,6 +20,7 @@ import 'features/main_menu/main_menu.dart';
 import 'utils/utils_page.dart';
 import 'views/chat_page.dart';
 import 'views/list_of_documents_page.dart';
+import 'views/rules_page.dart';
 
 final goRouterProvider = Provider(
   (ref) => Navigation.goRouter(ref),
@@ -36,6 +37,12 @@ class Navigation {
                 path: '/classes',
                 builder: (context, state) {
                   return Open5eClassPage();
+                },
+              ),
+              GoRoute(
+                path: '/rules',
+                builder: (context, state) {
+                  return RulesPage();
                 },
               ),
               GoRoute(
