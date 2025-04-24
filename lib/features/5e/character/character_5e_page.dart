@@ -205,6 +205,7 @@ class Character5ePage extends HookConsumerWidget {
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (character.classesStates.isNotEmpty) ...[
               _characterClassesWidget(character),
