@@ -9,6 +9,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../character/models/character_5e_class_model_v1.dart';
 import '../character/models/character_5e_model_v1.dart';
 import 'spell_card_page.dart';
+import 'utils/spell_utils.dart';
 import 'view_models/spell_view_model.dart';
 import 'widgets/add_to_character_menu.dart';
 import 'widgets/spell_filter_drawer.dart';
@@ -79,7 +80,6 @@ class ListOfSpellsPage extends HookConsumerWidget {
                   spellId: spell.id,
                 );
               } on MultipleClassesWithSpellFoundException catch (_) {
-                // showDialogToPickClass
                 final selectedClassId = await showDialog<String?>(
                   context: context,
                   builder: (context) {
@@ -268,7 +268,14 @@ class ListOfSpellsPage extends HookConsumerWidget {
       body: allSpells.when(
         data: (cantrips) {
           final filteredSpells =
-              spellFilters.value.filterSpells(cantrips.map((e) => e).toList());
+              spellFilters.value.filterSpells(cantrips.map((e) => e).toList())
+                ..sort(
+                  (a, b) {
+                    return a.spellLevel == b.spellLevel
+                        ? a.name.compareTo(b.name)
+                        : a.spellLevel.compareTo(b.spellLevel);
+                  },
+                );
           return SafeArea(
             child: Stack(
               children: [
@@ -278,28 +285,48 @@ class ListOfSpellsPage extends HookConsumerWidget {
                   ),
                   itemCount: filteredSpells.length,
                   itemBuilder: (context, index) {
+                    final shouldDisplayLevelSeparator = index == 0 ||
+                        filteredSpells[index].spellLevel !=
+                            filteredSpells[index - 1].spellLevel;
                     final spellViewModel = filteredSpells[index];
-                    return Card.outlined(
-                      clipBehavior: Clip.antiAlias,
-                      child: ListTile(
-                        leading: isAddToCharacterEnabled
-                            ? addToCharacterWidgetBuilder(spellViewModel)
-                            : null,
-                        title: Text(spellViewModel.name),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return SpellCardPage(
-                                  id: spellViewModel.id,
-                                  spellsFuture: Future.value(filteredSpells),
-                                );
-                              },
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (shouldDisplayLevelSeparator) ...[
+                          Text(
+                            SpellUtils.spellLevelString(
+                              spellViewModel.spellLevel,
                             ),
-                          );
-                        },
-                      ),
+                            style: Theme.of(context).textTheme.titleLarge,
+                            textAlign: TextAlign.center,
+                          ),
+                          Divider(),
+                        ],
+                        Card.outlined(
+                          clipBehavior: Clip.antiAlias,
+                          child: ListTile(
+                            leading: isAddToCharacterEnabled
+                                ? addToCharacterWidgetBuilder(spellViewModel)
+                                : null,
+                            title: Text(spellViewModel.name),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return SpellCardPage(
+                                      id: spellViewModel.id,
+                                      spellsFuture:
+                                          Future.value(filteredSpells),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     );
                   },
                   separatorBuilder: (context, index) {

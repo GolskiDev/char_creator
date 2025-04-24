@@ -307,7 +307,7 @@ class GameSystemViewModel {
 
   static final rules = GameSystemViewModelItem(
     name: 'Rules',
-    icon: Symbols.rule,
+    icon: Symbols.receipt_long,
   );
 }
 
