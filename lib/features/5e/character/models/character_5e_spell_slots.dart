@@ -85,7 +85,7 @@ extension Character5eSpellSlotLevelExtension on Character5eSpellSlotLevel {
 }
 
 class Character5eSpellSlots {
-  final Map<Character5eSpellSlotLevel, SpellSlot5e> spellSlots;
+  final Map<Character5eSpellSlotLevel, Character5eSpellSlot> spellSlots;
 
   Character5eSpellSlots({
     required this.spellSlots,
@@ -95,7 +95,7 @@ class Character5eSpellSlots {
     return Character5eSpellSlots(
       spellSlots: {
         for (var level in Character5eSpellSlotLevel.values)
-          level: SpellSlot5e(
+          level: Character5eSpellSlot(
             level: level,
             maxSlots: 0,
             currentSlots: 0,
@@ -105,7 +105,7 @@ class Character5eSpellSlots {
   }
 
   Character5eSpellSlots copyWith({
-    Map<Character5eSpellSlotLevel, SpellSlot5e>? spellSlots,
+    Map<Character5eSpellSlotLevel, Character5eSpellSlot>? spellSlots,
   }) {
     return Character5eSpellSlots(
       spellSlots: spellSlots ?? this.spellSlots,
@@ -118,7 +118,7 @@ class Character5eSpellSlots {
       spellSlots: {
         for (var entry in map.entries)
           Character5eSpellSlotLevel.fromString(entry.key):
-              SpellSlot5e.fromMap(entry.value),
+              Character5eSpellSlot.fromMap(entry.value),
       },
     );
   }
@@ -131,32 +131,32 @@ class Character5eSpellSlots {
   }
 }
 
-class SpellSlot5e {
+class Character5eSpellSlot {
   final Character5eSpellSlotLevel level;
   final int maxSlots;
   final int currentSlots;
 
-  SpellSlot5e({
+  Character5eSpellSlot({
     required this.level,
     required this.maxSlots,
     required this.currentSlots,
   });
 
-  SpellSlot5e copyWith({
+  Character5eSpellSlot copyWith({
     Character5eSpellSlotLevel? level,
-    int? maxSlots,
-    int? currentSlots,
+    int? Function()? maxSlotsSetter,
+    int? Function()? currentSlotsSetter,
   }) {
-    return SpellSlot5e(
+    return Character5eSpellSlot(
       level: level ?? this.level,
-      maxSlots: maxSlots ?? this.maxSlots,
-      currentSlots: currentSlots ?? this.currentSlots,
+      maxSlots: maxSlotsSetter?.call() ?? this.maxSlots,
+      currentSlots: currentSlotsSetter?.call() ?? this.currentSlots,
     );
   }
 
   @override
-  factory SpellSlot5e.fromMap(Map<String, dynamic> json) {
-    return SpellSlot5e(
+  factory Character5eSpellSlot.fromMap(Map<String, dynamic> json) {
+    return Character5eSpellSlot(
       level: Character5eSpellSlotLevel.fromString(json['level']),
       maxSlots: json['maxSlots'],
       currentSlots: json['currentSlots'],
@@ -175,7 +175,7 @@ class SpellSlot5e {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is SpellSlot5e &&
+    return other is Character5eSpellSlot &&
         other.level == level &&
         other.maxSlots == maxSlots &&
         other.currentSlots == currentSlots;

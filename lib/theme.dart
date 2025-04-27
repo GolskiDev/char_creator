@@ -37,48 +37,62 @@ class AppTheme {
   double get borderRadius => 8;
   themeData({
     required bool isDarkMode,
-  }) =>
-      ThemeData(
-        useMaterial3: true,
-        colorScheme: isDarkMode
-            ? DarkColorScheme().colorScheme
-            : LightColorScheme().colorScheme,
-        fontFamily: font.fontFamily,
-        visualDensity: VisualDensity(
-          horizontal: VisualDensity.minimumDensity,
-          vertical: VisualDensity.minimumDensity,
+  }) {
+    final colorScheme = isDarkMode
+        ? DarkColorScheme().colorScheme
+        : LightColorScheme().colorScheme;
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      brightness: isDarkMode ? Brightness.dark : Brightness.light,
+      fontFamily: font.fontFamily,
+      visualDensity: VisualDensity(
+        horizontal: VisualDensity.minimumDensity,
+        vertical: VisualDensity.minimumDensity,
+      ),
+      cardTheme: CardTheme(
+        elevation: 0,
+        margin: EdgeInsets.zero,
+      ),
+      buttonTheme: ButtonThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
         ),
-        cardTheme: CardTheme(
-          elevation: 0,
-          margin: EdgeInsets.zero,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+          borderSide: BorderSide.none,
         ),
-        buttonTheme: ButtonThemeData(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+          borderSide: BorderSide(
+            color: colorScheme.primary,
+            width: 1,
           ),
         ),
-        inputDecorationTheme: InputDecorationTheme(
-          floatingLabelAlignment: FloatingLabelAlignment.center,
-        ),
-        segmentedButtonTheme: SegmentedButtonThemeData(
-          style: ButtonStyle(
-            shape: WidgetStatePropertyAll(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  borderRadius,
-                ),
+        floatingLabelAlignment: FloatingLabelAlignment.center,
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                borderRadius,
               ),
             ),
           ),
         ),
-        expansionTileTheme: ExpansionTileThemeData(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              borderRadius,
-            ),
-            side: BorderSide.none,
+      ),
+      expansionTileTheme: ExpansionTileThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            borderRadius,
           ),
-          expandedAlignment: Alignment.topLeft,
+          side: BorderSide.none,
         ),
-      );
+        expandedAlignment: Alignment.topLeft,
+      ),
+    );
+  }
 }

@@ -172,7 +172,7 @@ class Character5ePage extends HookConsumerWidget {
               title: Text(GameSystemViewModel.spellSlots.name),
             );
           },
-          body: CharacterSpellsSlotsWidget.editing(
+          body: CharacterSpellsSlotsWidget.maxAndCurrent(
             spellSlots: character.spellSlots!,
             onChanged: (updatedSpellSlots) {
               final updatedCharacter = character.copyWith(

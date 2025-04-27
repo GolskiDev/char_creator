@@ -21,7 +21,7 @@ class SpellCardWidget extends ConsumerWidget {
       child: ListTile(
         titleAlignment: ListTileTitleAlignment.center,
         title: Text(
-          GameSystemViewModel.materialComponent.name,
+          "Components",
           textAlign: TextAlign.center,
         ),
         subtitle: Padding(
@@ -56,9 +56,11 @@ class SpellCardWidget extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(GameSystemViewModel.somaticComponent.icon),
-                      Text(GameSystemViewModel.somaticComponent.name,
-                          style: Theme.of(context).textTheme.labelSmall,
-                          textAlign: TextAlign.center),
+                      Text(
+                        GameSystemViewModel.somaticComponent.name,
+                        style: Theme.of(context).textTheme.labelSmall,
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   ),
                 if (spell.requiresMaterialComponent == true)
