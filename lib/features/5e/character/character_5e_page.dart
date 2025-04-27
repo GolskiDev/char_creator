@@ -1,5 +1,3 @@
-import 'package:char_creator/features/5e/character/models/character_5e_ability_scores.dart';
-import 'package:char_creator/features/5e/character/models/character_5e_spell_slots.dart';
 import 'package:char_creator/features/5e/character/widgets/character_classes_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +8,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../game_system_view_model.dart';
 import '../spells/view_models/spell_view_model.dart';
 import 'models/character_5e_model_v1.dart';
+import 'models/character_5e_spell_slots.dart';
 import 'repository/character_repository.dart';
 import 'widgets/character_ability_scores_widget.dart';
-import 'widgets/character_other_props_widget.dart';
 import 'widgets/character_skills_widget.dart';
-import 'widgets/character_spells_slots_widget.dart';
 import 'widgets/conditions_5e_widget.dart';
 import 'widgets/grouped_spells_widget.dart';
+import 'widgets/spell_slots/character_current_spell_slots_widget.dart';
+import 'widgets/spell_slots/character_edit_spell_slots_widget.dart';
 
 class Character5ePage extends HookConsumerWidget {
   final String characterId;
@@ -74,28 +73,6 @@ class Character5ePage extends HookConsumerWidget {
     final openedExpansionPanelsIndexes = useState<List<String>>([]);
 
     final mapOfExpansionPanels = {
-      "spells": ExpansionPanel(
-        isExpanded: openedExpansionPanelsIndexes.value.contains("spells"),
-        headerBuilder: (context, isExpanded) {
-          return ListTile(
-            leading: Icon(GameSystemViewModel.spells.icon),
-            title: Text(GameSystemViewModel.spells.name),
-            trailing: isExpanded
-                ? IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      context.go(
-                        '/characters/${character.id}/addSpells',
-                      );
-                    },
-                  )
-                : null,
-          );
-        },
-        body: GroupedSpellsWidget(
-          characterSpells: characterSpells,
-        ),
-      ),
       if (character.abilityScores != null) ...{
         "abilityScores": ExpansionPanel(
           isExpanded:
@@ -163,28 +140,6 @@ class Character5ePage extends HookConsumerWidget {
           ),
         ),
       },
-      if (character.spellSlots != null) ...{
-        "spellSlots": ExpansionPanel(
-          isExpanded: openedExpansionPanelsIndexes.value.contains("spellSlots"),
-          headerBuilder: (context, isExpanded) {
-            return ListTile(
-              leading: Icon(GameSystemViewModel.spellSlots.icon),
-              title: Text(GameSystemViewModel.spellSlots.name),
-            );
-          },
-          body: CharacterSpellsSlotsWidget.maxAndCurrent(
-            spellSlots: character.spellSlots!,
-            onChanged: (updatedSpellSlots) {
-              final updatedCharacter = character.copyWith(
-                spellSlots: updatedSpellSlots,
-              );
-              ref
-                  .read(characterRepositoryProvider)
-                  .updateCharacter(updatedCharacter);
-            },
-          ),
-        ),
-      }
     };
 
     final expansionPanels = mapOfExpansionPanels.values.toList();
@@ -204,80 +159,192 @@ class Character5ePage extends HookConsumerWidget {
         ],
       ),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (character.classesStates.isNotEmpty) ...[
-              _characterClassesWidget(character),
-              const Divider(),
-            ],
-            if (character.others != null) ...[
-              CharacterOtherPropsWidget(
-                characterOtherProps: character.others!,
-                onChanged: (updatedOtherProps) {
-                  final updatedCharacter = character.copyWith(
-                    others: updatedOtherProps,
-                  );
-                  ref
-                      .read(characterRepositoryProvider)
-                      .updateCharacter(updatedCharacter);
-                },
-              ),
-              const Divider(),
-            ],
-            ExpansionPanelList(
-              expansionCallback: (panelIndex, isExpanded) {
-                final panelKey =
-                    mapOfExpansionPanels.keys.elementAt(panelIndex);
-                if (openedExpansionPanelsIndexes.value.contains(panelKey)) {
-                  openedExpansionPanelsIndexes.value =
-                      openedExpansionPanelsIndexes.value
-                          .where((key) => key != panelKey)
-                          .toList();
-                } else {
-                  openedExpansionPanelsIndexes.value = [
-                    ...openedExpansionPanelsIndexes.value,
-                    panelKey,
-                  ];
-                }
-              },
-              children: expansionPanels,
-            ),
-            if (character.abilityScores == null) ...[
-              const Divider(),
-              ListTile(
-                title: Text('Add ${GameSystemViewModel.abilityScores.name}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    final updatedCharacter = character.copyWith(
-                      abilityScores: Character5eAbilityScores.empty(),
-                    );
-                    ref
-                        .read(characterRepositoryProvider)
-                        .updateCharacter(updatedCharacter);
-                  },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 8,
+            children: [
+              if (character.spellSlots == null ||
+                  character.spellSlots!.areSpellSlotsEmpty) ...[
+                ListTile(
+                  title: Text('Add ${GameSystemViewModel.spellSlots.name}'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () async {
+                      final updatedCharacter = character.copyWith(
+                        spellSlots: Character5eSpellSlots.empty(),
+                      );
+                      await ref
+                          .read(characterRepositoryProvider)
+                          .updateCharacter(updatedCharacter);
+                      if (!context.mounted) {
+                        return;
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CharacterEditSpellSlotsWidget(
+                            spellSlots: updatedCharacter.spellSlots!,
+                            onChanged: (updatedSpellSlots) async {
+                              final updatedCharacter = character.copyWith(
+                                spellSlots: updatedSpellSlots,
+                              );
+                              await ref
+                                  .read(characterRepositoryProvider)
+                                  .updateCharacter(updatedCharacter);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ] else ...[
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CharacterEditSpellSlotsWidget(
+                            spellSlots: character.spellSlots!,
+                            onChanged: (updatedSpellSlots) async {
+                              final updatedCharacter = character.copyWith(
+                                spellSlots: updatedSpellSlots,
+                              );
+                              await ref
+                                  .read(characterRepositoryProvider)
+                                  .updateCharacter(updatedCharacter);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: Icon(GameSystemViewModel.spellSlots.icon),
+                          title: Text(GameSystemViewModel.spellSlots.name),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CharacterCurrentSpellSlotsWidget(
+                            spellSlots: character.spellSlots!,
+                            onChanged: (updatedSpellSlots) async {
+                              final updatedCharacter = character.copyWith(
+                                spellSlots: updatedSpellSlots,
+                              );
+                              await ref
+                                  .read(characterRepositoryProvider)
+                                  .updateCharacter(updatedCharacter);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+              Card(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (characterSpells.isEmpty)
+                      ListTile(
+                        leading: Icon(GameSystemViewModel.spells.icon),
+                        title: Text('Add ${GameSystemViewModel.spells.name}'),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            context.go(
+                              '/characters/${character.id}/addSpells',
+                            );
+                          },
+                        ),
+                      ),
+                    if (characterSpells.isNotEmpty)
+                      ListTile(
+                        leading: Icon(GameSystemViewModel.spells.icon),
+                        title: Text(
+                          GameSystemViewModel.spells.name,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            context.go(
+                              '/characters/${character.id}/addSpells',
+                            );
+                          },
+                        ),
+                      ),
+                    if (characterSpells.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Builder(
+                          builder: (context) {
+                            return GroupedSpellsWidget(
+                              characterSpells: characterSpells,
+                            );
+                          },
+                        ),
+                      ),
+                  ],
                 ),
               ),
+              // if (character.others != null) ...[
+              //   CharacterOtherPropsWidget(
+              //     characterOtherProps: character.others!,
+              //     onChanged: (updatedOtherProps) {
+              //       final updatedCharacter = character.copyWith(
+              //         others: updatedOtherProps,
+              //       );
+              //       ref
+              //           .read(characterRepositoryProvider)
+              //           .updateCharacter(updatedCharacter);
+              //     },
+              //   ),
+              //   const Divider(),
+              // ],
+              // ExpansionPanelList(
+              //   expansionCallback: (panelIndex, isExpanded) {
+              //     final panelKey =
+              //         mapOfExpansionPanels.keys.elementAt(panelIndex);
+              //     if (openedExpansionPanelsIndexes.value.contains(panelKey)) {
+              //       openedExpansionPanelsIndexes.value =
+              //           openedExpansionPanelsIndexes.value
+              //               .where((key) => key != panelKey)
+              //               .toList();
+              //     } else {
+              //       openedExpansionPanelsIndexes.value = [
+              //         ...openedExpansionPanelsIndexes.value,
+              //         panelKey,
+              //       ];
+              //     }
+              //   },
+              //   children: expansionPanels,
+              // ),
+              // if (character.abilityScores == null) ...[
+              //   const Divider(),
+              //   ListTile(
+              //     title: Text('Add ${GameSystemViewModel.abilityScores.name}'),
+              //     trailing: IconButton(
+              //       icon: const Icon(Icons.add),
+              //       onPressed: () {
+              //         final updatedCharacter = character.copyWith(
+              //           abilityScores: Character5eAbilityScores.empty(),
+              //         );
+              //         ref
+              //             .read(characterRepositoryProvider)
+              //             .updateCharacter(updatedCharacter);
+              //       },
+              //     ),
+              //   ),
+              // ],
             ],
-            if (character.spellSlots == null) ...[
-              const Divider(),
-              ListTile(
-                title: Text('Add ${GameSystemViewModel.spellSlots.name}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    final updatedCharacter = character.copyWith(
-                      spellSlots: Character5eSpellSlots.empty(),
-                    );
-                    ref
-                        .read(characterRepositoryProvider)
-                        .updateCharacter(updatedCharacter);
-                  },
-                ),
-              ),
-            ],
-          ],
+          ),
         ),
       ),
     );

@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 enum Character5eSpellSlotLevel {
   first,
   second,
@@ -87,6 +89,11 @@ extension Character5eSpellSlotLevelExtension on Character5eSpellSlotLevel {
 class Character5eSpellSlots {
   final Map<Character5eSpellSlotLevel, Character5eSpellSlot> spellSlots;
 
+  ///AreSpellSlotsEmpty
+  bool get areSpellSlotsEmpty {
+    return spellSlots.values.every((spellSlot) => spellSlot.maxSlots == 0);
+  }
+
   Character5eSpellSlots({
     required this.spellSlots,
   });
@@ -128,6 +135,17 @@ class Character5eSpellSlots {
       for (var entry in spellSlots.entries)
         entry.key.toString(): entry.value.toMap(),
     };
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is Character5eSpellSlots &&
+        MapEquality().equals(other.spellSlots, spellSlots);
+  }
+
+  @override
+  int get hashCode {
+    return MapEquality().hash(spellSlots);
   }
 }
 

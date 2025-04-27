@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:char_creator/features/5e/character/models/character_5e_spell_slots.dart';
 import 'package:char_creator/features/5e/character/repository/character_classes_repository.dart';
-import 'package:char_creator/features/5e/character/widgets/character_spells_slots_widget.dart';
+import 'package:char_creator/features/5e/character/widgets/spell_slots/character_current_spell_slots_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -122,7 +122,7 @@ class NewScreen extends HookConsumerWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: CharacterSpellsSlotsWidget.maxAndCurrent(
+        child: CharacterCurrentSpellSlotsWidget(
           spellSlots: state.value,
           onChanged: (value) {
             state.value = value;

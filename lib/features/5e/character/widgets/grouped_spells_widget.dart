@@ -68,7 +68,7 @@ class GroupedSpellsWidget extends HookConsumerWidget {
                       itemCount: entry.value.length,
                       itemBuilder: (context, index) {
                         final spell = entry.value[index];
-                        return Card(
+                        return Card.outlined(
                           clipBehavior: Clip.antiAlias,
                           child: InkWell(
                             onTap: () {
@@ -130,7 +130,7 @@ class GroupedSpellsWidget extends HookConsumerWidget {
                             return Container(
                               width: 200,
                               margin: const EdgeInsets.all(8.0),
-                              child: Card(
+                              child: Card.outlined(
                                 clipBehavior: Clip.antiAlias,
                                 child: InkWell(
                                   onTap: () {
@@ -253,7 +253,7 @@ class GroupedSpellsWidget extends HookConsumerWidget {
       List<SpellViewModel> spells) {
     final Map<SpellType, List<SpellViewModel>> groupedSpells = {};
     for (final spell in spells) {
-      final types = spell.spellTypes?.toList() ?? [];
+      final types = spell.spellTypes.toList() ?? [];
       for (final type in types) {
         if (!groupedSpells.containsKey(type)) {
           groupedSpells[type] = [];
