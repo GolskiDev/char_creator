@@ -309,6 +309,11 @@ class GameSystemViewModel {
     name: 'Rules',
     icon: Symbols.receipt_long,
   );
+
+  static final note = GameSystemViewModelItem(
+    name: 'Note',
+    icon: Symbols.note,
+  );
 }
 
 class GameSystemViewModelItem {

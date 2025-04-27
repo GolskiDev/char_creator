@@ -1,5 +1,6 @@
 import 'package:char_creator/common/interfaces/identifiable.dart';
 import 'package:char_creator/features/5e/character/models/character_5e_ability_scores.dart';
+import 'package:char_creator/features/5e/character/models/character_5e_note.dart';
 import 'package:char_creator/features/5e/character/models/character_5e_skills.dart';
 import 'package:collection/collection.dart';
 
@@ -26,6 +27,7 @@ class Character5eModelV1 implements Identifiable {
   final Conditions5e? conditions;
   final Character5eOtherProps? others;
   final Character5eSpellSlots? spellSlots;
+  final Character5eNotes notes;
 
   /// Custom spells for character not saved in class
   final Set<String> customSpellIds;
@@ -59,6 +61,7 @@ class Character5eModelV1 implements Identifiable {
     this.conditions,
     this.others,
     this.spellSlots,
+    required this.notes,
   })  : _level = level,
         _name = name,
         _classesStates = classesStates ?? const {};
@@ -74,6 +77,7 @@ class Character5eModelV1 implements Identifiable {
     Conditions5e? conditions,
     Character5eOtherProps? others,
     Character5eSpellSlots? spellSlots,
+    Character5eNotes? notes,
   }) : this._(
           id: IdGenerator.generateId(Character5eModelV1),
           name: name,
@@ -85,6 +89,7 @@ class Character5eModelV1 implements Identifiable {
           character5eSkills: character5eSkills ?? Character5eSkills.empty(),
           conditions: conditions ?? Conditions5e(),
           spellSlots: spellSlots,
+          notes: notes ?? Character5eNotes.empty(),
           others: others ?? Character5eOtherProps.empty(),
         );
 
@@ -99,6 +104,7 @@ class Character5eModelV1 implements Identifiable {
     Conditions5e? conditions,
     Character5eOtherProps? others,
     Character5eSpellSlots? spellSlots,
+    Character5eNotes? notes,
   }) {
     return Character5eModelV1._(
       id: id,
@@ -112,6 +118,7 @@ class Character5eModelV1 implements Identifiable {
       character5eSkills: character5eSkills ?? this.character5eSkills,
       conditions: conditions ?? this.conditions,
       spellSlots: spellSlots ?? this.spellSlots,
+      notes: notes ?? this.notes,
       others: others ?? this.others,
     );
   }
@@ -270,6 +277,7 @@ class Character5eModelV1 implements Identifiable {
       'character5eSkills': character5eSkills?.toMap(),
       'conditions': conditions?.toMap(),
       'spellSlots': spellSlots?.toMap(),
+      'notes': notes.toMap(),
       'others': others?.toMap(),
     };
   }
@@ -300,6 +308,9 @@ class Character5eModelV1 implements Identifiable {
           ? Character5eSpellSlots.fromMap(
               json['spellSlots'] as Map<String, dynamic>)
           : null,
+      notes: json['notes'] != null
+          ? Character5eNotes.fromMap(json['notes'] as Map<String, dynamic>)
+          : Character5eNotes.empty(),
       others: json['others'] != null
           ? Character5eOtherProps.fromMap(
               json['others'] as Map<String, dynamic>)
@@ -321,6 +332,7 @@ class Character5eModelV1 implements Identifiable {
         other.character5eSkills == character5eSkills &&
         other.conditions == conditions &&
         other.spellSlots == spellSlots &&
+        other.notes == notes &&
         other.others == others;
   }
 
@@ -336,6 +348,7 @@ class Character5eModelV1 implements Identifiable {
         character5eSkills.hashCode ^
         conditions.hashCode ^
         spellSlots.hashCode ^
+        notes.hashCode ^
         others.hashCode;
   }
 }

@@ -117,17 +117,6 @@ class ListOfSpellsPage extends HookConsumerWidget {
             await ref
                 .read(characterRepositoryProvider)
                 .updateCharacter(updatedCharacter);
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    isSpellAdded
-                        ? 'Removed ${spell.name} from ${selectedCharacter.name}'
-                        : 'Added ${spell.name} to ${selectedCharacter.name}',
-                  ),
-                ),
-              );
-            }
           }
         },
       );

@@ -17,136 +17,204 @@ class CharacterEditSpellSlotsWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spellSlotsState = useState<Character5eSpellSlots>(spellSlots);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(GameSystemViewModel.spellSlots.name),
-      ),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 8,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 3,
-                child: Text(
-                  "Spell Level",
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  "Max Slots",
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  "Current Slots",
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-          ...spellSlotsState.value.spellSlots.entries.map(
-            (spellSlot) {
-              final maxSpellSlotsController = useTextEditingController(
-                text: spellSlot.value.maxSlots.toString() ?? '0',
-              );
-              final currentSpellSlotsController = useTextEditingController(
-                text: spellSlot.value.currentSlots.toString() ?? '0',
-              );
-              return Card(
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        spellSlot.key.toString(),
-                        style: Theme.of(context).textTheme.titleLarge,
-                        textAlign: TextAlign.center,
-                      ),
+
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          onChanged.call(spellSlotsState.value);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(GameSystemViewModel.spellSlots.name),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    leading: Icon(
+                      GameSystemViewModel.spellSlots.icon,
                     ),
-                    SizedBox(
-                      width: 8,
+                    title: Text(
+                      "Restore Spell Slots",
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: TextField(
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        controller: maxSpellSlotsController,
-                        onChanged: (value) {
-                          final intValue = int.tryParse(value);
-                          spellSlotsState.value =
-                              spellSlotsState.value.copyWith(
-                            spellSlots: {
-                              ...spellSlotsState.value.spellSlots,
-                              spellSlot.key: spellSlot.value.copyWith(
-                                maxSlotsSetter: () => intValue,
-                              ),
-                            },
-                          );
-                        },
-                        onSubmitted: (_) {
-                          onChanged.call(
-                            spellSlots.copyWith(
-                              spellSlots: spellSlotsState.value.spellSlots,
+                    trailing: Icon(
+                      Icons.refresh,
+                    ),
+                    onTap: () {
+                      spellSlotsState.value = spellSlotsState.value.copyWith(
+                        spellSlots: {
+                          for (var entry
+                              in spellSlotsState.value.spellSlots.entries)
+                            entry.key: entry.value.copyWith(
+                              currentSlotsSetter: () => entry.value.maxSlots,
                             ),
-                          );
                         },
-                      ),
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Card.filled(
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          controller: currentSpellSlotsController,
-                          onChanged: (value) {
-                            final intValue = int.tryParse(value);
-                            spellSlotsState.value =
-                                spellSlotsState.value.copyWith(
-                              spellSlots: {
-                                ...spellSlotsState.value.spellSlots,
-                                spellSlot.key: spellSlot.value.copyWith(
-                                  currentSlotsSetter: () => intValue,
+                      );
+                      onChanged.call(spellSlotsState.value);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 8,
+                      children: [
+                        Card.outlined(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  "Spell Level",
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                  textAlign: TextAlign.center,
                                 ),
-                              },
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Text(
+                                  "Max Slots",
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Text(
+                                  "Current Slots",
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ...spellSlotsState.value.spellSlots.entries.map(
+                          (spellSlot) {
+                            final maxSpellSlotsController =
+                                useTextEditingController(
+                              text: spellSlot.value.maxSlots.toString() ?? '0',
                             );
-                          },
-                          onSubmitted: (_) {
-                            onChanged.call(
-                              spellSlots.copyWith(
-                                spellSlots: spellSlotsState.value.spellSlots,
+                            final currentSpellSlotsController =
+                                useTextEditingController(
+                              text: spellSlot.value.currentSlots.toString() ??
+                                  '0',
+                            );
+                            return Card.outlined(
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      spellSlot.key.toString(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: TextField(
+                                      textAlign: TextAlign.center,
+                                      keyboardType: TextInputType.number,
+                                      controller: maxSpellSlotsController,
+                                      onChanged: (value) {
+                                        final intValue = int.tryParse(value);
+                                        spellSlotsState.value =
+                                            spellSlotsState.value.copyWith(
+                                          spellSlots: {
+                                            ...spellSlotsState.value.spellSlots,
+                                            spellSlot.key:
+                                                spellSlot.value.copyWith(
+                                              maxSlotsSetter: () => intValue,
+                                            ),
+                                          },
+                                        );
+                                      },
+                                      onSubmitted: (_) {
+                                        onChanged.call(
+                                          spellSlots.copyWith(
+                                            spellSlots: spellSlotsState
+                                                .value.spellSlots,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Card.filled(
+                                      child: TextField(
+                                        textAlign: TextAlign.center,
+                                        keyboardType: TextInputType.number,
+                                        controller: currentSpellSlotsController,
+                                        onChanged: (value) {
+                                          final intValue = int.tryParse(value);
+                                          spellSlotsState.value =
+                                              spellSlotsState.value.copyWith(
+                                            spellSlots: {
+                                              ...spellSlotsState
+                                                  .value.spellSlots,
+                                              spellSlot.key:
+                                                  spellSlot.value.copyWith(
+                                                currentSlotsSetter: () =>
+                                                    intValue,
+                                              ),
+                                            },
+                                          );
+                                        },
+                                        onSubmitted: (_) {
+                                          onChanged.call(
+                                            spellSlots.copyWith(
+                                              spellSlots: spellSlotsState
+                                                  .value.spellSlots,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           },
-                        ),
-                      ),
+                        )
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              );
-            },
-          )
-        ],
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

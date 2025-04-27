@@ -1,4 +1,5 @@
 import 'package:char_creator/features/5e/character/widgets/character_classes_widget.dart';
+import 'package:char_creator/features/5e/character/widgets/notes/character_5e_note_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,6 +15,7 @@ import 'widgets/character_ability_scores_widget.dart';
 import 'widgets/character_skills_widget.dart';
 import 'widgets/conditions_5e_widget.dart';
 import 'widgets/grouped_spells_widget.dart';
+import 'widgets/notes/character_5e_create_note_widget.dart';
 import 'widgets/spell_slots/character_current_spell_slots_widget.dart';
 import 'widgets/spell_slots/character_edit_spell_slots_widget.dart';
 
@@ -167,37 +169,41 @@ class Character5ePage extends HookConsumerWidget {
             children: [
               if (character.spellSlots == null ||
                   character.spellSlots!.areSpellSlotsEmpty) ...[
-                ListTile(
-                  title: Text('Add ${GameSystemViewModel.spellSlots.name}'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () async {
-                      final updatedCharacter = character.copyWith(
-                        spellSlots: Character5eSpellSlots.empty(),
-                      );
-                      await ref
-                          .read(characterRepositoryProvider)
-                          .updateCharacter(updatedCharacter);
-                      if (!context.mounted) {
-                        return;
-                      }
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CharacterEditSpellSlotsWidget(
-                            spellSlots: updatedCharacter.spellSlots!,
-                            onChanged: (updatedSpellSlots) async {
-                              final updatedCharacter = character.copyWith(
-                                spellSlots: updatedSpellSlots,
-                              );
-                              await ref
-                                  .read(characterRepositoryProvider)
-                                  .updateCharacter(updatedCharacter);
-                            },
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    leading: Icon(GameSystemViewModel.spellSlots.icon),
+                    title: Text('Add ${GameSystemViewModel.spellSlots.name}'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () async {
+                        final updatedCharacter = character.copyWith(
+                          spellSlots: Character5eSpellSlots.empty(),
+                        );
+                        await ref
+                            .read(characterRepositoryProvider)
+                            .updateCharacter(updatedCharacter);
+                        if (!context.mounted) {
+                          return;
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CharacterEditSpellSlotsWidget(
+                              spellSlots: updatedCharacter.spellSlots!,
+                              onChanged: (updatedSpellSlots) async {
+                                final updatedCharacter = character.copyWith(
+                                  spellSlots: updatedSpellSlots,
+                                );
+                                await ref
+                                    .read(characterRepositoryProvider)
+                                    .updateCharacter(updatedCharacter);
+                              },
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ] else ...[
@@ -292,6 +298,55 @@ class Character5ePage extends HookConsumerWidget {
                         ),
                       ),
                   ],
+                ),
+              ),
+              ...character.notes.notes.entries.map(
+                (e) => Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: Character5eNoteWidget(
+                    note: e.value,
+                    onUpdate: (value) {
+                      final updatedNotes = character.notes.copyWith(
+                        notes: {
+                          ...character.notes.notes,
+                          e.key: value,
+                        },
+                      );
+                      final updatedCharacter = character.copyWith(
+                        notes: updatedNotes,
+                      );
+                      ref
+                          .read(characterRepositoryProvider)
+                          .updateCharacter(updatedCharacter);
+                    },
+                    onDelete: () {
+                      final updatedNotes = character.notes.copyWith(
+                        notes: {
+                          ...character.notes.notes,
+                        }..remove(e.key),
+                      );
+                      final updatedCharacter = character.copyWith(
+                        notes: updatedNotes,
+                      );
+                      ref
+                          .read(characterRepositoryProvider)
+                          .updateCharacter(updatedCharacter);
+                    },
+                  ),
+                ),
+              ),
+              Card(
+                clipBehavior: Clip.antiAlias,
+                child: Character5eCreateNoteWidget(
+                  notes: character.notes,
+                  onUpdate: (updatedNotes) {
+                    final updatedCharacter = character.copyWith(
+                      notes: updatedNotes,
+                    );
+                    ref
+                        .read(characterRepositoryProvider)
+                        .updateCharacter(updatedCharacter);
+                  },
                 ),
               ),
               // if (character.others != null) ...[
