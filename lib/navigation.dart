@@ -1,5 +1,4 @@
 import 'package:char_creator/features/5e/spells/view_models/spell_view_model.dart';
-import 'package:char_creator/views/document_page.dart';
 import 'package:char_creator/views/settings_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,8 +17,6 @@ import 'features/5e/spells/open5e/models/open_5e_weapon_model.dart';
 import 'features/5e/spells/spell_card_page.dart';
 import 'features/main_menu/main_menu.dart';
 import 'utils/utils_page.dart';
-import 'views/chat_page.dart';
-import 'views/list_of_documents_page.dart';
 import 'views/rules_page.dart';
 
 final goRouterProvider = Provider(
@@ -145,38 +142,6 @@ class Navigation {
                       ),
                     ],
                   ),
-                ],
-              ),
-              GoRoute(
-                path: '/documents',
-                builder: (context, state) => const ListOfDocumentsPage(),
-                routes: [
-                  GoRoute(
-                    path: '/:id',
-                    builder: (context, state) => DocumentPage(
-                      documentId: state.pathParameters['id']!,
-                    ),
-                    routes: [
-                      GoRoute(
-                        path: '/chat',
-                        builder: (context, state) => ChatPage(
-                          documentId: state.pathParameters['id']!,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              GoRoute(
-                path: '/chat',
-                builder: (context, state) => const ChatPage(),
-                routes: [
-                  GoRoute(
-                    path: '/:id',
-                    builder: (context, state) => ChatPage(
-                      documentId: state.pathParameters['id']!,
-                    ),
-                  )
                 ],
               ),
             ],

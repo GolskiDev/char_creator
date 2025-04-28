@@ -253,7 +253,7 @@ class GroupedSpellsWidget extends HookConsumerWidget {
       List<SpellViewModel> spells) {
     final Map<SpellType, List<SpellViewModel>> groupedSpells = {};
     for (final spell in spells) {
-      final types = spell.spellTypes.toList() ?? [];
+      final types = spell.spellTypes.toList();
       for (final type in types) {
         if (!groupedSpells.containsKey(type)) {
           groupedSpells[type] = [];

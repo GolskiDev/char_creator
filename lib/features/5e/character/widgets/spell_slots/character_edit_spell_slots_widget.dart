@@ -114,12 +114,11 @@ class CharacterEditSpellSlotsWidget extends HookConsumerWidget {
                           (spellSlot) {
                             final maxSpellSlotsController =
                                 useTextEditingController(
-                              text: spellSlot.value.maxSlots.toString() ?? '0',
+                              text: spellSlot.value.maxSlots.toString(),
                             );
                             final currentSpellSlotsController =
                                 useTextEditingController(
-                              text: spellSlot.value.currentSlots.toString() ??
-                                  '0',
+                              text: spellSlot.value.currentSlots.toString(),
                             );
                             return Card.outlined(
                               child: Row(
