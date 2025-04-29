@@ -32,6 +32,9 @@ dependencies:
   flutter_html_table:
   markdown:
   firebase_core:
+  firebase_auth:
+  firebase_ui_auth:
+  firebase_ui_localizations:
 
 dev_dependencies:
   flutter_test:

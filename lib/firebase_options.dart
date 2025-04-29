@@ -64,6 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '80300784191',
     projectId: 'char-creator-dev',
     storageBucket: 'char-creator-dev.firebasestorage.app',
+    iosClientId: '80300784191-opno462bsb8ddauefg7pfadn2opb3b2f.apps.googleusercontent.com',
     iosBundleId: 'com.example.charCreator',
   );
 
@@ -73,6 +74,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '80300784191',
     projectId: 'char-creator-dev',
     storageBucket: 'char-creator-dev.firebasestorage.app',
+    iosClientId: '80300784191-opno462bsb8ddauefg7pfadn2opb3b2f.apps.googleusercontent.com',
     iosBundleId: 'com.example.charCreator',
   );
 
@@ -85,4 +87,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'char-creator-dev.firebasestorage.app',
     measurementId: 'G-9SPM7Q0Y0J',
   );
+
 }
