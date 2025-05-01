@@ -35,6 +35,7 @@ dependencies:
   firebase_auth:
   firebase_ui_auth:
   firebase_ui_localizations:
+  firebase_ui_oauth_google:
 
 dev_dependencies:
   flutter_test:

@@ -6,6 +6,7 @@ import 'package:char_creator/features/5e/character/repository/character_classes_
 import 'package:char_creator/features/5e/character/widgets/spell_slots/character_current_spell_slots_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class UtilsPage extends HookConsumerWidget {
@@ -27,6 +28,12 @@ class UtilsPage extends HookConsumerWidget {
             title: const Text('print'),
             onTap: () {
               debugPrint(context, ref);
+            },
+          ),
+          ListTile(
+            title: const Text('signIn'),
+            onTap: () {
+              context.go('/signIn');
             },
           ),
         ],
