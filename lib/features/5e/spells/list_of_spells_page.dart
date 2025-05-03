@@ -287,6 +287,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
                     );
                   }
                   return gridView(
+                    context,
                     filteredSpells,
                     isAddToCharacterEnabled,
                     addToCharacterWidgetBuilder,
@@ -342,10 +343,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
                 leading: isAddToCharacterEnabled
                     ? addToCharacterWidgetBuilder(spellViewModel)
                     : null,
-                title: Hero(
-                  tag: spellViewModel.name,
-                  child: Text(spellViewModel.name),
-                ),
+                title: Text(spellViewModel.name),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -373,61 +371,89 @@ class ListOfSpellsPage extends HookConsumerWidget {
   }
 
   Widget gridView(
+    BuildContext context,
     List<SpellViewModel> filteredSpells,
     bool isAddToCharacterEnabled,
     IconButton Function(SpellViewModel spell) addToCharacterWidgetBuilder,
   ) {
-    return GridView.builder(
-      padding: EdgeInsets.symmetric(
-        horizontal: 8,
-      ),
-      itemCount: filteredSpells.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 3 / 4,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-      ),
-      cacheExtent: 800,
-      itemBuilder: (context, index) {
-        final spellViewModel = filteredSpells[index];
-        return Card(
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return SpellCardPage(
-                      id: spellViewModel.id,
-                      spellsFuture: Future.value(filteredSpells),
+    final Map<int, List<SpellViewModel>> spellGroupedByLevel =
+        filteredSpells.groupListsBy(
+      (spell) => spell.spellLevel,
+    );
+
+    return CustomScrollView(
+      slivers: [
+        ...spellGroupedByLevel.entries
+            .map(
+              (listOfSpellLevel) => [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 8,
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        SpellUtils.spellLevelString(listOfSpellLevel.key),
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+                SliverGrid.builder(
+                  itemCount: listOfSpellLevel.value.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 3 / 4,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                  ),
+                  itemBuilder: (context, index) {
+                    final spellViewModel = listOfSpellLevel.value[index];
+                    return Card(
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return SpellCardPage(
+                                  id: spellViewModel.id,
+                                  spellsFuture: Future.value(filteredSpells),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Flexible(
+                              child: SmallSpellWidget(
+                                spell: spellViewModel,
+                              ),
+                            ),
+                            if (isAddToCharacterEnabled)
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: addToCharacterWidgetBuilder(
+                                      spellViewModel),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     );
                   },
                 ),
-              );
-            },
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Flexible(
-                  child: SmallSpellWidget(
-                    spell: spellViewModel,
-                  ),
-                ),
-                if (isAddToCharacterEnabled)
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: addToCharacterWidgetBuilder(spellViewModel),
-                    ),
-                  ),
               ],
-            ),
-          ),
-        );
-      },
+            )
+            .expand((element) => element)
+      ],
     );
   }
 

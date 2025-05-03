@@ -47,15 +47,12 @@ class SmallSpellWidget extends HookConsumerWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Card.filled(
                   clipBehavior: Clip.antiAlias,
-                  child: Hero(
-                    tag: spell.name,
-                    child: Material(
-                      child: ListTile(
-                        title: Text(
-                          spell.name,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
+                  child: Material(
+                    child: ListTile(
+                      title: Text(
+                        spell.name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                   ),
