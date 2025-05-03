@@ -1,5 +1,6 @@
 import 'package:char_creator/features/5e/character/repository/character_repository.dart';
 import 'package:char_creator/features/5e/spells/filters/spell_model_filters_state.dart';
+import 'package:char_creator/features/5e/spells/widgets/small_spell_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -210,6 +211,8 @@ class ListOfSpellsPage extends HookConsumerWidget {
       },
     );
 
+    final numberOfColumns = useState(2);
+
     return Scaffold(
       endDrawer: spellFilterDrawer(
         allSpells,
@@ -266,65 +269,37 @@ class ListOfSpellsPage extends HookConsumerWidget {
                   },
                 );
           return SafeArea(
-            child: Stack(
-              children: [
-                ListView.separated(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 8,
-                  ),
-                  itemCount: filteredSpells.length,
-                  itemBuilder: (context, index) {
-                    final shouldDisplayLevelSeparator = index == 0 ||
-                        filteredSpells[index].spellLevel !=
-                            filteredSpells[index - 1].spellLevel;
-                    final spellViewModel = filteredSpells[index];
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (shouldDisplayLevelSeparator) ...[
-                          Text(
-                            SpellUtils.spellLevelString(
-                              spellViewModel.spellLevel,
-                            ),
-                            style: Theme.of(context).textTheme.titleLarge,
-                            textAlign: TextAlign.center,
-                          ),
-                          Divider(),
-                        ],
-                        Card.outlined(
-                          clipBehavior: Clip.antiAlias,
-                          child: ListTile(
-                            leading: isAddToCharacterEnabled
-                                ? addToCharacterWidgetBuilder(spellViewModel)
-                                : null,
-                            title: Text(spellViewModel.name),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return SpellCardPage(
-                                      id: spellViewModel.id,
-                                      spellsFuture:
-                                          Future.value(filteredSpells),
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+            child: GestureDetector(
+              onScaleEnd: (details) {
+                if (details.scaleVelocity < 0) {
+                  numberOfColumns.value = (numberOfColumns.value + 1).clamp(
+                    0,
+                    3,
+                  );
+                } else if (details.scaleVelocity > 0) {
+                  numberOfColumns.value = (numberOfColumns.value - 1).clamp(
+                    0,
+                    3,
+                  );
+                }
+              },
+              child: Builder(
+                builder: (context) {
+                  if (numberOfColumns.value == 0) {
+                    return listView(
+                      filteredSpells,
+                      isAddToCharacterEnabled,
+                      addToCharacterWidgetBuilder,
                     );
-                  },
-                  separatorBuilder: (context, index) {
-                    return const SizedBox(
-                      height: 8,
-                    );
-                  },
-                ),
-              ],
+                  }
+                  return gridView(
+                    filteredSpells,
+                    isAddToCharacterEnabled,
+                    addToCharacterWidgetBuilder,
+                    numberOfColumns.value,
+                  );
+                },
+              ),
             ),
           );
         },
@@ -337,6 +312,123 @@ class ListOfSpellsPage extends HookConsumerWidget {
           );
         },
       ),
+    );
+  }
+
+  ListView listView(
+      List<SpellViewModel> filteredSpells,
+      bool isAddToCharacterEnabled,
+      IconButton Function(SpellViewModel spell) addToCharacterWidgetBuilder) {
+    return ListView.separated(
+      padding: EdgeInsets.symmetric(
+        horizontal: 8,
+      ),
+      itemCount: filteredSpells.length,
+      itemBuilder: (context, index) {
+        final shouldDisplayLevelSeparator = index == 0 ||
+            filteredSpells[index].spellLevel !=
+                filteredSpells[index - 1].spellLevel;
+        final spellViewModel = filteredSpells[index];
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (shouldDisplayLevelSeparator) ...[
+              Text(
+                SpellUtils.spellLevelString(
+                  spellViewModel.spellLevel,
+                ),
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              Divider(),
+            ],
+            Card.outlined(
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                leading: isAddToCharacterEnabled
+                    ? addToCharacterWidgetBuilder(spellViewModel)
+                    : null,
+                title: Hero(
+                  tag: spellViewModel.name,
+                  child: Text(spellViewModel.name),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return SpellCardPage(
+                          id: spellViewModel.id,
+                          spellsFuture: Future.value(filteredSpells),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+      separatorBuilder: (context, index) {
+        return const SizedBox(
+          height: 8,
+        );
+      },
+    );
+  }
+
+  Widget gridView(
+    List<SpellViewModel> filteredSpells,
+    bool isAddToCharacterEnabled,
+    IconButton Function(SpellViewModel spell) addToCharacterWidgetBuilder,
+    int numberOfColumns,
+  ) {
+    return GridView.builder(
+      padding: EdgeInsets.symmetric(
+        horizontal: 8,
+      ),
+      itemCount: filteredSpells.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: numberOfColumns,
+        childAspectRatio: 3 / 4,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+      ),
+      cacheExtent: 800,
+      itemBuilder: (context, index) {
+        final spellViewModel = filteredSpells[index];
+        return Card(
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return SpellCardPage(
+                      id: spellViewModel.id,
+                      spellsFuture: Future.value(filteredSpells),
+                    );
+                  },
+                ),
+              );
+            },
+            child: Column(
+              children: [
+                if (isAddToCharacterEnabled)
+                  addToCharacterWidgetBuilder(spellViewModel),
+                Flexible(
+                  child: SmallSpellWidget(
+                    spell: spellViewModel,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
