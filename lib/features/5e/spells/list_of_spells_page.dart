@@ -211,7 +211,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
       },
     );
 
-    final numberOfColumns = useState(2);
+    final isListMode = useState(false);
 
     return Scaffold(
       endDrawer: spellFilterDrawer(
@@ -272,20 +272,14 @@ class ListOfSpellsPage extends HookConsumerWidget {
             child: GestureDetector(
               onScaleEnd: (details) {
                 if (details.scaleVelocity < 0) {
-                  numberOfColumns.value = (numberOfColumns.value + 1).clamp(
-                    1,
-                    4,
-                  );
+                  isListMode.value = true;
                 } else if (details.scaleVelocity > 0) {
-                  numberOfColumns.value = (numberOfColumns.value - 1).clamp(
-                    1,
-                    4,
-                  );
+                  isListMode.value = false;
                 }
               },
               child: Builder(
                 builder: (context) {
-                  if (numberOfColumns.value == 4) {
+                  if (isListMode.value) {
                     return listView(
                       filteredSpells,
                       isAddToCharacterEnabled,
@@ -296,7 +290,6 @@ class ListOfSpellsPage extends HookConsumerWidget {
                     filteredSpells,
                     isAddToCharacterEnabled,
                     addToCharacterWidgetBuilder,
-                    numberOfColumns.value,
                   );
                 },
               ),
@@ -383,7 +376,6 @@ class ListOfSpellsPage extends HookConsumerWidget {
     List<SpellViewModel> filteredSpells,
     bool isAddToCharacterEnabled,
     IconButton Function(SpellViewModel spell) addToCharacterWidgetBuilder,
-    int numberOfColumns,
   ) {
     return GridView.builder(
       padding: EdgeInsets.symmetric(
@@ -391,7 +383,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
       ),
       itemCount: filteredSpells.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: numberOfColumns,
+        crossAxisCount: 2,
         childAspectRatio: 3 / 4,
         mainAxisSpacing: 8,
         crossAxisSpacing: 8,
@@ -415,15 +407,22 @@ class ListOfSpellsPage extends HookConsumerWidget {
                 ),
               );
             },
-            child: Column(
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                if (isAddToCharacterEnabled)
-                  addToCharacterWidgetBuilder(spellViewModel),
                 Flexible(
                   child: SmallSpellWidget(
                     spell: spellViewModel,
                   ),
                 ),
+                if (isAddToCharacterEnabled)
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: addToCharacterWidgetBuilder(spellViewModel),
+                    ),
+                  ),
               ],
             ),
           ),
