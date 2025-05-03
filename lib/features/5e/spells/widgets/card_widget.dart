@@ -69,12 +69,10 @@ class SpellCardWidget extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(GameSystemViewModel.materialComponent.icon),
-                      FittedBox(
-                        child: Text(
-                          GameSystemViewModel.materialComponent.name,
-                          style: Theme.of(context).textTheme.labelSmall,
-                          textAlign: TextAlign.center,
-                        ),
+                      Text(
+                        GameSystemViewModel.materialComponent.name,
+                        style: Theme.of(context).textTheme.labelSmall,
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
