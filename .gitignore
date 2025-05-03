@@ -44,3 +44,10 @@ app.*.map.json
 
 # Early secrets
 /lib/secrets.dart
+
+# Firebase related
+/firebase_options.dart
+/firebase.json
+
+# Android related
+/android/local.properties
