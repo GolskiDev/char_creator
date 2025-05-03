@@ -32,7 +32,7 @@ class SmallSpellWidget extends HookConsumerWidget {
                       return child;
                     }
                     return AnimatedOpacity(
-                      duration: Durations.short1,
+                      duration: Durations.medium1,
                       curve: Curves.easeIn,
                       opacity: frame == null ? 0 : 1,
                       child: child,
@@ -45,12 +45,18 @@ class SmallSpellWidget extends HookConsumerWidget {
               widthFactor: 1,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Card.outlined(
-                  child: ListTile(
-                    title: Text(
-                      spell.name,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                child: Card.filled(
+                  clipBehavior: Clip.antiAlias,
+                  child: Hero(
+                    tag: spell.name,
+                    child: Material(
+                      child: ListTile(
+                        title: Text(
+                          spell.name,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
                     ),
                   ),
                 ),

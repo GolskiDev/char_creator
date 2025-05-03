@@ -273,19 +273,19 @@ class ListOfSpellsPage extends HookConsumerWidget {
               onScaleEnd: (details) {
                 if (details.scaleVelocity < 0) {
                   numberOfColumns.value = (numberOfColumns.value + 1).clamp(
-                    0,
-                    3,
+                    1,
+                    4,
                   );
                 } else if (details.scaleVelocity > 0) {
                   numberOfColumns.value = (numberOfColumns.value - 1).clamp(
-                    0,
-                    3,
+                    1,
+                    4,
                   );
                 }
               },
               child: Builder(
                 builder: (context) {
-                  if (numberOfColumns.value == 0) {
+                  if (numberOfColumns.value == 4) {
                     return listView(
                       filteredSpells,
                       isAddToCharacterEnabled,

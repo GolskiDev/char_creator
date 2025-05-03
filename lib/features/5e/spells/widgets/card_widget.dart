@@ -220,9 +220,15 @@ class SpellCardWidget extends ConsumerWidget {
                         horizontal: 16,
                         vertical: 8,
                       ),
-                      child: Text(
-                        spell.name,
-                        style: Theme.of(context).textTheme.titleLarge,
+                      child: Hero(
+                        tag: spell.name,
+                        child: Material(
+                          child: ListTile(
+                            title: Text(
+                              spell.name,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     Padding(
