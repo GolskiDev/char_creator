@@ -314,6 +314,16 @@ class GameSystemViewModel {
     name: 'Note',
     icon: Symbols.note,
   );
+
+  static final cardMode = GameSystemViewModelItem(
+    name: 'Card Mode',
+    icon: Symbols.view_module,
+  );
+
+  static final listMode = GameSystemViewModelItem(
+    name: 'List Mode',
+    icon: Symbols.view_list,
+  );
 }
 
 class GameSystemViewModelItem {

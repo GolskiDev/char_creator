@@ -1,4 +1,5 @@
 import 'package:char_creator/features/5e/character/repository/character_repository.dart';
+import 'package:char_creator/features/5e/game_system_view_model.dart';
 import 'package:char_creator/features/5e/spells/filters/spell_model_filters_state.dart';
 import 'package:char_creator/features/5e/spells/widgets/small_spell_widget.dart';
 import 'package:collection/collection.dart';
@@ -135,7 +136,23 @@ class ListOfSpellsPage extends HookConsumerWidget {
     final isSearchVisible =
         searchFocusNode.hasFocus || searchController.text.isNotEmpty;
 
+    final isListMode = useState(false);
+
     final menuEntries = [
+      // ViewMode
+      MenuItemButton(
+        leadingIcon: Icon(
+          isListMode.value
+              ? GameSystemViewModel.cardMode.icon
+              : GameSystemViewModel.listMode.icon,
+        ),
+        child: Text(isListMode.value
+            ? GameSystemViewModel.cardMode.name
+            : GameSystemViewModel.listMode.name),
+        onPressed: () {
+          isListMode.value = !isListMode.value;
+        },
+      ),
       SubmenuButton(
         menuChildren: addToCharacterEntries,
         leadingIcon: Icon(
@@ -210,8 +227,6 @@ class ListOfSpellsPage extends HookConsumerWidget {
         );
       },
     );
-
-    final isListMode = useState(false);
 
     return Scaffold(
       endDrawer: spellFilterDrawer(
@@ -401,54 +416,61 @@ class ListOfSpellsPage extends HookConsumerWidget {
                     ),
                   ),
                 ),
-                SliverGrid.builder(
-                  itemCount: listOfSpellLevel.value.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 3 / 4,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
                   ),
-                  itemBuilder: (context, index) {
-                    final spellViewModel = listOfSpellLevel.value[index];
-                    return Card(
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return SpellCardPage(
-                                  id: spellViewModel.id,
-                                  spellsFuture: Future.value(filteredSpells),
-                                );
-                              },
-                            ),
-                          );
-                        },
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Flexible(
-                              child: SmallSpellWidget(
-                                spell: spellViewModel,
+                  sliver: SliverGrid.builder(
+                    itemCount: listOfSpellLevel.value.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 3 / 4,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                    ),
+                    itemBuilder: (context, index) {
+                      final spellViewModel = listOfSpellLevel.value[index];
+                      return Card(
+                        clipBehavior: Clip.antiAlias,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SpellCardPage(
+                                    id: spellViewModel.id,
+                                    spellsFuture: Future.value(filteredSpells),
+                                  );
+                                },
                               ),
-                            ),
-                            if (isAddToCharacterEnabled)
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: addToCharacterWidgetBuilder(
-                                      spellViewModel),
+                            );
+                          },
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Flexible(
+                                child: SmallSpellWidget(
+                                  spell: spellViewModel,
                                 ),
                               ),
-                          ],
+                              if (isAddToCharacterEnabled)
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: addToCharacterWidgetBuilder(
+                                        spellViewModel),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ],
             )
