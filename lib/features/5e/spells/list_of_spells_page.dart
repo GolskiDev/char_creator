@@ -397,6 +397,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
     );
 
     return CustomScrollView(
+      cacheExtent: MediaQuery.of(context).size.height,
       slivers: [
         ...spellGroupedByLevel.entries
             .map(
@@ -451,10 +452,8 @@ class ListOfSpellsPage extends HookConsumerWidget {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              Flexible(
-                                child: SmallSpellWidget(
-                                  spell: spellViewModel,
-                                ),
+                              SmallSpellWidget(
+                                spell: spellViewModel,
                               ),
                               if (isAddToCharacterEnabled)
                                 Align(

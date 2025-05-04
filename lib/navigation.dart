@@ -16,6 +16,7 @@ import 'features/5e/spells/open5e/models/open_5e_race_model.dart';
 import 'features/5e/spells/open5e/models/open_5e_weapon_model.dart';
 import 'features/5e/spells/spell_card_page.dart';
 import 'features/main_menu/main_menu.dart';
+import 'features/onboarding/pages/onboarding_explore_spells_page.dart';
 import 'sign_in_page.dart';
 import 'utils/utils_page.dart';
 import 'views/rules_page.dart';
@@ -31,6 +32,11 @@ class Navigation {
             path: '/',
             builder: (context, state) => const MainMenuPage(),
             routes: [
+              GoRoute(
+                path: '/onboarding',
+                builder: (context, state) =>
+                    const OnboardingExploreSpellsPage(),
+              ),
               GoRoute(
                 path: '/signIn',
                 builder: (context, state) {
