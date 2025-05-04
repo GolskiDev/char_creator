@@ -1,6 +1,8 @@
+import 'package:char_creator/features/5e/character/widgets/character_stats_widget.dart';
 import 'package:char_creator/features/5e/character/widgets/notes/character_5e_note_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -63,9 +65,215 @@ class Character5ePage extends HookConsumerWidget {
         );
     }
 
+    final page = useState(
+      0,
+    );
+
+    final pageController = usePageController(
+      initialPage: page.value,
+    );
+
     final characterSpells = spellViewModels
         .where((spell) => character.knownSpells.contains(spell.id))
         .toList();
+
+    final spellPage = SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 8,
+          children: [
+            if (character.spellSlots == null ||
+                character.spellSlots!.areSpellSlotsEmpty) ...[
+              Card(
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(
+                  leading: Icon(GameSystemViewModel.spellSlots.icon),
+                  title: Text('Add ${GameSystemViewModel.spellSlots.name}'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () async {
+                      final updatedCharacter = character.copyWith(
+                        spellSlots: Character5eSpellSlots.empty(),
+                      );
+                      await ref
+                          .read(characterRepositoryProvider)
+                          .updateCharacter(updatedCharacter);
+                      if (!context.mounted) {
+                        return;
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CharacterEditSpellSlotsWidget(
+                            spellSlots: updatedCharacter.spellSlots!,
+                            onChanged: (updatedSpellSlots) async {
+                              final updatedCharacter = character.copyWith(
+                                spellSlots: updatedSpellSlots,
+                              );
+                              await ref
+                                  .read(characterRepositoryProvider)
+                                  .updateCharacter(updatedCharacter);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ] else ...[
+              Card(
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CharacterEditSpellSlotsWidget(
+                          spellSlots: character.spellSlots!,
+                          onChanged: (updatedSpellSlots) async {
+                            final updatedCharacter = character.copyWith(
+                              spellSlots: updatedSpellSlots,
+                            );
+                            await ref
+                                .read(characterRepositoryProvider)
+                                .updateCharacter(updatedCharacter);
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Icon(GameSystemViewModel.spellSlots.icon),
+                        title: Text(GameSystemViewModel.spellSlots.name),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CharacterCurrentSpellSlotsWidget(
+                          spellSlots: character.spellSlots!,
+                          onChanged: (updatedSpellSlots) async {
+                            final updatedCharacter = character.copyWith(
+                              spellSlots: updatedSpellSlots,
+                            );
+                            await ref
+                                .read(characterRepositoryProvider)
+                                .updateCharacter(updatedCharacter);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            Card(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (characterSpells.isEmpty)
+                    ListTile(
+                      leading: Icon(GameSystemViewModel.spells.icon),
+                      title: Text('Add ${GameSystemViewModel.spells.name}'),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          context.go(
+                            '/characters/${character.id}/addSpells',
+                          );
+                        },
+                      ),
+                    ),
+                  if (characterSpells.isNotEmpty)
+                    ListTile(
+                      leading: Icon(GameSystemViewModel.spells.icon),
+                      title: Text(
+                        GameSystemViewModel.spells.name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          context.go(
+                            '/characters/${character.id}/addSpells',
+                          );
+                        },
+                      ),
+                    ),
+                  if (characterSpells.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Builder(
+                        builder: (context) {
+                          return GroupedSpellsWidget(
+                            characterSpells: characterSpells,
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            ...character.notes.notes.entries.map(
+              (e) => Card(
+                clipBehavior: Clip.antiAlias,
+                child: Character5eNoteWidget(
+                  note: e.value,
+                  onUpdate: (value) {
+                    final updatedNotes = character.notes.copyWith(
+                      notes: {
+                        ...character.notes.notes,
+                        e.key: value,
+                      },
+                    );
+                    final updatedCharacter = character.copyWith(
+                      notes: updatedNotes,
+                    );
+                    ref
+                        .read(characterRepositoryProvider)
+                        .updateCharacter(updatedCharacter);
+                  },
+                  onDelete: () {
+                    final updatedNotes = character.notes.copyWith(
+                      notes: {
+                        ...character.notes.notes,
+                      }..remove(e.key),
+                    );
+                    final updatedCharacter = character.copyWith(
+                      notes: updatedNotes,
+                    );
+                    ref
+                        .read(characterRepositoryProvider)
+                        .updateCharacter(updatedCharacter);
+                  },
+                ),
+              ),
+            ),
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: Character5eCreateNoteWidget(
+                notes: character.notes,
+                onUpdate: (updatedNotes) {
+                  final updatedCharacter = character.copyWith(
+                    notes: updatedNotes,
+                  );
+                  ref
+                      .read(characterRepositoryProvider)
+                      .updateCharacter(updatedCharacter);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final statsPage = CharacterStatsWidget(
+      character: character,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -81,198 +289,12 @@ class Character5ePage extends HookConsumerWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 8,
-            children: [
-              if (character.spellSlots == null ||
-                  character.spellSlots!.areSpellSlotsEmpty) ...[
-                Card(
-                  clipBehavior: Clip.antiAlias,
-                  child: ListTile(
-                    leading: Icon(GameSystemViewModel.spellSlots.icon),
-                    title: Text('Add ${GameSystemViewModel.spellSlots.name}'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () async {
-                        final updatedCharacter = character.copyWith(
-                          spellSlots: Character5eSpellSlots.empty(),
-                        );
-                        await ref
-                            .read(characterRepositoryProvider)
-                            .updateCharacter(updatedCharacter);
-                        if (!context.mounted) {
-                          return;
-                        }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CharacterEditSpellSlotsWidget(
-                              spellSlots: updatedCharacter.spellSlots!,
-                              onChanged: (updatedSpellSlots) async {
-                                final updatedCharacter = character.copyWith(
-                                  spellSlots: updatedSpellSlots,
-                                );
-                                await ref
-                                    .read(characterRepositoryProvider)
-                                    .updateCharacter(updatedCharacter);
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ] else ...[
-                Card(
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CharacterEditSpellSlotsWidget(
-                            spellSlots: character.spellSlots!,
-                            onChanged: (updatedSpellSlots) async {
-                              final updatedCharacter = character.copyWith(
-                                spellSlots: updatedSpellSlots,
-                              );
-                              await ref
-                                  .read(characterRepositoryProvider)
-                                  .updateCharacter(updatedCharacter);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: Icon(GameSystemViewModel.spellSlots.icon),
-                          title: Text(GameSystemViewModel.spellSlots.name),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CharacterCurrentSpellSlotsWidget(
-                            spellSlots: character.spellSlots!,
-                            onChanged: (updatedSpellSlots) async {
-                              final updatedCharacter = character.copyWith(
-                                spellSlots: updatedSpellSlots,
-                              );
-                              await ref
-                                  .read(characterRepositoryProvider)
-                                  .updateCharacter(updatedCharacter);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-              Card(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (characterSpells.isEmpty)
-                      ListTile(
-                        leading: Icon(GameSystemViewModel.spells.icon),
-                        title: Text('Add ${GameSystemViewModel.spells.name}'),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () {
-                            context.go(
-                              '/characters/${character.id}/addSpells',
-                            );
-                          },
-                        ),
-                      ),
-                    if (characterSpells.isNotEmpty)
-                      ListTile(
-                        leading: Icon(GameSystemViewModel.spells.icon),
-                        title: Text(
-                          GameSystemViewModel.spells.name,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () {
-                            context.go(
-                              '/characters/${character.id}/addSpells',
-                            );
-                          },
-                        ),
-                      ),
-                    if (characterSpells.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Builder(
-                          builder: (context) {
-                            return GroupedSpellsWidget(
-                              characterSpells: characterSpells,
-                            );
-                          },
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              ...character.notes.notes.entries.map(
-                (e) => Card(
-                  clipBehavior: Clip.antiAlias,
-                  child: Character5eNoteWidget(
-                    note: e.value,
-                    onUpdate: (value) {
-                      final updatedNotes = character.notes.copyWith(
-                        notes: {
-                          ...character.notes.notes,
-                          e.key: value,
-                        },
-                      );
-                      final updatedCharacter = character.copyWith(
-                        notes: updatedNotes,
-                      );
-                      ref
-                          .read(characterRepositoryProvider)
-                          .updateCharacter(updatedCharacter);
-                    },
-                    onDelete: () {
-                      final updatedNotes = character.notes.copyWith(
-                        notes: {
-                          ...character.notes.notes,
-                        }..remove(e.key),
-                      );
-                      final updatedCharacter = character.copyWith(
-                        notes: updatedNotes,
-                      );
-                      ref
-                          .read(characterRepositoryProvider)
-                          .updateCharacter(updatedCharacter);
-                    },
-                  ),
-                ),
-              ),
-              Card(
-                clipBehavior: Clip.antiAlias,
-                child: Character5eCreateNoteWidget(
-                  notes: character.notes,
-                  onUpdate: (updatedNotes) {
-                    final updatedCharacter = character.copyWith(
-                      notes: updatedNotes,
-                    );
-                    ref
-                        .read(characterRepositoryProvider)
-                        .updateCharacter(updatedCharacter);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
+      body: PageView(
+        controller: pageController,
+        children: [
+          spellPage,
+          statsPage,
+        ],
       ),
     );
   }

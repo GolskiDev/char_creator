@@ -120,10 +120,13 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                   child: TextField(
                     controller: savingThrowModifierEditingController,
                     textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.numberWithOptions(
+                      signed: true,
+                      decimal: false,
+                    ),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
-                        RegExp(r'^[-+]?[0-9]*$'),
+                        RegExp(r'^[-+.]?[0-9]*$'),
                       ),
                     ],
                     onChanged: (value) {

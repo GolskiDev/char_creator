@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -7,12 +8,16 @@ class ScoreWidget extends HookConsumerWidget {
   final int? initialValue;
   final IconData? icon;
   final String label;
+  final TextInputType? textInputType;
+  final List<TextInputFormatter>? inputFormatters;
 
   const ScoreWidget({
     super.key,
     required this.icon,
     required this.label,
     required this.initialValue,
+    this.textInputType,
+    this.inputFormatters,
     this.onChanged,
   });
 
@@ -26,7 +31,10 @@ class ScoreWidget extends HookConsumerWidget {
     final isSaved = initialValue == state.value;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 8.0,
+        ),
         child: TextField(
           decoration: InputDecoration(
             icon: isSaved
@@ -56,8 +64,9 @@ class ScoreWidget extends HookConsumerWidget {
                   ),
           ),
           textAlign: TextAlign.center,
-          keyboardType: TextInputType.number,
+          keyboardType: textInputType,
           controller: textController,
+          inputFormatters: inputFormatters,
           onChanged: (value) {
             final intValue = int.tryParse(value);
             state.value = intValue;

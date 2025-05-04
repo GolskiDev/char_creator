@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/services.dart';
 
 import '../../game_system_view_model.dart';
 
@@ -178,6 +179,12 @@ class Character5eAbilityScore {
       modifier: map['modifier'] as int?,
     );
   }
+
+  static TextInputFormatter get abilityScoreFormatter {
+    return FilteringTextInputFormatter.allow(
+      RegExp(r'[0-9]*$'),
+    );
+  }
 }
 
 extension AbilityScoreGameSystemViewModel on Character5eAbilityScoreType {
@@ -196,6 +203,12 @@ extension AbilityScoreGameSystemViewModel on Character5eAbilityScoreType {
 }
 
 class Modifier {
+  TextInputFormatter get formatter {
+    return FilteringTextInputFormatter.allow(
+      RegExp(r'^[-]?[0-9]*$'),
+    );
+  }
+
   static String display(int? modifier) {
     if (modifier == null) {
       return '';
