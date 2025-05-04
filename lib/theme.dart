@@ -34,7 +34,7 @@ class DarkColorScheme {
 
 class AppTheme {
   TextStyle get font => GoogleFonts.crimsonText();
-  double get borderRadius => 8;
+  static double get borderRadius => 8;
   themeData({
     required bool isDarkMode,
   }) {
@@ -68,7 +68,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(
             color: colorScheme.primary,
-            width: 1,
+            width: 2,
           ),
         ),
         floatingLabelAlignment: FloatingLabelAlignment.center,

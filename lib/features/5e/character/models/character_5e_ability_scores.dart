@@ -85,7 +85,7 @@ class Character5eAbilityScores {
 
   @override
   int get hashCode {
-    return _abilityScores.hashCode;
+    return const DeepCollectionEquality().hash(_abilityScores);
   }
 }
 
@@ -107,10 +107,10 @@ class Character5eAbilityScore {
     if (_savingThrowModifier != null) {
       return _savingThrowModifier;
     }
-    if (modifier == null) {
-      return null;
+    if (modifier != null) {
+      return modifier;
     }
-    return modifier;
+    return null;
   }
 
   //manually set modifier
@@ -131,13 +131,13 @@ class Character5eAbilityScore {
       abilityScoreType.gameSystemViewModel;
 
   Character5eAbilityScore copyWith({
-    int? value,
+    int? Function()? value,
     int? Function()? manuallySetModifier,
     int? Function()? manuallySetSavingThrowModifier,
   }) {
     return Character5eAbilityScore(
       abilityScoreType: abilityScoreType,
-      value: value ?? this.value,
+      value: value != null ? value() : this.value,
       modifier: manuallySetModifier != null ? manuallySetModifier() : _modifier,
       savingThrowModifier: manuallySetSavingThrowModifier != null
           ? manuallySetSavingThrowModifier()
@@ -203,7 +203,14 @@ extension AbilityScoreGameSystemViewModel on Character5eAbilityScoreType {
 }
 
 class Modifier {
-  TextInputFormatter get formatter {
+  static TextInputType get textInputType {
+    return TextInputType.numberWithOptions(
+      signed: true,
+      decimal: false,
+    );
+  }
+
+  static TextInputFormatter get formatter {
     return FilteringTextInputFormatter.allow(
       RegExp(r'^[-]?[0-9]*$'),
     );

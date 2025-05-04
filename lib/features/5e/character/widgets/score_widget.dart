@@ -28,53 +28,38 @@ class ScoreWidget extends HookConsumerWidget {
     );
     final state = useState(initialValue);
 
-    final isSaved = initialValue == state.value;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: 8.0,
+    final focusNode = useFocusNode();
+
+    useEffect(() {
+      focusNode.addListener(() {
+        if (!focusNode.hasFocus) {
+          onChanged?.call(state.value);
+        }
+      });
+      return null;
+    }, [focusNode]);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: 8.0,
+      ),
+      child: TextField(
+        focusNode: focusNode,
+        decoration: InputDecoration(
+          icon: Icon(icon),
+          hintText: label,
+          labelText: label,
+          labelStyle: Theme.of(context).textTheme.labelLarge,
         ),
-        child: TextField(
-          decoration: InputDecoration(
-            icon: isSaved
-                ? Icon(icon)
-                : SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(),
-                  ),
-            label: Text(
-              label,
-              textAlign: TextAlign.center,
-            ),
-            labelStyle: Theme.of(context).textTheme.labelLarge,
-            border: isSaved
-                ? OutlineInputBorder(
-                    borderSide: BorderSide(
-                      style: BorderStyle.none,
-                      width: 0,
-                    ),
-                  )
-                : OutlineInputBorder(
-                    borderSide: BorderSide(
-                      style: BorderStyle.solid,
-                      width: 1,
-                    ),
-                  ),
-          ),
-          textAlign: TextAlign.center,
-          keyboardType: textInputType,
-          controller: textController,
-          inputFormatters: inputFormatters,
-          onChanged: (value) {
-            final intValue = int.tryParse(value);
-            state.value = intValue;
-          },
-          onSubmitted: (_) {
-            onChanged?.call(state.value);
-          },
-        ),
+        textAlign: TextAlign.center,
+        keyboardType: textInputType,
+        controller: textController,
+        inputFormatters: inputFormatters,
+        onChanged: (value) {
+          final intValue = int.tryParse(value);
+          state.value = intValue;
+        },
       ),
     );
   }

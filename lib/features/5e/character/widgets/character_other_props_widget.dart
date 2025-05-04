@@ -24,8 +24,12 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
       signed: true,
       decimal: false,
     );
+
     final inputFormatters = [
-      FilteringTextInputFormatter.digitsOnly,
+      FilteringTextInputFormatter.allow(
+        RegExp(r'^[-]?[0-9]*$'),
+      ),
+      LengthLimitingTextInputFormatter(3),
     ];
 
     final widgets = [
@@ -39,18 +43,7 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
           otherPropsState.value = otherPropsState.value.copyWith(
             maxHP: () => value,
           );
-        },
-      ),
-      ScoreWidget(
-        inputFormatters: inputFormatters,
-        textInputType: inputType,
-        icon: GameSystemViewModel.temporaryHp.icon,
-        label: GameSystemViewModel.temporaryHp.name,
-        initialValue: otherPropsState.value.temporaryHP,
-        onChanged: (value) {
-          otherPropsState.value = otherPropsState.value.copyWith(
-            temporaryHP: () => value,
-          );
+          onChanged?.call(otherPropsState.value);
         },
       ),
       ScoreWidget(
@@ -63,6 +56,20 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
           otherPropsState.value = otherPropsState.value.copyWith(
             currentHP: () => value,
           );
+          onChanged?.call(otherPropsState.value);
+        },
+      ),
+      ScoreWidget(
+        inputFormatters: inputFormatters,
+        textInputType: inputType,
+        icon: GameSystemViewModel.temporaryHp.icon,
+        label: GameSystemViewModel.temporaryHp.name,
+        initialValue: otherPropsState.value.temporaryHP,
+        onChanged: (value) {
+          otherPropsState.value = otherPropsState.value.copyWith(
+            temporaryHP: () => value,
+          );
+          onChanged?.call(otherPropsState.value);
         },
       ),
       ScoreWidget(
@@ -75,6 +82,7 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
           otherPropsState.value = otherPropsState.value.copyWith(
             ac: () => value,
           );
+          onChanged?.call(otherPropsState.value);
         },
       ),
       ScoreWidget(
@@ -87,6 +95,7 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
           otherPropsState.value = otherPropsState.value.copyWith(
             currentSpeed: () => value,
           );
+          onChanged?.call(otherPropsState.value);
         },
       ),
       ScoreWidget(
@@ -99,39 +108,47 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
           otherPropsState.value = otherPropsState.value.copyWith(
             initiative: () => value,
           );
+          onChanged?.call(otherPropsState.value);
         },
       ),
-    ];
-
-    final numberOfColumns = MediaQuery.of(context).size.width ~/ 150;
-
-    final rows = () {
-      final rows = List<Widget>.empty(growable: true);
-      List<Widget> widgetsCopy = List<Widget>.from(widgets);
-      while (widgetsCopy.isNotEmpty) {
-        final rowWidgets = widgetsCopy.take(numberOfColumns).toList();
-        rows.add(
-          Row(
-            spacing: 8,
-            mainAxisSize: MainAxisSize.min,
-            children: rowWidgets.map(
-              (widget) {
-                return Expanded(
-                  child: widget,
-                );
-              },
-            ).toList(),
-          ),
+    ].map(
+      (e) {
+        return Card(
+          child: e,
         );
-        widgetsCopy.removeRange(0, numberOfColumns);
-      }
-      return rows;
-    }();
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      spacing: 8,
-      children: rows,
+      },
     );
+
+    return LayoutBuilder(builder: (context, constraints) {
+      final numberOfColumns = constraints.maxWidth ~/ 180;
+
+      final rows = () {
+        final rows = List<Widget>.empty(growable: true);
+        List<Widget> widgetsCopy = List<Widget>.from(widgets);
+        while (widgetsCopy.isNotEmpty) {
+          final rowWidgets = widgetsCopy.take(numberOfColumns).toList();
+          rows.add(
+            Row(
+              spacing: 8,
+              mainAxisSize: MainAxisSize.min,
+              children: rowWidgets.map(
+                (widget) {
+                  return Expanded(
+                    child: widget,
+                  );
+                },
+              ).toList(),
+            ),
+          );
+          widgetsCopy.removeRange(0, numberOfColumns);
+        }
+        return rows;
+      }();
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 8,
+        children: rows,
+      );
+    });
   }
 }

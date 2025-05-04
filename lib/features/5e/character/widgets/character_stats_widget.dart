@@ -34,10 +34,10 @@ class CharacterStatsWidget extends HookConsumerWidget {
 
     final abilityScores = () {
       if (character.abilityScores != null) {
-        return CharacterAbilityScoresWidget.editing(
+        return CharacterAbilityScoresWidget(
           abilityScores: character.abilityScores!,
           onChanged: (value) {
-            ref.read(characterRepositoryProvider).updateCharacter(
+            return ref.read(characterRepositoryProvider).updateCharacter(
                   character.copyWith(
                     abilityScores: value,
                   ),
