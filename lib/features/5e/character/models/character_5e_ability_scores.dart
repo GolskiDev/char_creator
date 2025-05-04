@@ -210,9 +210,9 @@ class Modifier {
     );
   }
 
-  static TextInputFormatter get formatter {
+  static TextInputFormatter get inputFormatter {
     return FilteringTextInputFormatter.allow(
-      RegExp(r'^[-]?[0-9]*$'),
+      RegExp(r'^[+-]?[0-9]*$'),
     );
   }
 

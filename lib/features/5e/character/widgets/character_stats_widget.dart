@@ -50,7 +50,7 @@ class CharacterStatsWidget extends HookConsumerWidget {
     final skills = () {
       if (character.abilityScores != null &&
           character.character5eSkills != null) {
-        return Card(
+        return Card.outlined(
           child: ExpansionTile(
             leading: Icon(
               GameSystemViewModel.skills.icon,
@@ -60,11 +60,11 @@ class CharacterStatsWidget extends HookConsumerWidget {
             ),
             childrenPadding: const EdgeInsets.all(8),
             children: [
-              CharacterSkillsWidget.editing(
+              CharacterSkillsWidget(
                 abilityScores: character.abilityScores!,
                 skills: character.character5eSkills!,
-                onChanged: (value) {
-                  ref.read(characterRepositoryProvider).updateCharacter(
+                onChanged: (value) async {
+                  return ref.read(characterRepositoryProvider).updateCharacter(
                         character.copyWith(
                           character5eSkills: value,
                         ),

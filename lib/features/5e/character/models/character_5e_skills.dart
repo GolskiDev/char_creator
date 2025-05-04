@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 import '../../../../../features/5e/game_system_view_model.dart';
 import 'character_5e_ability_scores.dart';
 
@@ -64,10 +66,7 @@ class Character5eSkill {
     if (_manualModifier != null) {
       return _manualModifier;
     }
-    if (abilityScores == null) {
-      return null;
-    }
-    return abilityScores.abilityScores[skillType.associatedAbility]?.modifier;
+    return abilityScores?.abilityScores[skillType.associatedAbility]?.modifier;
   }
 
   GameSystemViewModelItem get gameSystemViewModel =>
@@ -97,6 +96,18 @@ class Character5eSkill {
       manualModifier: map['manualModifier'] as int?,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Character5eSkill &&
+        other.skillType == skillType &&
+        other._manualModifier == _manualModifier;
+  }
+
+  @override
+  int get hashCode => skillType.hashCode ^ _manualModifier.hashCode;
 }
 
 class Character5eSkills {
@@ -140,11 +151,10 @@ class Character5eSkills {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Character5eSkills && skills == other.skills;
+    return other is Character5eSkills &&
+        DeepCollectionEquality().equals(other.skills, skills);
   }
 
   @override
-  int get hashCode => skills.hashCode;
+  int get hashCode => DeepCollectionEquality().hash(skills);
 }

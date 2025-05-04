@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../theme.dart';
 import '../models/character_5e_ability_scores.dart';
 
 class CharacterAbilityScoresWidget extends HookConsumerWidget {
@@ -50,157 +49,171 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
             title: Text(abilityScore.gameSystemViewModel.name),
             leading: Icon(abilityScore.gameSystemViewModel.icon),
           ),
-          Card(
-            child: HookBuilder(
-              builder: (context) {
-                final focusNode = useFocusNode();
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Card(
+              child: HookBuilder(
+                builder: (context) {
+                  final focusNode = useFocusNode();
 
-                useEffect(() {
-                  focusNode.addListener(() async {
-                    if (!focusNode.hasFocus) {
-                      await onChanged?.call(
-                        abilityScoresState.value,
-                      );
-                      modifierEditingController.text = Modifier.display(
-                        abilityScoresState
-                            .value.abilityScores[abilityScoreType]!.modifier,
-                      );
-                      savingThrowModifierEditingController.text =
-                          Modifier.display(
-                        abilityScoresState
-                            .value
-                            .abilityScores[abilityScoreType]!
-                            .savingThrowModifier,
-                      );
-                    }
-                  });
-                  return null;
-                }, [focusNode]);
+                  useEffect(() {
+                    focusNode.addListener(() async {
+                      if (!focusNode.hasFocus) {
+                        await onChanged?.call(
+                          abilityScoresState.value,
+                        );
+                        modifierEditingController.text = Modifier.display(
+                          abilityScoresState
+                              .value.abilityScores[abilityScoreType]!.modifier,
+                        );
+                        savingThrowModifierEditingController.text =
+                            Modifier.display(
+                          abilityScoresState
+                              .value
+                              .abilityScores[abilityScoreType]!
+                              .savingThrowModifier,
+                        );
+                      }
+                    });
+                    return null;
+                  }, [focusNode]);
 
-                return TextField(
-                  focusNode: focusNode,
-                  controller: abilityScoreEditingController,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'^[-]?[0-9]*$'),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    final intValue = int.tryParse(value);
-                    final updatedAbilityScores =
-                        abilityScoresState.value.copyWith(
-                      abilityScores: {
-                        ...abilityScoresState.value.abilityScores,
-                        abilityScoreType: abilityScore.copyWith(
-                          value: () => intValue,
-                        ),
-                      },
-                    );
-                    abilityScoresState.value = updatedAbilityScores;
-                  },
-                );
-              },
-            ),
-          ),
-          HookBuilder(
-            builder: (context) {
-              final focusNode = useFocusNode();
-
-              useEffect(() {
-                focusNode.addListener(() async {
-                  if (!focusNode.hasFocus) {
-                    await onChanged?.call(abilityScoresState.value);
-                    modifierEditingController.text = Modifier.display(
-                      abilityScoresState
-                          .value.abilityScores[abilityScoreType]!.modifier,
-                    );
-                    savingThrowModifierEditingController.text =
-                        Modifier.display(
-                      abilityScoresState.value.abilityScores[abilityScoreType]!
-                          .savingThrowModifier,
-                    );
-                  }
-                });
-                return null;
-              }, [focusNode]);
-
-              return TextField(
-                focusNode: focusNode,
-                controller: modifierEditingController,
-                textAlign: TextAlign.center,
-                keyboardType: Modifier.textInputType,
-                inputFormatters: [Modifier.formatter],
-                onChanged: (value) {
-                  final intValue = int.tryParse(value);
-                  final updatedAbilityScores =
-                      abilityScoresState.value.copyWith(
-                    abilityScores: {
-                      ...abilityScoresState.value.abilityScores,
-                      abilityScoreType: abilityScore.copyWith(
-                        manuallySetModifier: () => intValue,
+                  return TextField(
+                    focusNode: focusNode,
+                    controller: abilityScoreEditingController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'^[-]?[0-9]*$'),
                       ),
+                    ],
+                    onChanged: (value) {
+                      final intValue = int.tryParse(value);
+                      final updatedAbilityScores =
+                          abilityScoresState.value.copyWith(
+                        abilityScores: {
+                          ...abilityScoresState.value.abilityScores,
+                          abilityScoreType: abilityScore.copyWith(
+                            value: () => intValue,
+                          ),
+                        },
+                      );
+                      abilityScoresState.value = updatedAbilityScores;
                     },
                   );
-                  abilityScoresState.value = updatedAbilityScores;
-                  if (intValue != null) {
-                    modifierEditingController.text = Modifier.display(intValue);
-                  }
                 },
-              );
-            },
+              ),
+            ),
           ),
-          Card(
-            child: HookBuilder(
-              builder: (context) {
-                final focusNode = useFocusNode();
+          Padding(
+            padding: const EdgeInsets.all(2),
+            child: Card(
+              child: HookBuilder(
+                builder: (context) {
+                  final focusNode = useFocusNode();
 
-                useEffect(() {
-                  focusNode.addListener(() async {
-                    if (!focusNode.hasFocus) {
-                      await onChanged?.call(abilityScoresState.value);
-                      modifierEditingController.text = Modifier.display(
-                        abilityScoresState
-                            .value.abilityScores[abilityScoreType]!.modifier,
-                      );
-                      savingThrowModifierEditingController.text =
-                          Modifier.display(
-                        abilityScoresState
-                            .value
-                            .abilityScores[abilityScoreType]!
-                            .savingThrowModifier,
-                      );
-                    }
-                  });
-                  return null;
-                }, [focusNode]);
+                  useEffect(() {
+                    focusNode.addListener(() async {
+                      if (!focusNode.hasFocus) {
+                        await onChanged?.call(abilityScoresState.value);
+                        modifierEditingController.text = Modifier.display(
+                          abilityScoresState
+                              .value.abilityScores[abilityScoreType]!.modifier,
+                        );
+                        savingThrowModifierEditingController.text =
+                            Modifier.display(
+                          abilityScoresState
+                              .value
+                              .abilityScores[abilityScoreType]!
+                              .savingThrowModifier,
+                        );
+                      }
+                    });
+                    return null;
+                  }, [focusNode]);
 
-                return TextField(
-                  focusNode: focusNode,
-                  controller: savingThrowModifierEditingController,
-                  textAlign: TextAlign.center,
-                  keyboardType: Modifier.textInputType,
-                  inputFormatters: [Modifier.formatter],
-                  onChanged: (value) {
-                    final intValue = int.tryParse(value);
-                    final updatedAbilityScores =
-                        abilityScoresState.value.copyWith(
-                      abilityScores: {
-                        ...abilityScoresState.value.abilityScores,
-                        abilityScoreType: abilityScore.copyWith(
-                          manuallySetSavingThrowModifier: () => intValue,
-                        ),
-                      },
-                    );
-                    abilityScoresState.value = updatedAbilityScores;
-                    if (intValue != null) {
-                      savingThrowModifierEditingController.text =
-                          Modifier.display(intValue);
-                    }
-                  },
-                );
-              },
+                  return TextField(
+                    focusNode: focusNode,
+                    controller: modifierEditingController,
+                    textAlign: TextAlign.center,
+                    keyboardType: Modifier.textInputType,
+                    inputFormatters: [Modifier.inputFormatter],
+                    onChanged: (value) {
+                      final intValue = int.tryParse(value);
+                      final updatedAbilityScores =
+                          abilityScoresState.value.copyWith(
+                        abilityScores: {
+                          ...abilityScoresState.value.abilityScores,
+                          abilityScoreType: abilityScore.copyWith(
+                            manuallySetModifier: () => intValue,
+                          ),
+                        },
+                      );
+                      abilityScoresState.value = updatedAbilityScores;
+                      if (intValue != null) {
+                        modifierEditingController.text =
+                            Modifier.display(intValue);
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(2),
+            child: Card(
+              child: HookBuilder(
+                builder: (context) {
+                  final focusNode = useFocusNode();
+
+                  useEffect(() {
+                    focusNode.addListener(() async {
+                      if (!focusNode.hasFocus) {
+                        await onChanged?.call(abilityScoresState.value);
+                        modifierEditingController.text = Modifier.display(
+                          abilityScoresState
+                              .value.abilityScores[abilityScoreType]!.modifier,
+                        );
+                        savingThrowModifierEditingController.text =
+                            Modifier.display(
+                          abilityScoresState
+                              .value
+                              .abilityScores[abilityScoreType]!
+                              .savingThrowModifier,
+                        );
+                      }
+                    });
+                    return null;
+                  }, [focusNode]);
+
+                  return TextField(
+                    focusNode: focusNode,
+                    controller: savingThrowModifierEditingController,
+                    textAlign: TextAlign.center,
+                    keyboardType: Modifier.textInputType,
+                    inputFormatters: [Modifier.inputFormatter],
+                    onChanged: (value) {
+                      final intValue = int.tryParse(value);
+                      final updatedAbilityScores =
+                          abilityScoresState.value.copyWith(
+                        abilityScores: {
+                          ...abilityScoresState.value.abilityScores,
+                          abilityScoreType: abilityScore.copyWith(
+                            manuallySetSavingThrowModifier: () => intValue,
+                          ),
+                        },
+                      );
+                      abilityScoresState.value = updatedAbilityScores;
+                      if (intValue != null) {
+                        savingThrowModifierEditingController.text =
+                            Modifier.display(intValue);
+                      }
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -290,11 +303,6 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
         2: const FlexColumnWidth(1),
         3: const FlexColumnWidth(1),
       },
-      border: TableBorder.all(
-        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
-        color: Theme.of(context).colorScheme.surface,
-        width: 2,
-      ),
       children: [
         ...legend,
         ...abilityScoresState.value.abilityScores.entries.map(
