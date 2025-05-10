@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../game_system_view_model.dart';
@@ -9,7 +9,7 @@ import 'score_widget.dart';
 
 class CharacterOtherPropsWidget extends HookConsumerWidget {
   final Character5eOtherProps characterOtherProps;
-  final ValueChanged<Character5eOtherProps>? onChanged;
+  final AsyncValueSetter<Character5eOtherProps>? onChanged;
   const CharacterOtherPropsWidget({
     required this.characterOtherProps,
     this.onChanged,
@@ -18,8 +18,6 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final otherPropsState = useState(characterOtherProps);
-
     final inputType = TextInputType.numberWithOptions(
       signed: true,
       decimal: false,
@@ -38,12 +36,13 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
         textInputType: inputType,
         icon: GameSystemViewModel.maxHp.icon,
         label: GameSystemViewModel.maxHp.name,
-        initialValue: otherPropsState.value.maxHP,
-        onChanged: (value) {
-          otherPropsState.value = otherPropsState.value.copyWith(
-            maxHP: () => value,
+        initialValue: characterOtherProps.maxHP,
+        onChanged: (value) async {
+          await onChanged?.call(
+            characterOtherProps.copyWith(
+              maxHP: () => value,
+            ),
           );
-          onChanged?.call(otherPropsState.value);
         },
       ),
       ScoreWidget(
@@ -51,12 +50,11 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
         textInputType: inputType,
         icon: GameSystemViewModel.currentHp.icon,
         label: GameSystemViewModel.currentHp.name,
-        initialValue: otherPropsState.value.currentHP,
-        onChanged: (value) {
-          otherPropsState.value = otherPropsState.value.copyWith(
+        initialValue: characterOtherProps.currentHP,
+        onChanged: (value) async {
+          await onChanged?.call(characterOtherProps.copyWith(
             currentHP: () => value,
-          );
-          onChanged?.call(otherPropsState.value);
+          ));
         },
       ),
       ScoreWidget(
@@ -64,12 +62,11 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
         textInputType: inputType,
         icon: GameSystemViewModel.temporaryHp.icon,
         label: GameSystemViewModel.temporaryHp.name,
-        initialValue: otherPropsState.value.temporaryHP,
-        onChanged: (value) {
-          otherPropsState.value = otherPropsState.value.copyWith(
+        initialValue: characterOtherProps.temporaryHP,
+        onChanged: (value) async {
+          await onChanged?.call(characterOtherProps.copyWith(
             temporaryHP: () => value,
-          );
-          onChanged?.call(otherPropsState.value);
+          ));
         },
       ),
       ScoreWidget(
@@ -77,12 +74,11 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
         textInputType: inputType,
         icon: GameSystemViewModel.armorClass.icon,
         label: GameSystemViewModel.armorClass.name,
-        initialValue: otherPropsState.value.ac,
-        onChanged: (value) {
-          otherPropsState.value = otherPropsState.value.copyWith(
+        initialValue: characterOtherProps.ac,
+        onChanged: (value) async {
+          await onChanged?.call(characterOtherProps.copyWith(
             ac: () => value,
-          );
-          onChanged?.call(otherPropsState.value);
+          ));
         },
       ),
       ScoreWidget(
@@ -90,12 +86,11 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
         textInputType: inputType,
         icon: GameSystemViewModel.speed.icon,
         label: GameSystemViewModel.speed.name,
-        initialValue: otherPropsState.value.currentSpeed,
-        onChanged: (value) {
-          otherPropsState.value = otherPropsState.value.copyWith(
+        initialValue: characterOtherProps.currentSpeed,
+        onChanged: (value) async {
+          await onChanged?.call(characterOtherProps.copyWith(
             currentSpeed: () => value,
-          );
-          onChanged?.call(otherPropsState.value);
+          ));
         },
       ),
       ScoreWidget(
@@ -103,12 +98,11 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
         textInputType: inputType,
         icon: GameSystemViewModel.initiative.icon,
         label: GameSystemViewModel.initiative.name,
-        initialValue: otherPropsState.value.initiative,
-        onChanged: (value) {
-          otherPropsState.value = otherPropsState.value.copyWith(
+        initialValue: characterOtherProps.initiative,
+        onChanged: (value) async {
+          await onChanged?.call(characterOtherProps.copyWith(
             initiative: () => value,
-          );
-          onChanged?.call(otherPropsState.value);
+          ));
         },
       ),
     ].map(
@@ -120,7 +114,7 @@ class CharacterOtherPropsWidget extends HookConsumerWidget {
     );
 
     return LayoutBuilder(builder: (context, constraints) {
-      final numberOfColumns = constraints.maxWidth ~/ 180;
+      final numberOfColumns = constraints.maxWidth ~/ 150;
 
       final rows = () {
         final rows = List<Widget>.empty(growable: true);

@@ -5,7 +5,12 @@ import 'package:char_creator/features/5e/character/widgets/character_other_props
 import 'package:char_creator/features/5e/character/widgets/character_skills_widget.dart';
 import 'package:char_creator/features/5e/game_system_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../models/character_5e_ability_scores.dart';
+import '../models/character_5e_others.dart';
+import '../models/character_5e_skills.dart';
 
 class CharacterStatsWidget extends HookConsumerWidget {
   final Character5eModelV1 character;
@@ -17,37 +22,64 @@ class CharacterStatsWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final other = () {
+    final currentCharacterState = useState(character);
+
+    useEffect(
+      () {
+        currentCharacterState.value = character;
+      },
+    );
+
+    onOtherPropsChanged(Character5eOtherProps otherProps) async {
+      final updatedCharacter = currentCharacterState.value.copyWith(
+        others: otherProps,
+      );
+      await ref.read(characterRepositoryProvider).updateCharacter(
+            updatedCharacter,
+          );
+    }
+
+    otherWidget() {
       if (character.others != null) {
         return CharacterOtherPropsWidget(
           characterOtherProps: character.others!,
-          onChanged: (value) {
-            ref.read(characterRepositoryProvider).updateCharacter(
-                  character.copyWith(
-                    others: value,
-                  ),
-                );
-          },
+          onChanged: onOtherPropsChanged,
         );
       }
-    }();
+    }
 
-    final abilityScores = () {
+    onAbilityScoresChanged(
+      Character5eAbilityScores abilityScores,
+    ) async {
+      final updatedCharacter = currentCharacterState.value.copyWith(
+        abilityScores: abilityScores,
+      );
+      await ref.read(characterRepositoryProvider).updateCharacter(
+            updatedCharacter,
+          );
+    }
+
+    abilityScoresWidget() {
       if (character.abilityScores != null) {
         return CharacterAbilityScoresWidget(
           abilityScores: character.abilityScores!,
-          onChanged: (value) {
-            return ref.read(characterRepositoryProvider).updateCharacter(
-                  character.copyWith(
-                    abilityScores: value,
-                  ),
-                );
-          },
+          onChanged: onAbilityScoresChanged,
         );
       }
-    }();
+    }
 
-    final skills = () {
+    onSkillsChanged(
+      Character5eSkills skills,
+    ) async {
+      final updatedCharacter = currentCharacterState.value.copyWith(
+        character5eSkills: skills,
+      );
+      await ref.read(characterRepositoryProvider).updateCharacter(
+            updatedCharacter,
+          );
+    }
+
+    skillsWidget() {
       if (character.abilityScores != null &&
           character.character5eSkills != null) {
         return Card.outlined(
@@ -63,19 +95,14 @@ class CharacterStatsWidget extends HookConsumerWidget {
               CharacterSkillsWidget(
                 abilityScores: character.abilityScores!,
                 skills: character.character5eSkills!,
-                onChanged: (value) async {
-                  return ref.read(characterRepositoryProvider).updateCharacter(
-                        character.copyWith(
-                          character5eSkills: value,
-                        ),
-                      );
-                },
+                onChanged: onSkillsChanged,
               ),
             ],
           ),
         );
       }
-    }();
+    }
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -83,9 +110,9 @@ class CharacterStatsWidget extends HookConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           spacing: 8,
           children: [
-            if (other != null) other,
-            if (abilityScores != null) abilityScores,
-            if (skills != null) skills,
+            otherWidget() ?? const SizedBox(),
+            abilityScoresWidget() ?? const SizedBox(),
+            skillsWidget() ?? const SizedBox(),
           ],
         ),
       ),

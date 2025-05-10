@@ -22,26 +22,17 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final abilityScoresState = useState(abilityScores);
 
+    useEffect(
+      () {
+        abilityScoresState.value = abilityScores;
+      },
+      [abilityScores],
+    );
+
     TableRow abilityScoreRow({
       required Character5eAbilityScore abilityScore,
     }) {
       final abilityScoreType = abilityScore.abilityScoreType;
-
-      final abilityScoreEditingController = useTextEditingController(
-        text: abilityScore.value?.toString() ?? '',
-      );
-
-      final modifierEditingController = useTextEditingController(
-        text: Modifier.display(
-          abilityScore.modifier,
-        ),
-      );
-
-      final savingThrowModifierEditingController = useTextEditingController(
-        text: Modifier.display(
-          abilityScore.savingThrowModifier,
-        ),
-      );
 
       return TableRow(
         children: [
@@ -54,29 +45,43 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
             child: Card(
               child: HookBuilder(
                 builder: (context) {
+                  final abilityScoreEditingController =
+                      useTextEditingController(
+                    text: abilityScore.value?.toString() ?? '',
+                  );
+
                   final focusNode = useFocusNode();
 
-                  useEffect(() {
-                    focusNode.addListener(() async {
-                      if (!focusNode.hasFocus) {
-                        await onChanged?.call(
-                          abilityScoresState.value,
-                        );
-                        modifierEditingController.text = Modifier.display(
-                          abilityScoresState
-                              .value.abilityScores[abilityScoreType]!.modifier,
-                        );
-                        savingThrowModifierEditingController.text =
-                            Modifier.display(
-                          abilityScoresState
-                              .value
-                              .abilityScores[abilityScoreType]!
-                              .savingThrowModifier,
-                        );
-                      }
-                    });
-                    return null;
-                  }, [focusNode]);
+                  useEffect(
+                    () {
+                      focusNode.addListener(
+                        () async {
+                          if (!focusNode.hasFocus) {
+                            final currentValue =
+                                abilityScoreEditingController.text;
+
+                            final intValue = int.tryParse(currentValue);
+
+                            final updatedAbilityScores =
+                                abilityScoresState.value.copyWith(
+                              abilityScores: {
+                                ...abilityScoresState.value.abilityScores,
+                                abilityScoreType: abilityScore.copyWith(
+                                  value: () => intValue,
+                                ),
+                              },
+                            );
+
+                            await onChanged?.call(
+                              updatedAbilityScores,
+                            );
+                          }
+                        },
+                      );
+                      return null;
+                    },
+                    [focusNode],
+                  );
 
                   return TextField(
                     focusNode: focusNode,
@@ -88,19 +93,6 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                         RegExp(r'^[-]?[0-9]*$'),
                       ),
                     ],
-                    onChanged: (value) {
-                      final intValue = int.tryParse(value);
-                      final updatedAbilityScores =
-                          abilityScoresState.value.copyWith(
-                        abilityScores: {
-                          ...abilityScoresState.value.abilityScores,
-                          abilityScoreType: abilityScore.copyWith(
-                            value: () => intValue,
-                          ),
-                        },
-                      );
-                      abilityScoresState.value = updatedAbilityScores;
-                    },
                   );
                 },
               ),
@@ -113,25 +105,49 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                 builder: (context) {
                   final focusNode = useFocusNode();
 
-                  useEffect(() {
-                    focusNode.addListener(() async {
-                      if (!focusNode.hasFocus) {
-                        await onChanged?.call(abilityScoresState.value);
-                        modifierEditingController.text = Modifier.display(
-                          abilityScoresState
-                              .value.abilityScores[abilityScoreType]!.modifier,
-                        );
-                        savingThrowModifierEditingController.text =
-                            Modifier.display(
-                          abilityScoresState
-                              .value
-                              .abilityScores[abilityScoreType]!
-                              .savingThrowModifier,
-                        );
-                      }
-                    });
-                    return null;
-                  }, [focusNode]);
+                  final modifierEditingController = useTextEditingController(
+                    text: Modifier.display(
+                      abilityScore.modifier,
+                    ),
+                  );
+
+                  updateModifierTextField() {
+                    modifierEditingController.text = Modifier.display(
+                      abilityScore.modifier,
+                    );
+                  }
+
+                  useEffect(
+                    () {
+                      updateModifierTextField();
+                      return null;
+                    },
+                    [abilityScore.value, abilityScore.modifier],
+                  );
+
+                  useEffect(
+                    () {
+                      focusNode.addListener(() async {
+                        if (!focusNode.hasFocus) {
+                          final currentValue = modifierEditingController.text;
+                          final intValue = int.tryParse(currentValue);
+                          final updatedAbilityScores =
+                              abilityScoresState.value.copyWith(
+                            abilityScores: {
+                              ...abilityScoresState.value.abilityScores,
+                              abilityScoreType: abilityScore.copyWith(
+                                manuallySetModifier: () => intValue,
+                              ),
+                            },
+                          );
+
+                          await onChanged?.call(updatedAbilityScores);
+                        }
+                      });
+                      return null;
+                    },
+                    [focusNode],
+                  );
 
                   return TextField(
                     focusNode: focusNode,
@@ -141,17 +157,10 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                     inputFormatters: [Modifier.inputFormatter],
                     onChanged: (value) {
                       final intValue = int.tryParse(value);
-                      final updatedAbilityScores =
-                          abilityScoresState.value.copyWith(
-                        abilityScores: {
-                          ...abilityScoresState.value.abilityScores,
-                          abilityScoreType: abilityScore.copyWith(
-                            manuallySetModifier: () => intValue,
-                          ),
-                        },
-                      );
-                      abilityScoresState.value = updatedAbilityScores;
-                      if (intValue != null) {
+                      if (intValue == null) {
+                        // text will be updated in updateModifierTextField
+                      } else {
+                        // we want to update the text field with the display value
                         modifierEditingController.text =
                             Modifier.display(intValue);
                       }
@@ -168,25 +177,52 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                 builder: (context) {
                   final focusNode = useFocusNode();
 
-                  useEffect(() {
-                    focusNode.addListener(() async {
-                      if (!focusNode.hasFocus) {
-                        await onChanged?.call(abilityScoresState.value);
-                        modifierEditingController.text = Modifier.display(
-                          abilityScoresState
-                              .value.abilityScores[abilityScoreType]!.modifier,
-                        );
-                        savingThrowModifierEditingController.text =
-                            Modifier.display(
-                          abilityScoresState
-                              .value
-                              .abilityScores[abilityScoreType]!
-                              .savingThrowModifier,
-                        );
-                      }
-                    });
-                    return null;
-                  }, [focusNode]);
+                  final savingThrowModifierEditingController =
+                      useTextEditingController(
+                    text: Modifier.display(
+                      abilityScore.savingThrowModifier,
+                    ),
+                  );
+
+                  updateModifierTextField() {
+                    savingThrowModifierEditingController.text =
+                        Modifier.display(
+                      abilityScore.savingThrowModifier,
+                    );
+                  }
+
+                  useEffect(
+                    () {
+                      updateModifierTextField();
+                      return null;
+                    },
+                    [abilityScore.modifier, abilityScore.savingThrowModifier],
+                  );
+
+                  useEffect(
+                    () {
+                      focusNode.addListener(() async {
+                        if (!focusNode.hasFocus) {
+                          final currentValue =
+                              savingThrowModifierEditingController.text;
+                          final intValue = int.tryParse(currentValue);
+                          final updatedAbilityScores =
+                              abilityScoresState.value.copyWith(
+                            abilityScores: {
+                              ...abilityScoresState.value.abilityScores,
+                              abilityScoreType: abilityScore.copyWith(
+                                manuallySetSavingThrowModifier: () => intValue,
+                              ),
+                            },
+                          );
+
+                          await onChanged?.call(updatedAbilityScores);
+                        }
+                      });
+                      return null;
+                    },
+                    [focusNode],
+                  );
 
                   return TextField(
                     focusNode: focusNode,
@@ -196,17 +232,9 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                     inputFormatters: [Modifier.inputFormatter],
                     onChanged: (value) {
                       final intValue = int.tryParse(value);
-                      final updatedAbilityScores =
-                          abilityScoresState.value.copyWith(
-                        abilityScores: {
-                          ...abilityScoresState.value.abilityScores,
-                          abilityScoreType: abilityScore.copyWith(
-                            manuallySetSavingThrowModifier: () => intValue,
-                          ),
-                        },
-                      );
-                      abilityScoresState.value = updatedAbilityScores;
-                      if (intValue != null) {
+                      if (intValue == null) {
+                        // text will be updated in updateModifierTextField
+                      } else {
                         savingThrowModifierEditingController.text =
                             Modifier.display(intValue);
                       }
