@@ -93,6 +93,13 @@ class Character5eAbilityScore {
   final Character5eAbilityScoreType abilityScoreType;
   final int? value;
 
+  int? get modifierFromValue {
+    if (value == null) {
+      return null;
+    }
+    return ((value! - 10) / 2).floor();
+  }
+
   int? get modifier {
     if (_modifier != null) {
       return _modifier;
@@ -100,7 +107,7 @@ class Character5eAbilityScore {
     if (value == null) {
       return null;
     }
-    return ((value! - 10) / 2).floor();
+    return modifierFromValue;
   }
 
   int? get savingThrowModifier {
@@ -111,6 +118,14 @@ class Character5eAbilityScore {
       return modifier;
     }
     return null;
+  }
+
+  bool get isModifierCustom {
+    return _modifier != null;
+  }
+
+  bool get isSavingThrowModifierCustom {
+    return _savingThrowModifier != null;
   }
 
   //manually set modifier
@@ -177,6 +192,7 @@ class Character5eAbilityScore {
           Character5eAbilityScoreType.fromString(map['abilityScoreType']),
       value: map['value'] as int?,
       modifier: map['modifier'] as int?,
+      savingThrowModifier: map['savingThrowModifier'] as int?,
     );
   }
 
@@ -216,16 +232,23 @@ class Modifier {
     );
   }
 
-  static String display(int? modifier) {
+  static String display(String? modifier) {
     if (modifier == null) {
       return '';
     }
-    if (modifier > 0) {
-      return '+$modifier';
-    } else if (modifier < 0) {
-      return '$modifier';
+    if (modifier == '-') {
+      return '-';
+    }
+
+    final intModifier = int.tryParse(modifier);
+    if (intModifier == null) {
+      return '';
+    }
+
+    if (intModifier <= 0) {
+      return intModifier.toString();
     } else {
-      return '0';
+      return '+$intModifier';
     }
   }
 }

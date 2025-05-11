@@ -57,6 +57,8 @@ class Character5eSkill {
   final Character5eSkillType skillType;
   final int? _manualModifier;
 
+  bool get isCustomModifierUsed => _manualModifier != null;
+
   const Character5eSkill({
     required this.skillType,
     int? manualModifier,

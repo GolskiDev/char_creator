@@ -324,6 +324,11 @@ class GameSystemViewModel {
     name: 'List Mode',
     icon: Symbols.view_list,
   );
+
+  static final customValue = GameSystemViewModelItem(
+    name: 'Custom Value',
+    icon: Symbols.adjust,
+  );
 }
 
 class GameSystemViewModelItem {

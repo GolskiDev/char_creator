@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:char_creator/features/5e/game_system_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +27,87 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
     useEffect(
       () {
         abilityScoresState.value = abilityScores;
+        final value = abilityScoresState
+            .value.abilityScores[Character5eAbilityScoreType.strength]?.value;
+        final modifier = abilityScoresState.value
+            .abilityScores[Character5eAbilityScoreType.strength]?.modifier;
+        final savingThrowModifier = abilityScoresState
+            .value
+            .abilityScores[Character5eAbilityScoreType.strength]
+            ?.savingThrowModifier;
+        dev.log(
+          'Strength: $value',
+        );
+        dev.log(
+          'Strength Modifier: $modifier',
+        );
+        dev.log(
+          'Strength Saving Throw: $savingThrowModifier',
+        );
       },
       [abilityScores],
     );
+
+    updateAbilityScore(
+      Character5eAbilityScoreType abilityScoreType,
+      int? abilityScore,
+    ) async {
+      final updatedAbilityScores = abilityScoresState.value.copyWith(
+        abilityScores: {
+          ...abilityScoresState.value.abilityScores,
+          abilityScoreType: abilityScoresState
+              .value.abilityScores[abilityScoreType]!
+              .copyWith(
+            value: () => abilityScore,
+          ),
+        },
+      );
+
+      await onChanged?.call(updatedAbilityScores);
+    }
+
+    updateModifier(
+      Character5eAbilityScoreType abilityScoreType,
+      int? modifier,
+    ) async {
+      final abilityScore =
+          abilityScoresState.value.abilityScores[abilityScoreType]!;
+      if (modifier == abilityScore.modifier ||
+          modifier == abilityScore.modifierFromValue) {
+        return;
+      }
+      final updatedAbilityScores = abilityScoresState.value.copyWith(
+        abilityScores: {
+          ...abilityScoresState.value.abilityScores,
+          abilityScoreType: abilityScore.copyWith(
+            manuallySetModifier: () => modifier,
+          )
+        },
+      );
+
+      await onChanged?.call(updatedAbilityScores);
+    }
+
+    updateSavingThrowModifier(
+      Character5eAbilityScoreType abilityScoreType,
+      int? savingThrowModifier,
+    ) async {
+      final abilityScore =
+          abilityScoresState.value.abilityScores[abilityScoreType]!;
+      if (savingThrowModifier == abilityScore.savingThrowModifier) {
+        return;
+      }
+      final updatedAbilityScores = abilityScoresState.value.copyWith(
+        abilityScores: {
+          ...abilityScoresState.value.abilityScores,
+          abilityScoreType: abilityScore.copyWith(
+            manuallySetSavingThrowModifier: () => savingThrowModifier,
+          )
+        },
+      );
+
+      await onChanged?.call(updatedAbilityScores);
+    }
 
     TableRow abilityScoreRow({
       required Character5eAbilityScore abilityScore,
@@ -62,18 +142,9 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
 
                             final intValue = int.tryParse(currentValue);
 
-                            final updatedAbilityScores =
-                                abilityScoresState.value.copyWith(
-                              abilityScores: {
-                                ...abilityScoresState.value.abilityScores,
-                                abilityScoreType: abilityScore.copyWith(
-                                  value: () => intValue,
-                                ),
-                              },
-                            );
-
-                            await onChanged?.call(
-                              updatedAbilityScores,
+                            updateAbilityScore(
+                              abilityScoreType,
+                              intValue,
                             );
                           }
                         },
@@ -105,15 +176,11 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                 builder: (context) {
                   final focusNode = useFocusNode();
 
-                  final modifierEditingController = useTextEditingController(
-                    text: Modifier.display(
-                      abilityScore.modifier,
-                    ),
-                  );
+                  final modifierEditingController = useTextEditingController();
 
                   updateModifierTextField() {
                     modifierEditingController.text = Modifier.display(
-                      abilityScore.modifier,
+                      abilityScore.modifier.toString(),
                     );
                   }
 
@@ -122,49 +189,65 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                       updateModifierTextField();
                       return null;
                     },
-                    [abilityScore.value, abilityScore.modifier],
+                    [
+                      abilityScore.value,
+                      abilityScore.modifier,
+                      abilityScore.isModifierCustom,
+                    ],
                   );
 
                   useEffect(
                     () {
-                      focusNode.addListener(() async {
-                        if (!focusNode.hasFocus) {
-                          final currentValue = modifierEditingController.text;
-                          final intValue = int.tryParse(currentValue);
-                          final updatedAbilityScores =
-                              abilityScoresState.value.copyWith(
-                            abilityScores: {
-                              ...abilityScoresState.value.abilityScores,
-                              abilityScoreType: abilityScore.copyWith(
-                                manuallySetModifier: () => intValue,
-                              ),
-                            },
-                          );
+                      focusNode.addListener(
+                        () async {
+                          dev.log('focusChanged');
+                          if (!focusNode.hasFocus) {
+                            final currentValue = modifierEditingController.text;
+                            final intValue = int.tryParse(currentValue);
 
-                          await onChanged?.call(updatedAbilityScores);
-                        }
-                      });
+                            await updateModifier(
+                              abilityScoreType,
+                              intValue,
+                            );
+
+                            if (intValue == null &&
+                                !abilityScore.isModifierCustom) {
+                              updateModifierTextField();
+                            }
+                          }
+                        },
+                      );
                       return null;
                     },
                     [focusNode],
                   );
 
-                  return TextField(
-                    focusNode: focusNode,
-                    controller: modifierEditingController,
-                    textAlign: TextAlign.center,
-                    keyboardType: Modifier.textInputType,
-                    inputFormatters: [Modifier.inputFormatter],
-                    onChanged: (value) {
-                      final intValue = int.tryParse(value);
-                      if (intValue == null) {
-                        // text will be updated in updateModifierTextField
-                      } else {
-                        // we want to update the text field with the display value
-                        modifierEditingController.text =
-                            Modifier.display(intValue);
-                      }
-                    },
+                  return Stack(
+                    children: [
+                      TextField(
+                        focusNode: focusNode,
+                        controller: modifierEditingController,
+                        textAlign: TextAlign.center,
+                        keyboardType: Modifier.textInputType,
+                        inputFormatters: [Modifier.inputFormatter],
+                        onChanged: (value) {
+                          modifierEditingController.text =
+                              Modifier.display(value);
+                        },
+                      ),
+                      if (abilityScore.isModifierCustom)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Icon(
+                              GameSystemViewModel.customValue.icon,
+                              size: 10,
+                            ),
+                          ),
+                        )
+                    ],
                   );
                 },
               ),
@@ -178,67 +261,81 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
                   final focusNode = useFocusNode();
 
                   final savingThrowModifierEditingController =
-                      useTextEditingController(
-                    text: Modifier.display(
-                      abilityScore.savingThrowModifier,
-                    ),
-                  );
+                      useTextEditingController();
 
-                  updateModifierTextField() {
+                  updateSavingThrowModifierText() {
                     savingThrowModifierEditingController.text =
                         Modifier.display(
-                      abilityScore.savingThrowModifier,
+                      abilityScore.savingThrowModifier.toString(),
                     );
                   }
 
                   useEffect(
                     () {
-                      updateModifierTextField();
+                      updateSavingThrowModifierText();
                       return null;
                     },
-                    [abilityScore.modifier, abilityScore.savingThrowModifier],
+                    [
+                      abilityScore.value,
+                      abilityScore.modifier,
+                      abilityScore.savingThrowModifier,
+                      abilityScore.isSavingThrowModifierCustom,
+                    ],
                   );
 
                   useEffect(
                     () {
-                      focusNode.addListener(() async {
-                        if (!focusNode.hasFocus) {
-                          final currentValue =
-                              savingThrowModifierEditingController.text;
-                          final intValue = int.tryParse(currentValue);
-                          final updatedAbilityScores =
-                              abilityScoresState.value.copyWith(
-                            abilityScores: {
-                              ...abilityScoresState.value.abilityScores,
-                              abilityScoreType: abilityScore.copyWith(
-                                manuallySetSavingThrowModifier: () => intValue,
-                              ),
-                            },
-                          );
+                      focusNode.addListener(
+                        () async {
+                          if (!focusNode.hasFocus) {
+                            final currentValue =
+                                savingThrowModifierEditingController.text;
+                            final intValue = int.tryParse(currentValue);
 
-                          await onChanged?.call(updatedAbilityScores);
-                        }
-                      });
+                            await updateSavingThrowModifier(
+                              abilityScoreType,
+                              intValue,
+                            );
+
+                            if (intValue == null &&
+                                !abilityScore.isSavingThrowModifierCustom) {
+                              updateSavingThrowModifierText();
+                              return;
+                            }
+                          }
+                        },
+                      );
                       return null;
                     },
                     [focusNode],
                   );
 
-                  return TextField(
-                    focusNode: focusNode,
-                    controller: savingThrowModifierEditingController,
-                    textAlign: TextAlign.center,
-                    keyboardType: Modifier.textInputType,
-                    inputFormatters: [Modifier.inputFormatter],
-                    onChanged: (value) {
-                      final intValue = int.tryParse(value);
-                      if (intValue == null) {
-                        // text will be updated in updateModifierTextField
-                      } else {
-                        savingThrowModifierEditingController.text =
-                            Modifier.display(intValue);
-                      }
-                    },
+                  return Stack(
+                    children: [
+                      TextField(
+                        focusNode: focusNode,
+                        controller: savingThrowModifierEditingController,
+                        textAlign: TextAlign.center,
+                        keyboardType: Modifier.textInputType,
+                        inputFormatters: [Modifier.inputFormatter],
+                        onChanged: (value) {
+                          savingThrowModifierEditingController.text =
+                              Modifier.display(value);
+                        },
+                      ),
+                      if (abilityScore.isSavingThrowModifierCustom)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Icon(
+                              GameSystemViewModel.customValue.icon,
+                              size: 10,
+                            ),
+                          ),
+                        )
+                    ],
                   );
                 },
               ),
@@ -253,23 +350,16 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
         children: [
           SizedBox.shrink(),
           TableCell(
+            verticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
-                  child: Center(
-                    child: Text(
-                      GameSystemViewModel.abilityScores.name,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                Text(
+                  GameSystemViewModel.abilityScores.name,
+                  textAlign: TextAlign.center,
                 ),
-                Flexible(
-                  child: Center(
-                    child: Icon(
-                      GameSystemViewModel.abilityScores.icon,
-                    ),
-                  ),
+                Icon(
+                  GameSystemViewModel.abilityScores.icon,
                 ),
               ],
             ),
@@ -277,22 +367,14 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
           TableCell(
             verticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
-                  child: Center(
-                    child: Text(
-                      GameSystemViewModel.modifier.name,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                Text(
+                  GameSystemViewModel.modifier.name,
+                  textAlign: TextAlign.center,
                 ),
-                Flexible(
-                  child: Center(
-                    child: Icon(
-                      GameSystemViewModel.modifier.icon,
-                    ),
-                  ),
+                Icon(
+                  GameSystemViewModel.modifier.icon,
                 ),
               ],
             ),
@@ -300,22 +382,14 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
           TableCell(
             verticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Center(
-                  child: Flexible(
-                    child: Text(
-                      GameSystemViewModel.savingThrowModifier.name,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                Text(
+                  GameSystemViewModel.savingThrowModifier.name,
+                  textAlign: TextAlign.center,
                 ),
-                Center(
-                  child: Flexible(
-                    child: Icon(
-                      GameSystemViewModel.savingThrowModifier.icon,
-                    ),
-                  ),
+                Icon(
+                  GameSystemViewModel.savingThrowModifier.icon,
                 ),
               ],
             ),

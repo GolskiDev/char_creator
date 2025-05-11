@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../game_system_view_model.dart';
 import '../models/character_5e_ability_scores.dart';
 
 class CharacterSkillsWidget extends HookConsumerWidget {
@@ -30,7 +31,7 @@ class CharacterSkillsWidget extends HookConsumerWidget {
             final skill = skillEntry;
 
             final skillsModifier = skill.getModifier(abilityScores);
-            final initialText = Modifier.display(skillsModifier);
+            final initialText = Modifier.display(skillsModifier.toString());
 
             return HookBuilder(
               builder: (context) {
@@ -42,7 +43,9 @@ class CharacterSkillsWidget extends HookConsumerWidget {
 
                 updateModifierTextField() {
                   final modifier = skill.getModifier(abilityScores);
-                  modifierEditingController.text = Modifier.display(modifier);
+                  modifierEditingController.text = Modifier.display(
+                    modifier.toString(),
+                  );
                 }
 
                 useEffect(
@@ -84,18 +87,34 @@ class CharacterSkillsWidget extends HookConsumerWidget {
                         width: 50,
                         height: 50,
                         child: Card.filled(
-                          child: TextField(
-                            focusNode: focusNode,
-                            controller: modifierEditingController,
-                            textAlign: TextAlign.center,
-                            keyboardType: Modifier.textInputType,
-                            inputFormatters: [Modifier.inputFormatter],
-                            onChanged: (value) {
-                              final intValue = int.tryParse(value);
-                              skillState.value = skill.copyWith(
-                                manuallySetModifier: () => intValue,
-                              );
-                            },
+                          child: Stack(
+                            children: [
+                              TextField(
+                                focusNode: focusNode,
+                                controller: modifierEditingController,
+                                textAlign: TextAlign.center,
+                                keyboardType: Modifier.textInputType,
+                                inputFormatters: [Modifier.inputFormatter],
+                                onChanged: (value) {
+                                  final intValue = int.tryParse(value);
+                                  skillState.value = skill.copyWith(
+                                    manuallySetModifier: () => intValue,
+                                  );
+                                },
+                              ),
+                              if (skill.isCustomModifierUsed)
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      GameSystemViewModel.customValue.icon,
+                                      size: 10,
+                                    ),
+                                  ),
+                                )
+                            ],
                           ),
                         ),
                       ),

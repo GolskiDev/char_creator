@@ -287,6 +287,26 @@ class Character5ePage extends HookConsumerWidget {
               );
             },
           ),
+          IconButton(
+            onPressed: () async {
+              if (page.value == 0) {
+                await pageController.nextPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+                page.value = 1;
+              } else {
+                await pageController.previousPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+                page.value = 0;
+              }
+            },
+            icon: page.value == 0
+                ? Icon(GameSystemViewModel.abilityScores.icon)
+                : Icon(GameSystemViewModel.spells.icon),
+          ),
         ],
       ),
       body: PageView(
