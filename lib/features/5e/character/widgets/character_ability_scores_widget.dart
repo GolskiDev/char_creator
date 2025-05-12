@@ -27,23 +27,7 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
     useEffect(
       () {
         abilityScoresState.value = abilityScores;
-        final value = abilityScoresState
-            .value.abilityScores[Character5eAbilityScoreType.strength]?.value;
-        final modifier = abilityScoresState.value
-            .abilityScores[Character5eAbilityScoreType.strength]?.modifier;
-        final savingThrowModifier = abilityScoresState
-            .value
-            .abilityScores[Character5eAbilityScoreType.strength]
-            ?.savingThrowModifier;
-        dev.log(
-          'Strength: $value',
-        );
-        dev.log(
-          'Strength Modifier: $modifier',
-        );
-        dev.log(
-          'Strength Saving Throw: $savingThrowModifier',
-        );
+        return null;
       },
       [abilityScores],
     );

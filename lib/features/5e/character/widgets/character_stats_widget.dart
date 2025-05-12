@@ -27,6 +27,7 @@ class CharacterStatsWidget extends HookConsumerWidget {
     useEffect(
       () {
         currentCharacterState.value = character;
+        return null;
       },
     );
 
