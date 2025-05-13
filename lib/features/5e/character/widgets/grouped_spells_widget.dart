@@ -54,89 +54,21 @@ class GroupedSpellsWidget extends HookConsumerWidget {
                         ),
                     },
                   ),
-                  if (entry.key == 'All Spells')
-                    GridView.builder(
-                      padding: const EdgeInsets.all(8),
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 8,
-                        crossAxisSpacing: 8,
-                        childAspectRatio: 3 / 4,
-                      ),
-                      itemCount: entry.value.length,
-                      itemBuilder: (context, index) {
-                        final spell = entry.value[index];
-                        return Card.outlined(
-                          clipBehavior: Clip.antiAlias,
-                          child: InkWell(
-                            onTap: () {
-                              final spellsInGrouped = groupedSpells.entries
-                                  .expand((e) => e.value)
-                                  .toList();
-                              showSpell(
-                                context: context,
-                                spellId: spell.id,
-                                spells: spellsInGrouped,
-                              );
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if (spell.imageUrl != null)
-                                  Flexible(
-                                    child: Hero(
-                                      tag: spell.imageUrl!,
-                                      child: Image.asset(
-                                        spell.imageUrl!,
-                                        fit: BoxFit.cover,
-                                        frameBuilder: (context, child, frame,
-                                            wasSynchronouslyLoaded) {
-                                          if (wasSynchronouslyLoaded) {
-                                            return child;
-                                          }
-                                          return AnimatedOpacity(
-                                            duration: Durations.long1,
-                                            curve: Curves.easeIn,
-                                            opacity: frame == null ? 0 : 1,
-                                            child: child,
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    spell.name,
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                  else
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: entry.value.map(
-                          (spell) {
-                            return Container(
-                              width: 200,
-                              margin: const EdgeInsets.all(8.0),
-                              child: smallSpellWidget(
-                                  groupedSpells, context, spell),
-                            );
-                          },
-                        ).toList(),
-                      ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: entry.value.map(
+                        (spell) {
+                          return Container(
+                            width: 200,
+                            margin: const EdgeInsets.all(8.0),
+                            child:
+                                smallSpellWidget(groupedSpells, context, spell),
+                          );
+                        },
+                      ).toList(),
                     ),
+                  ),
                 ],
               );
             },
@@ -207,24 +139,19 @@ class GroupedSpellsWidget extends HookConsumerWidget {
         showSelectedIcon: false,
         segments: [
           ButtonSegment(
-            tooltip: 'All Spells',
-            value: 'All',
-            icon: Icon(Icons.all_inclusive),
-          ),
-          ButtonSegment(
             value: 'Type',
             tooltip: 'Spell Type',
             icon: Icon(Symbols.emoji_symbols),
           ),
           ButtonSegment(
-            value: 'Casting Time',
-            tooltip: 'Casting Time',
-            icon: Icon(Icons.timer),
-          ),
-          ButtonSegment(
             value: 'Level',
             tooltip: 'Level',
             icon: Icon(Icons.star),
+          ),
+          ButtonSegment(
+            value: 'Casting Time',
+            tooltip: 'Casting Time',
+            icon: Icon(Icons.timer),
           ),
         ],
         selected: {selectedGrouping.value},
@@ -246,10 +173,8 @@ class GroupedSpellsWidget extends HookConsumerWidget {
         return _groupByType(spells);
       case 'Casting Time':
         return _groupByCastingTime(spells);
-      case 'Level':
-        return _groupByLevel(spells);
       default:
-        return {'All Spells': spells};
+        return _groupByLevel(spells);
     }
   }
 
