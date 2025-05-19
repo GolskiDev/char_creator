@@ -36,6 +36,10 @@ dependencies:
   firebase_ui_auth:
   firebase_ui_localizations:
   firebase_ui_oauth_google:
+  firebase_analytics:
+  firebase_remote_config:
+  firebase_crashlytics:
+  firebase_messaging:
 
 dev_dependencies:
   flutter_test:
