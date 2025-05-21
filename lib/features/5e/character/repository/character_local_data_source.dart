@@ -1,9 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/character_5e_model_v1.dart';
+
+final characterLocalDataSourceProvider = Provider<CharacterLocalDataSource>(
+  (ref) => CharacterLocalDataSource(),
+);
 
 class CharacterLocalDataSource {
   static const String _storageKey = 'characters';
