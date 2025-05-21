@@ -50,7 +50,7 @@ class AppTheme {
         horizontal: VisualDensity.minimumDensity,
         vertical: VisualDensity.minimumDensity,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 4,
         margin: EdgeInsets.zero,
       ),
