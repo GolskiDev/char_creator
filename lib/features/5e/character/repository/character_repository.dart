@@ -1,13 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/character_5e_model_v1.dart';
+import 'character_local_data_source.dart';
 
 final characterRepositoryProvider = Provider(
-  (ref) => CharacterRepository(),
+  (ref) => CharacterRepository(
+    localDataSource: CharacterLocalDataSource(),
+  ),
 );
 
 final charactersStreamProvider =
@@ -16,77 +17,25 @@ final charactersStreamProvider =
 );
 
 class CharacterRepository {
-  static const String _storageKey = 'characters';
+  final CharacterLocalDataSource localDataSource;
 
-  Stream<List<Character5eModelV1>> get stream => _controller.stream;
+  CharacterRepository({required this.localDataSource});
 
-  final StreamController<List<Character5eModelV1>> _controller;
-
-  CharacterRepository()
-      : _controller = StreamController<List<Character5eModelV1>>.broadcast() {
-    _controller.onListen = _refreshStream;
-  }
-
-  String _encodeCharacter(Character5eModelV1 character) {
-    final Map<String, dynamic> characterMap = character.toMap();
-    return json.encode(characterMap);
-  }
-
-  Character5eModelV1 _decodeCharacter(String encodedCharacter) {
-    final Map<String, dynamic> characterMap = json.decode(encodedCharacter);
-    return Character5eModelV1.fromMap(characterMap);
-  }
+  Stream<List<Character5eModelV1>> get stream => localDataSource.stream;
 
   Future<void> saveCharacter(Character5eModelV1 character) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String encodedCharacter = _encodeCharacter(character);
-    List<String> characters = prefs.getStringList(_storageKey) ?? [];
-    characters.add(encodedCharacter);
-    await prefs.setStringList(_storageKey, characters);
-
-    await _refreshStream();
+    await localDataSource.saveCharacter(character);
   }
 
   Future<List<Character5eModelV1>> getAllCharacters() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    final List<String>? encodedCharacters = prefs.getStringList(_storageKey);
-    final sharedPrefsCharacters = encodedCharacters ?? [];
-
-    final characters = sharedPrefsCharacters
-        .map((encodedCharacter) => _decodeCharacter(encodedCharacter))
-        .toList();
-
-    return [
-      ...characters,
-    ];
+    return await localDataSource.getAllCharacters();
   }
 
   Future<void> updateCharacter(Character5eModelV1 updatedCharacter) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> characters = prefs.getStringList(_storageKey) ?? [];
-    final int index = characters.indexWhere((c) =>
-        Character5eModelV1.fromMap(json.decode(c)).id == updatedCharacter.id);
-    if (index != -1) {
-      characters[index] = _encodeCharacter(updatedCharacter);
-      await prefs.setStringList(_storageKey, characters);
-    }
-
-    await _refreshStream();
+    await localDataSource.updateCharacter(updatedCharacter);
   }
 
   Future<void> deleteCharacter(String characterId) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> characters = prefs.getStringList(_storageKey) ?? [];
-    characters.removeWhere(
-        (c) => Character5eModelV1.fromMap(json.decode(c)).id == characterId);
-    await prefs.setStringList(_storageKey, characters);
-
-    await _refreshStream();
-  }
-
-  Future<void> _refreshStream() async {
-    final List<Character5eModelV1> characters = await getAllCharacters();
-    _controller.add(characters);
+    await localDataSource.deleteCharacter(characterId);
   }
 }
