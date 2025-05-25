@@ -116,9 +116,9 @@ class ListOfSpellsPage extends HookConsumerWidget {
                 );
               }
             }
-            await ref
-                .read(characterRepositoryProvider)
-                .updateCharacter(updatedCharacter);
+            final repository =
+                await ref.read(characterRepositoryProvider.future);
+            await repository.updateCharacter(updatedCharacter);
           }
         },
       );

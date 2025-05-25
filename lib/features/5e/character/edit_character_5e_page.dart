@@ -58,22 +58,20 @@ class EditCharacter5ePage extends HookConsumerWidget {
           );
         }).toSet();
 
+        final repository = await ref.read(characterRepositoryProvider.future);
+
         if (isNewCharacter) {
           final newCharacter = Character5eModelV1.empty(
             name: nameController.text,
             classes: classes,
           );
-          await ref
-              .read(characterRepositoryProvider)
-              .saveCharacter(newCharacter);
+          await repository.saveCharacter(newCharacter);
         } else {
           final updatedCharacter = character!.copyWith(
             name: nameController.text,
             classesStates: classes,
           );
-          await ref
-              .read(characterRepositoryProvider)
-              .updateCharacter(updatedCharacter);
+          await repository.updateCharacter(updatedCharacter);
         }
         if (context.mounted) {
           Navigator.of(context).pop();

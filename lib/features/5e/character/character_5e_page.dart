@@ -97,9 +97,9 @@ class Character5ePage extends HookConsumerWidget {
                       final updatedCharacter = character.copyWith(
                         spellSlots: Character5eSpellSlots.empty(),
                       );
-                      await ref
-                          .read(characterRepositoryProvider)
-                          .updateCharacter(updatedCharacter);
+                      final repository =
+                          await ref.read(characterRepositoryProvider.future);
+                      await repository.updateCharacter(updatedCharacter);
                       if (!context.mounted) {
                         return;
                       }
@@ -112,8 +112,7 @@ class Character5ePage extends HookConsumerWidget {
                               final updatedCharacter = character.copyWith(
                                 spellSlots: updatedSpellSlots,
                               );
-                              await ref
-                                  .read(characterRepositoryProvider)
+                              await repository
                                   .updateCharacter(updatedCharacter);
                             },
                           ),
@@ -137,9 +136,9 @@ class Character5ePage extends HookConsumerWidget {
                             final updatedCharacter = character.copyWith(
                               spellSlots: updatedSpellSlots,
                             );
-                            await ref
-                                .read(characterRepositoryProvider)
-                                .updateCharacter(updatedCharacter);
+                            final repository = await ref
+                                .read(characterRepositoryProvider.future);
+                            await repository.updateCharacter(updatedCharacter);
                           },
                         ),
                       ),
@@ -159,9 +158,9 @@ class Character5ePage extends HookConsumerWidget {
                             final updatedCharacter = character.copyWith(
                               spellSlots: updatedSpellSlots,
                             );
-                            await ref
-                                .read(characterRepositoryProvider)
-                                .updateCharacter(updatedCharacter);
+                            final repository = await ref
+                                .read(characterRepositoryProvider.future);
+                            await repository.updateCharacter(updatedCharacter);
                           },
                         ),
                       ),
@@ -222,7 +221,7 @@ class Character5ePage extends HookConsumerWidget {
                 clipBehavior: Clip.antiAlias,
                 child: Character5eNoteWidget(
                   note: e.value,
-                  onUpdate: (value) {
+                  onUpdate: (value) async {
                     final updatedNotes = character.notes.copyWith(
                       notes: {
                         ...character.notes.notes,
@@ -232,11 +231,11 @@ class Character5ePage extends HookConsumerWidget {
                     final updatedCharacter = character.copyWith(
                       notes: updatedNotes,
                     );
-                    ref
-                        .read(characterRepositoryProvider)
-                        .updateCharacter(updatedCharacter);
+                    final repository =
+                        await ref.read(characterRepositoryProvider.future);
+                    await repository.updateCharacter(updatedCharacter);
                   },
-                  onDelete: () {
+                  onDelete: () async {
                     final updatedNotes = character.notes.copyWith(
                       notes: {
                         ...character.notes.notes,
@@ -245,9 +244,9 @@ class Character5ePage extends HookConsumerWidget {
                     final updatedCharacter = character.copyWith(
                       notes: updatedNotes,
                     );
-                    ref
-                        .read(characterRepositoryProvider)
-                        .updateCharacter(updatedCharacter);
+                    final repository =
+                        await ref.read(characterRepositoryProvider.future);
+                    await repository.updateCharacter(updatedCharacter);
                   },
                 ),
               ),
@@ -256,13 +255,13 @@ class Character5ePage extends HookConsumerWidget {
               clipBehavior: Clip.antiAlias,
               child: Character5eCreateNoteWidget(
                 notes: character.notes,
-                onUpdate: (updatedNotes) {
+                onUpdate: (updatedNotes) async {
                   final updatedCharacter = character.copyWith(
                     notes: updatedNotes,
                   );
-                  ref
-                      .read(characterRepositoryProvider)
-                      .updateCharacter(updatedCharacter);
+                  final repository =
+                      await ref.read(characterRepositoryProvider.future);
+                  await repository.updateCharacter(updatedCharacter);
                 },
               ),
             ),
