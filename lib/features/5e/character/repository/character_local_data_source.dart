@@ -8,20 +8,20 @@ import '../../../../utils/shared_preferences.dart';
 import '../models/character_5e_model_v1.dart';
 
 final characterLocalDataSourceProvider =
-    FutureProvider<CharacterLocalDataSource>(
+    FutureProvider<UserCharactersLocalDataSource>(
   (ref) async {
     final sharedPreferences = await ref.watch(sharedPreferencesProvider.future);
-    return CharacterLocalDataSource(
+    return UserCharactersLocalDataSource(
       sharedPreferences,
     );
   },
 );
 
-class CharacterLocalDataSource {
+class UserCharactersLocalDataSource {
   static const String _storageKey = 'characters';
   final SharedPreferences prefs;
 
-  CharacterLocalDataSource(this.prefs);
+  UserCharactersLocalDataSource(this.prefs);
 
   String _encodeCharacter(Character5eModelV1 character) {
     final Map<String, dynamic> characterMap = character.toMap();
@@ -39,7 +39,7 @@ class CharacterLocalDataSource {
     await prefs.setStringList(_storageKey, encodedCharacters);
   }
 
-  Future<List<Character5eModelV1>> getAllCharacters() async {
+  Future<List<Character5eModelV1>> getAllUserCharacters() async {
     final List<String>? encodedCharacters = prefs.getStringList(_storageKey);
     final sharedPrefsCharacters = encodedCharacters ?? [];
     final characters = sharedPrefsCharacters

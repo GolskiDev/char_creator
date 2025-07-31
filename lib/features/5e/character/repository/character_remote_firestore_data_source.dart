@@ -9,17 +9,17 @@ import '../models/character_5e_model_v1.dart';
 final characterRemoteFirestoreDataSourceProvider = Provider(
   (ref) {
     final firestore = ref.watch(firestoreProvider);
-    return CharacterRemoteFirestoreDataSource(
+    return UserCharactersRemoteFirestoreDataSource(
       firestore: firestore,
     );
   },
 );
 
-class CharacterRemoteFirestoreDataSource {
+class UserCharactersRemoteFirestoreDataSource {
   final FirebaseFirestore _firestore;
   static const String collectionPath = 'characters';
 
-  CharacterRemoteFirestoreDataSource({
+  UserCharactersRemoteFirestoreDataSource({
     required FirebaseFirestore firestore,
   }) : _firestore = firestore;
 
@@ -31,7 +31,7 @@ class CharacterRemoteFirestoreDataSource {
         );
   }
 
-  Future<List<Character5eModelV1>> getAllCharacters() async {
+  Future<List<Character5eModelV1>> getAllUserCharacters() async {
     final snapshot = await collection.get();
     return snapshot.docs
         .map(
@@ -52,7 +52,7 @@ class CharacterRemoteFirestoreDataSource {
     await collection.doc(characterId).delete();
   }
 
-  Stream<List<Character5eModelV1>> get stream {
+  Stream<List<Character5eModelV1>> get allUserCharactersStream {
     return collection.snapshots().map(
           (snapshot) => snapshot.docs
               .map(

@@ -22,35 +22,38 @@ final charactersStreamProvider =
   (ref) async* {
     final characterRepository =
         await ref.watch(characterRepositoryProvider.future);
-    yield* characterRepository.stream;
+    yield* characterRepository.allUserCharactersStream;
   },
 );
 
 class CharacterRepository {
-  final CharacterLocalDataSource localDataSource;
-  final CharacterRemoteFirestoreDataSource remoteDataSource;
+  final UserCharactersLocalDataSource localDataSource;
+  final UserCharactersRemoteFirestoreDataSource remoteDataSource;
 
   CharacterRepository({
     required this.localDataSource,
     required this.remoteDataSource,
   }) {
-    remoteDataSource.stream.listen((remoteCharacters) async {
-      await localDataSource.replaceAll(remoteCharacters);
-    });
+    remoteDataSource.allUserCharactersStream.listen(
+      (remoteCharacters) async {
+        await localDataSource.replaceAll(remoteCharacters);
+      },
+    );
   }
 
-  Stream<List<Character5eModelV1>> get stream => remoteDataSource.stream;
+  Stream<List<Character5eModelV1>> get allUserCharactersStream =>
+      remoteDataSource.allUserCharactersStream;
+
+  Future<List<Character5eModelV1>> getAllUserCharacters() async {
+    try {
+      return await remoteDataSource.getAllUserCharacters();
+    } catch (_) {
+      return await localDataSource.getAllUserCharacters();
+    }
+  }
 
   Future<void> saveCharacter(Character5eModelV1 character) async {
     await remoteDataSource.saveCharacter(character);
-  }
-
-  Future<List<Character5eModelV1>> getAllCharacters() async {
-    try {
-      return await remoteDataSource.getAllCharacters();
-    } catch (_) {
-      return await localDataSource.getAllCharacters();
-    }
   }
 
   Future<void> updateCharacter(Character5eModelV1 updatedCharacter) async {

@@ -3,7 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class OnboardingExploreSpellsPage extends HookConsumerWidget {
-  const OnboardingExploreSpellsPage({super.key});
+  final Function(BuildContext context)? onContinue;
+  const OnboardingExploreSpellsPage({
+    this.onContinue,
+    super.key,
+  });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final someSpells = [
@@ -84,18 +88,19 @@ class OnboardingExploreSpellsPage extends HookConsumerWidget {
               ),
             ],
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Continue'),
+          if (onContinue != null)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    onContinue?.call(context);
+                  },
+                  child: const Text('Continue'),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

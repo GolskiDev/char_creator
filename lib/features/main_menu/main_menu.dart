@@ -1,6 +1,5 @@
 import 'package:char_creator/features/5e/game_system_view_model.dart';
 import 'package:char_creator/features/main_menu/widgets/main_menu_default_card_widget.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -24,16 +23,10 @@ class MainMenuPage extends HookConsumerWidget {
         path: "/characters",
       ),
       MainMenuDefaultCardWidget(
-        icon: GameSystemViewModel.rules.icon,
-        title: "Browse the Rules",
-        path: "/rules",
+        icon: Icons.extension,
+        title: "Utils",
+        path: "/utils",
       ),
-      if (kDebugMode)
-        MainMenuDefaultCardWidget(
-          icon: Icons.extension,
-          title: "Utils",
-          path: "/utils",
-        ),
     ];
 
     return Scaffold(

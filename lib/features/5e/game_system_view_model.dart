@@ -329,6 +329,11 @@ class GameSystemViewModel {
     name: 'Custom Value',
     icon: Symbols.adjust,
   );
+
+  static final account = GameSystemViewModelItem(
+    name: 'Account',
+    icon: Symbols.account_circle,
+  );
 }
 
 class GameSystemViewModelItem {

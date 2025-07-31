@@ -4,8 +4,8 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'features/navigation/navigation.dart';
 import 'firebase_options.dart';
-import 'navigation.dart';
 import 'theme.dart';
 
 void main() async {
