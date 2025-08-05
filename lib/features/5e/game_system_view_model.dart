@@ -86,6 +86,11 @@ class GameSystemViewModel {
     icon: Symbols.magic_button,
   );
 
+  static final atHigherLevels = GameSystemViewModelItem(
+    name: 'At Higher Levels',
+    icon: Symbols.arrow_circle_up,
+  );
+
   static final abilityScores = GameSystemViewModelItem(
     name: 'Ability Scores',
     icon: Icons.bar_chart,

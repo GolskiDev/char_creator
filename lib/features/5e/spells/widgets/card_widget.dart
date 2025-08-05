@@ -166,6 +166,32 @@ class SpellCardWidget extends ConsumerWidget {
         )
         .toList();
 
+    final atHigherLevelsWidget = spell.atHigherLevels != null
+        ? Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Row(
+                    spacing: 8,
+                    children: [
+                      Icon(GameSystemViewModel.atHigherLevels.icon),
+                      Text(
+                        GameSystemViewModel.atHigherLevels.name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ],
+                  ),
+                  Text(
+                    spell.atHigherLevels!,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          )
+        : null;
+
     return SafeArea(
       child: SingleChildScrollView(
         primary: false,
@@ -271,6 +297,14 @@ class SpellCardWidget extends ConsumerWidget {
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ),
+                    if (atHigherLevelsWidget != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 8,
+                        ),
+                        child: atHigherLevelsWidget,
+                      ),
                   ],
                 ),
               ),

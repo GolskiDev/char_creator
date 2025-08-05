@@ -1,3 +1,4 @@
+import 'package:char_creator/features/5e/spells/srd/srd_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -7,7 +8,6 @@ import '../../tags.dart';
 import '../models/spell_casting_time.dart';
 import '../models/spell_duration.dart';
 import '../models/spell_range.dart';
-import '../open5e/open_5e_spells_repository.dart';
 import '../spell_images/spell_images_repository.dart';
 import '../utils/spell_utils.dart';
 
@@ -19,25 +19,23 @@ final spellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
     final spellTypes = SpellTags.spellTypes;
 
     final spellViewModelsFutures = open5eSpellModels.map(
-      (open5eSpellModel) async {
-        final spellViewModel = open5eSpellModel.toSpellViewModel();
-
+      (srdSpellViewModel) async {
         final spellImageUrl = await ref
-            .watch(spellImagePathProvider(open5eSpellModel.slug).future);
+            .watch(spellImagePathProvider(srdSpellViewModel.id).future);
 
         final spellType = spellTypes.entries.firstWhereOrNull(
           (entry) {
-            return entry.key == spellViewModel.id;
+            return entry.key == srdSpellViewModel.id;
           },
         )?.value;
 
-        return spellViewModel.copyWith(
+        return srdSpellViewModel.copyWith(
           imageUrl: spellImageUrl,
           spellTypes: spellType,
           classes: characterClasses.where(
             (characterClass) {
               return characterClass.availableSpells.contains(
-                spellViewModel.id,
+                srdSpellViewModel.id,
               );
             },
           ).toSet(),
@@ -73,6 +71,8 @@ class SpellViewModel {
   final SpellRange? range;
   final SpellCastingTime? castingTime;
 
+  final String? atHigherLevels;
+
   final String? imageUrl;
 
   final Set<SpellType> spellTypes;
@@ -93,6 +93,7 @@ class SpellViewModel {
     this.duration,
     this.range,
     this.castingTime,
+    this.atHigherLevels,
     this.imageUrl,
     this.spellTypes = const {},
     this.characterClasses = const {},
@@ -113,6 +114,7 @@ class SpellViewModel {
     SpellDuration? duration,
     SpellRange? range,
     SpellCastingTime? castingTime,
+    String? atHigherLevels,
     String? imageUrl,
     Set<SpellType>? spellTypes,
     Set<ICharacter5eClassModelV1>? classes,
@@ -136,6 +138,7 @@ class SpellViewModel {
       duration: duration ?? this.duration,
       range: range ?? this.range,
       castingTime: castingTime ?? this.castingTime,
+      atHigherLevels: atHigherLevels ?? this.atHigherLevels,
       imageUrl: imageUrl ?? this.imageUrl,
       spellTypes: spellTypes ?? this.spellTypes,
       characterClasses: classes ?? this.characterClasses,

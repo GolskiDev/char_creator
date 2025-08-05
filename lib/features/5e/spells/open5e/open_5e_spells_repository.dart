@@ -15,7 +15,7 @@ final open5eSpellsRepositoryProvider = Provider<Open5eSpellsRepository>(
   },
 );
 
-final allSRDSpellsProvider =
+final allOpen5eSRDSpellsProvider =
     FutureProvider.autoDispose<List<Open5eSpellModelV1>>(
   (ref) async {
     final repository = ref.read(open5eSpellsRepositoryProvider);
