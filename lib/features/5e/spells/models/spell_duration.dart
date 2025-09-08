@@ -2,12 +2,12 @@ import 'package:char_creator/common/interfaces/identifiable.dart';
 
 sealed class SpellDuration implements Identifiable {
   static SpellDuration fromString(String duration) {
-    switch (duration) {
-      case 'Instantaneous':
+    switch (duration.toLowerCase()) {
+      case 'instantaneous':
         return Instantaneous();
       case '1 round':
         return OneRound();
-      case 'Up to 1 minute':
+      case 'up to 1 minute':
         return OneMinute();
       case '10 minutes':
         return TenMinutes();
@@ -17,31 +17,31 @@ sealed class SpellDuration implements Identifiable {
         return EightHours();
       case '24 hours':
         return TwentyFourHours();
-      case 'Up to 10 minutes':
+      case 'up to 10 minutes':
         return UpToTenMinutes();
-      case 'Up to 1 hour':
+      case 'up to 1 hour':
         return UpToOneHour();
-      case 'Up to 24 hours':
+      case 'up to 24 hours':
         return UpToTwentyFourHours();
       case '10 days':
         return TenDays();
-      case 'Until dispelled':
+      case 'until dispelled':
         return UntilDispelled();
-      case 'Special':
+      case 'special':
         return Special();
       case '1 minute':
         return OneMinuteExact();
       case '7 days':
         return SevenDays();
-      case 'Up to 8 hours':
+      case 'up to 8 hours':
         return UpToEightHours();
       case '30 days':
         return ThirtyDays();
-      case 'Until dispelled or triggered':
+      case 'until dispelled or triggered':
         return UntilDispelledOrTriggered();
-      case 'Up to 2 hours':
+      case 'up to 2 hours':
         return UpToTwoHours();
-      case 'Up to 1 round':
+      case 'up to 1 round':
         return UpToOneRound();
       default:
         return SpellDurationCustom();

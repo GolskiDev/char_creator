@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:markdown/markdown.dart' hide Text;
 
 import '../../game_system_view_model.dart';
 import '../view_models/spell_view_model.dart';
@@ -17,80 +19,87 @@ class SpellCardWidget extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    var components = Center(
-      child: ListTile(
-        titleAlignment: ListTileTitleAlignment.center,
-        title: Text(
-          "Components",
-          textAlign: TextAlign.center,
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(
-            top: 8.0,
+    components() {
+      if (!spell.requiresMaterialComponent! &&
+          !spell.requiresSomaticComponent! &&
+          !spell.requiresVerbalComponent!) {
+        return null;
+      }
+      return Center(
+        child: ListTile(
+          titleAlignment: ListTileTitleAlignment.center,
+          title: Text(
+            "Components",
+            textAlign: TextAlign.center,
           ),
-          child: Table(
-            columnWidths: const {
-              0: FlexColumnWidth(),
-              1: FlexColumnWidth(),
-              2: FlexColumnWidth(),
-            },
-            children: [
-              TableRow(
-                  children: [
-                if (spell.requiresVerbalComponent == true)
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+          subtitle: Padding(
+            padding: const EdgeInsets.only(
+              top: 8.0,
+            ),
+            child: Table(
+              columnWidths: const {
+                0: FlexColumnWidth(),
+                1: FlexColumnWidth(),
+                2: FlexColumnWidth(),
+              },
+              children: [
+                TableRow(
                     children: [
-                      Icon(GameSystemViewModel.verbalComponent.icon),
-                      Text(
-                        GameSystemViewModel.verbalComponent.name,
-                        style: Theme.of(context).textTheme.labelSmall,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                if (spell.requiresSomaticComponent == true)
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(GameSystemViewModel.somaticComponent.icon),
-                      Text(
-                        GameSystemViewModel.somaticComponent.name,
-                        style: Theme.of(context).textTheme.labelSmall,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                if (spell.requiresMaterialComponent == true)
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(GameSystemViewModel.materialComponent.icon),
-                      Text(
-                        GameSystemViewModel.materialComponent.name,
-                        style: Theme.of(context).textTheme.labelSmall,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-              ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 2,
-                          ),
-                          child: e,
+                  if (spell.requiresVerbalComponent == true)
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(GameSystemViewModel.verbalComponent.icon),
+                        Text(
+                          GameSystemViewModel.verbalComponent.name,
+                          style: Theme.of(context).textTheme.labelSmall,
+                          textAlign: TextAlign.center,
                         ),
-                      )
-                      .toList()),
-            ],
+                      ],
+                    ),
+                  if (spell.requiresSomaticComponent == true)
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(GameSystemViewModel.somaticComponent.icon),
+                        Text(
+                          GameSystemViewModel.somaticComponent.name,
+                          style: Theme.of(context).textTheme.labelSmall,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  if (spell.requiresMaterialComponent == true)
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(GameSystemViewModel.materialComponent.icon),
+                        Text(
+                          GameSystemViewModel.materialComponent.name,
+                          style: Theme.of(context).textTheme.labelSmall,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                ]
+                        .map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 2,
+                            ),
+                            child: e,
+                          ),
+                        )
+                        .toList()),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }
 
     List<Widget> spellTraits = [
       ListTile(
@@ -134,10 +143,7 @@ class SpellCardWidget extends ConsumerWidget {
           title: Text(spell.canBeCastAsRitual! ? 'Yes' : 'No'),
           subtitle: Text(GameSystemViewModel.ritual.name),
         ),
-      if (spell.requiresMaterialComponent != null ||
-          spell.requiresSomaticComponent != null ||
-          spell.requiresVerbalComponent != null)
-        components,
+      if (components() != null) components()!,
       if (spell.material != null)
         ListTile(
           visualDensity: VisualDensity.compact,
@@ -292,9 +298,15 @@ class SpellCardWidget extends ConsumerWidget {
                         horizontal: 16,
                         vertical: 8,
                       ),
-                      child: Text(
-                        spell.description,
-                        style: Theme.of(context).textTheme.bodyLarge,
+                      child: Html(
+                        data: markdownToHtml(
+                          spell.description,
+                        ),
+                        style: {
+                          "body": Style(
+                            fontSize: FontSize.large,
+                          ),
+                        },
                       ),
                     ),
                     if (atHigherLevelsWidget != null)

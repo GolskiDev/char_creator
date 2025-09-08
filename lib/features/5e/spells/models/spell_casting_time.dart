@@ -2,7 +2,7 @@ import 'package:char_creator/common/interfaces/identifiable.dart';
 
 sealed class SpellCastingTime implements Identifiable {
   static SpellCastingTime fromString(String castingTime) {
-    switch (castingTime) {
+    switch (castingTime.toLowerCase()) {
       case '1 action':
         return OneAction();
       case '1 bonus action':
@@ -10,12 +10,16 @@ sealed class SpellCastingTime implements Identifiable {
       case '1 reaction':
         return OneReaction();
       case '1 minute':
+      case 'up to 1 minute':
         return OneMinute();
       case '10 minutes':
+      case 'up to 10 minutes':
         return TenMinutes();
       case '1 hour':
+      case 'up to 1 hour':
         return OneHour();
       case '8 hours':
+      case 'up to 8 hours':
         return EightHours();
       case '1 reaction, which you take when you see a creature within 60 feet of you casting a spell':
         return ReactionToCreatureCastingSpell();

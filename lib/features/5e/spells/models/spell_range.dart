@@ -2,7 +2,7 @@ import 'package:char_creator/common/interfaces/identifiable.dart';
 
 sealed class SpellRange implements Identifiable {
   static SpellRange fromString(String range) {
-    switch (range) {
+    switch (range.toLowerCase()) {
       case 'self':
         return Self();
       case 'touch':
