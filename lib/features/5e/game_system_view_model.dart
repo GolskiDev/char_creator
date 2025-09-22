@@ -339,6 +339,16 @@ class GameSystemViewModel {
     name: 'Account',
     icon: Symbols.account_circle,
   );
+
+  static final contactUs = GameSystemViewModelItem(
+    name: 'Contact Us',
+    icon: Symbols.email,
+  );
+
+  static final updateAvailable = GameSystemViewModelItem(
+    name: 'Update Available',
+    icon: Symbols.system_update,
+  );
 }
 
 class GameSystemViewModelItem {

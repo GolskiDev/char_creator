@@ -7,30 +7,25 @@ environment:
   sdk: '>=3.3.3 <4.0.0'
 
 dependencies:
-  flutter_chat_ui:
-  langchain: 
-  langchain_openai: 
   flutter:
     sdk: flutter
-  shared_preferences: 
+  # state management
   riverpod: 
   flutter_riverpod: 
   hooks_riverpod:
   flutter_hooks: 
-  uuid: 
-  collection: 
-  go_router: 
-  google_fonts: 
-  image_picker: 
-  path_provider:
-  http:
+
+  # dart
   path: 
-  flutter_svg: 
-  material_symbols_icons:
-  flutter_cache_manager:
+  collection: 
+  async:
+
+  # html/markdown
   flutter_html:
   flutter_html_table:
   markdown:
+  
+  # firebase
   firebase_core:
   firebase_auth:
   firebase_ui_auth:
@@ -41,7 +36,22 @@ dependencies:
   firebase_crashlytics:
   firebase_messaging:
   cloud_firestore: ^5.6.8
+
+  # misc
   url_launcher:
+  shared_preferences: 
+  uuid: 
+  go_router: 
+  image_picker: 
+  path_provider:
+  http:
+  flutter_svg: 
+  flutter_cache_manager:
+  package_info_plus: 
+
+  # ui
+  material_symbols_icons:
+  google_fonts: 
 
 dev_dependencies:
   flutter_test:
