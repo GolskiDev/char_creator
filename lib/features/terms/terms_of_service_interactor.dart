@@ -1,29 +1,43 @@
-import 'privacy_policy_data_source.dart';
-import 'terms_of_use_data_source.dart';
-import 'terms_of_use_details.dart';
-import 'user_accepted_privacy_policy_data_source.dart';
-import 'user_accepted_terms_data_source.dart';
+import 'package:char_creator/features/terms/user_accepted_agreements_data_source.dart';
 
-class TermsOfServiceInteractor {
-  final UserAcceptedTermsDataSource userAcceptedTermsDataSource;
-  final UserAcceptedPrivacyPolicyDataSource userAcceptedPrivacyPolicyDataSource;
-  final TermsOfUseDataSource termsOfUseDataSource;
-  final PrivacyPolicyDataSource privacyPolicyDataSource;
+import 'agreements_documents_data_source.dart';
 
-  TermsOfServiceInteractor({
-    required this.userAcceptedTermsDataSource,
-    required this.userAcceptedPrivacyPolicyDataSource,
-    required this.termsOfUseDataSource,
-    required this.privacyPolicyDataSource,
+class AgreementsInteractor {
+  final UserAcceptedAgreementsDataSource userAcceptedAgreementsDataSource;
+  final AgreementsDocumentsDataSource agreementsDocumentsDataSource;
+
+  AgreementsInteractor({
+    required this.userAcceptedAgreementsDataSource,
+    required this.agreementsDocumentsDataSource,
   });
+
+  Future<void> acceptAgreements({
+    TermsOfUseDetails? tos,
+    PrivacyPolicyDetails? policy,
+  }) {
+    final futures = <Future>[];
+    if (tos != null) {
+      futures.add(userAcceptedAgreementsDataSource.acceptAgreement(
+        type: AgreementType.termsOfUse,
+        version: tos.version,
+      ));
+    }
+    if (policy != null) {
+      futures.add(userAcceptedAgreementsDataSource.acceptAgreement(
+        type: AgreementType.privacyPolicy,
+        version: policy.version,
+      ));
+    }
+    return Future.wait(futures);
+  }
 
   /// Returns the latest TOS that must be accepted, or null if none required.
   Stream<TermsOfUseDetails?> requiredTermsOfUseToAccept() async* {
-    await for (final userAccepted
-        in userAcceptedTermsDataSource.lastAcceptedTermsStream()) {
+    await for (final userAccepted in userAcceptedAgreementsDataSource
+        .lastAcceptedAgreementStream(AgreementType.termsOfUse)) {
       final afterDate = userAccepted?.acceptedAt;
       final now = DateTime.now();
-      await for (final tosList in termsOfUseDataSource
+      await for (final tosList in agreementsDocumentsDataSource
           .getTermsOfUseDetailsStream(after: afterDate)) {
         final candidates = tosList
             .where((tos) => tos.effectiveDate.isBefore(now))
@@ -36,11 +50,11 @@ class TermsOfServiceInteractor {
 
   /// Returns the latest Privacy Policy that must be accepted, or null if none required.
   Stream<PrivacyPolicyDetails?> requiredPrivacyPolicyToAccept() async* {
-    await for (final userAccepted in userAcceptedPrivacyPolicyDataSource
-        .lastAcceptedPrivacyPolicyStream()) {
+    await for (final userAccepted in userAcceptedAgreementsDataSource
+        .lastAcceptedAgreementStream(AgreementType.privacyPolicy)) {
       final afterDate = userAccepted?.acceptedAt;
       final now = DateTime.now();
-      await for (final policyList in privacyPolicyDataSource
+      await for (final policyList in agreementsDocumentsDataSource
           .getPrivacyPolicyDetailsStream(after: afterDate)) {
         final candidates = policyList
             .where((policy) => policy.effectiveDate.isBefore(now))
