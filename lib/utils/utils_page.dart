@@ -2,10 +2,14 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:char_creator/features/5e/character/repository/character_classes_repository.dart';
+import 'package:char_creator/features/terms/data_sources/agreements_documents_data_source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../features/terms/data_sources/user_accepted_agreements_data_source.dart';
+import '../features/terms/widgets/terms_and_conditions_widget.dart';
 
 class UtilsPage extends HookConsumerWidget {
   const UtilsPage({super.key});
@@ -38,6 +42,30 @@ class UtilsPage extends HookConsumerWidget {
             title: const Text('go to'),
             onTap: () {
               goTo(context, ref);
+            },
+          ),
+          ListTile(
+            title: const Text('showTosUpdate'),
+            onTap: () {
+              AgreementsWidget.showTosUpdateDialog(
+                context,
+                AgreementDetails(
+                  effectiveDate: DateTime.now().subtract(
+                    const Duration(days: 1),
+                  ),
+                  type: AgreementType.termsOfUse,
+                  version: 'v2.0',
+                  extra: {"link_en": "https://facebook.com"},
+                ),
+                AgreementDetails(
+                  effectiveDate: DateTime.now().subtract(
+                    const Duration(days: 1),
+                  ),
+                  type: AgreementType.privacyPolicy,
+                  version: 'v2.0',
+                  extra: {"link_en": "https://bing.com"},
+                ),
+              );
             },
           ),
         ],

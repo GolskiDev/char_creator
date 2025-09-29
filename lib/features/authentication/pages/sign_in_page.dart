@@ -7,66 +7,98 @@ class SignInPage extends HookConsumerWidget {
   final Function(BuildContext context)? onSignedIn;
   final Function(BuildContext context)? onSkipped;
   final Function(BuildContext context)? onError;
+  final bool showSignIn;
 
-  const SignInPage({
+  const SignInPage._({
+    required this.showSignIn,
     this.onSignedIn,
     this.onError,
     this.onSkipped,
     super.key,
   });
+
+  factory SignInPage.signIn({
+    required Function(BuildContext context) onSignedIn,
+    Function(BuildContext context)? onError,
+    Key? key,
+  }) {
+    return SignInPage._(
+      showSignIn: true,
+      onSignedIn: onSignedIn,
+      onSkipped: null,
+      onError: onError,
+      key: key,
+    );
+  }
+
+  factory SignInPage.register({
+    required Function(BuildContext context) onAuthenticated,
+    Function(BuildContext context)? onError,
+    Function(BuildContext context)? onSkipped,
+    Key? key,
+  }) {
+    return SignInPage._(
+      showSignIn: false,
+      onSignedIn: onAuthenticated,
+      onSkipped: onSkipped,
+      onError: onError,
+      key: key,
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      body: SignInScreen(
-        headerBuilder: (context, constraints, _) {
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Welcome to the App',
-                style: Theme.of(context).textTheme.headlineMedium,
-                textAlign: TextAlign.center,
-              ),
+    final oAuthButtonVariant = OAuthButtonVariant.icon_and_text;
+    final List<AuthProvider> providers = [
+      EmailAuthProvider(),
+      GoogleProvider(clientId: 'YOUR_CLIENT ID'),
+    ];
+    final actions = [
+      AuthStateChangeAction<SignedIn>(
+        (context, state) {
+          onSignedIn?.call(context);
+        },
+      ),
+      AuthStateChangeAction<AuthFailed>(
+        (context, state) {
+          onError?.call(context);
+        },
+      ),
+      AuthCancelledAction(
+        (context) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Sign-in cancelled'),
             ),
           );
         },
-        oauthButtonVariant: OAuthButtonVariant.icon_and_text,
-        providers: [
-          EmailAuthProvider(),
-          GoogleProvider(clientId: 'YOUR_CLIENT_ID'),
-        ],
-        actions: [
-          AuthStateChangeAction<SignedIn>(
-            (context, state) {
-              onSignedIn?.call(context);
-            },
-          ),
-          AuthStateChangeAction<AuthFailed>(
-            (context, state) {
-              onError?.call(context);
-            },
-          ),
-          AuthCancelledAction(
-            (context) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Sign-in cancelled'),
-                ),
-              );
-            },
-          ),
-        ],
-        footerBuilder: onSkipped != null
-            ? (context, action) {
-                return TextButton(
-                  onPressed: () {
-                    onSkipped?.call(context);
-                  },
-                  child: const Text('Skip Sign In'),
-                );
-              }
-            : null,
       ),
+    ];
+    final footerBuilder = onSkipped != null
+        ? (context, action) {
+            return TextButton(
+              onPressed: () {
+                onSkipped?.call(context);
+              },
+              child: const Text('Skip Sign In'),
+            );
+          }
+        : null;
+    final body = showSignIn
+        ? SignInScreen(
+            oauthButtonVariant: oAuthButtonVariant,
+            providers: providers,
+            actions: actions,
+            footerBuilder: footerBuilder,
+          )
+        : RegisterScreen(
+            oauthButtonVariant: oAuthButtonVariant,
+            providers: providers,
+            actions: actions,
+            footerBuilder: footerBuilder,
+          );
+    return Scaffold(
+      body: body,
     );
   }
 }

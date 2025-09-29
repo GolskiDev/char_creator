@@ -149,7 +149,7 @@ class Navigation {
               GoRoute(
                 path: '/signIn',
                 builder: (context, state) {
-                  return SignInPage(
+                  return SignInPage.signIn(
                     onSignedIn: (context) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -165,10 +165,30 @@ class Navigation {
                         ),
                       );
                     },
-                    onSkipped: (context) =>
-                        context.go('/onboarding/signInAnonymously'),
                   );
                 },
+              ),
+              GoRoute(
+                path: '/register',
+                builder: (context, state) => SignInPage.register(
+                  onAuthenticated: (context) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Registered and signed in successfully.'),
+                      ),
+                    );
+                    context.go('/');
+                  },
+                  onError: (context) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Error registering.'),
+                      ),
+                    );
+                  },
+                  onSkipped: (context) =>
+                      context.go('/onboarding/signInAnonymously'),
+                ),
               ),
               GoRoute(
                 path: '/consents',

@@ -1,0 +1,113 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../data_sources/agreements_documents_data_source.dart';
+
+class AgreementsWidget extends HookConsumerWidget {
+  const AgreementsWidget({
+    this.termsOfUseDetails,
+    this.privacyPolicyDetails,
+    super.key,
+  });
+  final AgreementDetails? termsOfUseDetails;
+  final AgreementDetails? privacyPolicyDetails;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final checkboxText = htmlDeclaration(
+      context,
+      termsOfUseDetails,
+      privacyPolicyDetails,
+    );
+
+    final isSelected = useState(false);
+
+    final listTile = ListTile(
+      trailing: Checkbox(
+        value: isSelected.value,
+        onChanged: (value) {
+          isSelected.value = value ?? false;
+        },
+      ),
+      title: Html(
+        data: checkboxText,
+        onAnchorTap: (url, attributes, element) {
+          if (url != null) {
+            launchUrl(Uri.parse(url));
+          }
+        },
+      ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 8,
+      children: [
+        listTile,
+        FilledButton(
+          onPressed: isSelected.value ? () {} : null,
+          child: const Text('Continue'),
+        ),
+      ],
+    );
+  }
+
+  String htmlDeclaration(
+    BuildContext context,
+    AgreementDetails? details,
+    AgreementDetails? privacyDetails,
+  ) {
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final tosLink = details?.extra?['link_$languageCode'] as String? ?? '';
+    final ppLink =
+        privacyDetails?.extra?['link_$languageCode'] as String? ?? '';
+
+    final String checkboxText =
+        "I declare that I have read the <a href=\"$tosLink\">Terms and Conditions</a> and <a href=\"$ppLink\">Privacy Policy</a> and accept their provisions.";
+    return checkboxText;
+  }
+
+  static Future<void> showTosUpdateDialog(
+    BuildContext context,
+    AgreementDetails? termsOfUseDetails,
+    AgreementDetails? privacyPolicyDetails,
+  ) {
+    final title = 'Terms and Conditions Update';
+    final subtitle =
+        'We have updated our Terms and Conditions and Privacy Policy. Please review and accept the updated documents to continue using the app.';
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      useSafeArea: true,
+      builder: (BuildContext context) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: Text(
+              title,
+              textAlign: TextAlign.center,
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                spacing: 8,
+                children: [
+                  Text(
+                    subtitle,
+                    textAlign: TextAlign.center,
+                  ),
+                  AgreementsWidget(
+                    termsOfUseDetails: termsOfUseDetails,
+                    privacyPolicyDetails: privacyPolicyDetails,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

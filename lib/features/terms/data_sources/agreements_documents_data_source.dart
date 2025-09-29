@@ -1,0 +1,47 @@
+import 'package:char_creator/features/terms/data_sources/user_accepted_agreements_data_source.dart';
+import 'package:riverpod/riverpod.dart';
+
+class AgreementDetails {
+  final DateTime effectiveDate;
+  final String version;
+  final AgreementType type;
+  final Map<String, dynamic>? extra;
+
+  const AgreementDetails({
+    required this.effectiveDate,
+    required this.type,
+    required this.version,
+    this.extra,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is AgreementDetails &&
+        other.type == type &&
+        other.effectiveDate == effectiveDate &&
+        other.version == version;
+  }
+
+  @override
+  int get hashCode => effectiveDate.hashCode ^ version.hashCode ^ type.hashCode;
+}
+
+final agreementsDocumentsDataSourceProvider =
+    Provider<AgreementsDocumentsDataSource>(
+  (ref) {
+    throw UnimplementedError();
+  },
+);
+
+abstract class AgreementsDocumentsDataSource {
+  /// If [after] is provided, only emit TOS with effectiveDate > [after].
+  Stream<List<AgreementDetails>> getTermsOfUseDetailsStream({
+    DateTime? after,
+  });
+
+  /// If [after] is provided, only emit privacy policies with effectiveDate > [after].
+  Stream<List<AgreementDetails>> getPrivacyPolicyDetailsStream({
+    DateTime? after,
+  });
+}
