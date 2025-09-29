@@ -46,10 +46,10 @@ class AppTheme {
       colorScheme: colorScheme,
       brightness: isDarkMode ? Brightness.dark : Brightness.light,
       fontFamily: font.fontFamily,
-      visualDensity: VisualDensity(
-        horizontal: VisualDensity.minimumDensity,
-        vertical: VisualDensity.minimumDensity,
-      ),
+      // visualDensity: VisualDensity(
+      //   horizontal: VisualDensity.minimumDensity,
+      //   vertical: VisualDensity.minimumDensity,
+      // ),
       cardTheme: CardThemeData(
         elevation: 4,
         margin: EdgeInsets.zero,

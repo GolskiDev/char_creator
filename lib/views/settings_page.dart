@@ -23,14 +23,14 @@ class SettingsPage extends HookConsumerWidget {
       ),
       ListTile(
         leading: Icon(GameSystemViewModel.account.icon),
-        subtitle: Text(GameSystemViewModel.account.name),
+        title: Text(GameSystemViewModel.account.name),
         onTap: () {
           context.go('/settings/account');
         },
       ),
       ListTile(
         leading: Icon(GameSystemViewModel.contactUs.icon),
-        subtitle: Text(GameSystemViewModel.contactUs.name),
+        title: Text(GameSystemViewModel.contactUs.name),
         onTap: () {
           ContactUs.sendMail();
         },
@@ -43,11 +43,16 @@ class SettingsPage extends HookConsumerWidget {
           "Settings",
         ),
       ),
-      body: ListView.builder(
+      body: ListView.separated(
+        padding: const EdgeInsets.all(8.0),
         itemCount: settings.length,
         itemBuilder: (context, index) {
-          return settings[index];
+          return Card(
+            clipBehavior: Clip.antiAlias,
+            child: settings[index],
+          );
         },
+        separatorBuilder: (context, index) => const SizedBox(height: 8.0),
       ),
     );
   }

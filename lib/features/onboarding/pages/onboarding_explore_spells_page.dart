@@ -91,13 +91,16 @@ class OnboardingExploreSpellsPage extends HookConsumerWidget {
           if (onContinue != null)
             Align(
               alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    onContinue?.call(context);
-                  },
-                  child: const Text('Continue'),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FilledButton(
+                    onPressed: () {
+                      onContinue?.call(context);
+                    },
+                    child: const Text('Continue'),
+                  ),
                 ),
               ),
             ),

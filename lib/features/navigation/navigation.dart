@@ -1,5 +1,6 @@
 import 'package:char_creator/features/5e/spells/view_models/spell_view_model.dart';
 import 'package:char_creator/features/authentication/auth_controller.dart';
+import 'package:char_creator/views/initial_page.dart';
 import 'package:char_creator/views/settings_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ import '../authentication/pages/sign_in_page.dart';
 import '../main_menu/main_menu.dart';
 import '../onboarding/pages/consents_page.dart';
 import '../onboarding/pages/onboarding_explore_spells_page.dart';
+import '../onboarding/pages/onboarding_home_page.dart';
 
 final goRouterProvider = Provider(
   (ref) => Navigation.goRouter(ref),
@@ -27,7 +29,17 @@ final goRouterProvider = Provider(
 class Navigation {
   static goRouter(Ref ref) => GoRouter(
         debugLogDiagnostics: kDebugMode,
+        initialLocation: '/',
         routes: [
+          GoRoute(
+            path: '/initialPage',
+            pageBuilder: (context, state) {
+              return MaterialPage(
+                key: state.pageKey,
+                child: const InitialPage(),
+              );
+            },
+          ),
           GoRoute(
             path: '/',
             redirect: (context, state) async {
@@ -122,10 +134,16 @@ class Navigation {
               }
               return null;
             },
-            builder: (context, state) => OnboardingExploreSpellsPage(
-              onContinue: (context) => context.go('/onboarding/consents'),
-            ),
+            builder: (context, state) => const OnboardingHomePage(),
             routes: [
+              GoRoute(
+                path: '/exploreSpells',
+                builder: (context, state) => OnboardingExploreSpellsPage(
+                  onContinue: (context) {
+                    context.go('/onboarding/consents');
+                  },
+                ),
+              ),
               GoRoute(
                 path: '/signInAnonymously',
                 builder: (context, state) => SignInAnonymouslyPage(

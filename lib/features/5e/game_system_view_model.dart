@@ -349,6 +349,11 @@ class GameSystemViewModel {
     name: 'Update Available',
     icon: Symbols.system_update,
   );
+
+  static final signIn = GameSystemViewModelItem(
+    name: 'Sign In',
+    icon: Symbols.login,
+  );
 }
 
 class GameSystemViewModelItem {

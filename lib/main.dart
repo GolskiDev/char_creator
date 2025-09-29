@@ -10,6 +10,13 @@ import 'theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeFirebase();
+  runApp(
+    const MainApp(),
+  );
+}
+
+Future<void> initializeFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -20,9 +27,6 @@ void main() async {
         clientId: 'YOUR_CLIENT_ID',
       ),
     ],
-  );
-  runApp(
-    const MainApp(),
   );
 }
 

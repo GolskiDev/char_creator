@@ -60,16 +60,19 @@ class SignInAnonymouslyPage extends HookConsumerWidget {
               ),
             ),
             SafeArea(
-              child: isLoading
-                  ? CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: () {
-                        currentAction.value = signIn();
-                      },
-                      child: Text(
-                        'Sign In Anonymously',
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: isLoading
+                    ? CircularProgressIndicator()
+                    : FilledButton(
+                        onPressed: () {
+                          currentAction.value = signIn();
+                        },
+                        child: Text(
+                          'Sign In Anonymously',
+                        ),
                       ),
-                    ),
+              ),
             ),
           ],
         ),
