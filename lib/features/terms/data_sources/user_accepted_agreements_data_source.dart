@@ -29,6 +29,15 @@ class UserAcceptedAgreement {
 enum AgreementType {
   termsOfUse,
   privacyPolicy;
+
+  static AgreementType fromString(String value) {
+    return AgreementType.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () {
+        throw ArgumentError('Unknown AgreementType: $value');
+      },
+    );
+  }
 }
 
 final userAcceptedAgreementsDataSourceProvider =

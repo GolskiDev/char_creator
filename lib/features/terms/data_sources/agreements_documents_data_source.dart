@@ -14,6 +14,24 @@ class AgreementDetails {
     this.extra,
   });
 
+  Map<String, dynamic> toMap() {
+    return {
+      'effectiveDate': effectiveDate,
+      'version': version,
+      'type': type,
+      'extra': extra,
+    };
+  }
+
+  factory AgreementDetails.fromMap(Map<String, dynamic> map) {
+    return AgreementDetails(
+      effectiveDate: map['effectiveDate'] as DateTime,
+      type: AgreementType.fromString(map['type'] as String),
+      version: map['version'] as String,
+      extra: map['extra'] as Map<String, dynamic>?,
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
