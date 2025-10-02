@@ -1,30 +1,79 @@
 import 'dart:async';
 
 import 'package:char_creator/features/terms/data_sources/user_accepted_agreements_data_source.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../services/firestore.dart';
+import '../authentication/auth_controller.dart';
 import 'data_sources/agreements_documents_data_source.dart';
+import 'data_sources/firebase_user_accepted_agreements_data_source.dart';
+
+final latestEffectiveTermsOfUseProvider =
+    StreamProvider<AgreementDetails?>((ref) async* {
+  final interactor = await ref.watch(agreementsInteractorProvider.future);
+  if (interactor == null) {
+    return;
+  }
+  yield* interactor.requiredUpdatedTermsOfUseToAccept();
+});
+
+final latestEffectivePrivacyPolicyProvider =
+    StreamProvider<AgreementDetails?>((ref) async* {
+  final interactor = await ref.watch(agreementsInteractorProvider.future);
+  if (interactor == null) {
+    return;
+  }
+  yield* interactor.requiredUpdatedPrivacyPolicyToAccept();
+});
 
 final requiredTermsOfUseToAcceptProvider = StreamProvider<AgreementDetails?>(
-  (ref) {
-    final interactor = ref.watch(agreementsInteractorProvider);
-    return interactor.requiredTermsOfUseToAccept();
+  (ref) async* {
+    final interactor = await ref.watch(agreementsInteractorProvider.future);
+    if (interactor == null) {
+      return;
+    }
+    yield* interactor.requiredUpdatedTermsOfUseToAccept();
   },
 );
 
 final requiredPrivacyPolicyToAcceptProvider = StreamProvider<AgreementDetails?>(
-  (ref) {
-    final interactor = ref.watch(agreementsInteractorProvider);
-    return interactor.requiredPrivacyPolicyToAccept();
+  (ref) async* {
+    final interactor = await ref.watch(agreementsInteractorProvider.future);
+    if (interactor == null) {
+      return;
+    }
+    yield* interactor.requiredUpdatedPrivacyPolicyToAccept();
   },
 );
 
-final agreementsInteractorProvider = Provider<AgreementsInteractor>(
-  (ref) {
+final userAcceptedAgreementsDataSourceProvider =
+    FutureProvider<UserAcceptedAgreementsDataSource?>(
+  (ref) async {
+    final firestore = ref.watch(firestoreProvider);
+    final userId = await ref.watch(currentUserProvider.selectAsync(
+      (data) => data?.uid,
+    ));
+    if (userId == null) {
+      return null;
+    }
+    return FirebaseUserAcceptedAgreementsDataSource(
+      uid: userId,
+      firestore: firestore,
+    );
+  },
+);
+
+final agreementsInteractorProvider = FutureProvider<AgreementsInteractor?>(
+  (ref) async {
     final userAcceptedAgreementsDataSource =
-        ref.watch(userAcceptedAgreementsDataSourceProvider);
+        await ref.watch(userAcceptedAgreementsDataSourceProvider.future);
     final agreementsDocumentsDataSource =
         ref.watch(agreementsDocumentsDataSourceProvider);
+
+    if (userAcceptedAgreementsDataSource == null) {
+      return null;
+    }
+
     return AgreementsInteractor(
       userAcceptedAgreementsDataSource: userAcceptedAgreementsDataSource,
       agreementsDocumentsDataSource: agreementsDocumentsDataSource,
@@ -41,13 +90,37 @@ class AgreementsInteractor {
     required this.agreementsDocumentsDataSource,
   });
 
+  static Future<void> waitForSignInAndAccept({
+    required WidgetRef ref,
+    required AgreementType type,
+    required AgreementDetails? agreementDetails,
+  }) async {
+    final completer = Completer<void>();
+    ref.listen(
+      agreementsInteractorProvider.future,
+      (previous, next) async {
+        final interactor = await next;
+        if (interactor == null) {
+          return;
+        }
+        await interactor.acceptAgreement(
+          type: type,
+          agreementDetails: agreementDetails,
+        );
+        completer.complete();
+      },
+    );
+
+    return completer.future;
+  }
+
   Future<void> acceptAgreement({
     required AgreementType type,
     AgreementDetails? agreementDetails,
-  }) {
+  }) async {
     final agreementCompleter = Completer<void>();
     if (agreementDetails != null) {
-      requiredTermsOfUseToAccept().first.then((value) {
+      requiredUpdatedTermsOfUseToAccept().first.then((value) {
         if (value == null) {
           agreementCompleter.complete();
         }
@@ -65,7 +138,7 @@ class AgreementsInteractor {
   }
 
   /// Returns the latest TOS that must be accepted, or null if none required.
-  Stream<AgreementDetails?> requiredTermsOfUseToAccept() async* {
+  Stream<AgreementDetails?> requiredUpdatedTermsOfUseToAccept() async* {
     await for (final userAccepted in userAcceptedAgreementsDataSource
         .lastAcceptedAgreementStream(AgreementType.termsOfUse)) {
       final afterDate = userAccepted?.acceptedAt;
@@ -82,7 +155,7 @@ class AgreementsInteractor {
   }
 
   /// Returns the latest Privacy Policy that must be accepted, or null if none required.
-  Stream<AgreementDetails?> requiredPrivacyPolicyToAccept() async* {
+  Stream<AgreementDetails?> requiredUpdatedPrivacyPolicyToAccept() async* {
     await for (final userAccepted in userAcceptedAgreementsDataSource
         .lastAcceptedAgreementStream(AgreementType.privacyPolicy)) {
       final afterDate = userAccepted?.acceptedAt;

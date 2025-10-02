@@ -10,17 +10,19 @@ class AgreementsWidget extends HookConsumerWidget {
   const AgreementsWidget({
     this.termsOfUseDetails,
     this.privacyPolicyDetails,
+    required this.onContinue,
     super.key,
   });
   final AgreementDetails? termsOfUseDetails;
   final AgreementDetails? privacyPolicyDetails;
+  final Function(BuildContext context, WidgetRef ref)? onContinue;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final checkboxText = htmlDeclaration(
-      context,
-      termsOfUseDetails,
-      privacyPolicyDetails,
+      context: context,
+      termsOfUseDetails: termsOfUseDetails,
+      privacyPolicyDetails: privacyPolicyDetails,
     );
 
     final isSelected = useState(false);
@@ -48,33 +50,36 @@ class AgreementsWidget extends HookConsumerWidget {
       children: [
         listTile,
         FilledButton(
-          onPressed: isSelected.value ? () {} : null,
+          onPressed: isSelected.value && onContinue != null
+              ? () => onContinue!(context, ref)
+              : null,
           child: const Text('Continue'),
         ),
       ],
     );
   }
 
-  String htmlDeclaration(
-    BuildContext context,
-    AgreementDetails? details,
-    AgreementDetails? privacyDetails,
-  ) {
+  String htmlDeclaration({
+    required BuildContext context,
+    AgreementDetails? termsOfUseDetails,
+    AgreementDetails? privacyPolicyDetails,
+  }) {
     final languageCode = Localizations.localeOf(context).languageCode;
-    final tosLink = details?.extra?['link_$languageCode'] as String? ?? '';
+    final tosLink =
+        termsOfUseDetails?.extra?['link_$languageCode'] as String? ?? '';
     final ppLink =
-        privacyDetails?.extra?['link_$languageCode'] as String? ?? '';
+        privacyPolicyDetails?.extra?['link_$languageCode'] as String? ?? '';
 
     final String checkboxText =
         "I declare that I have read the <a href=\"$tosLink\">Terms and Conditions</a> and <a href=\"$ppLink\">Privacy Policy</a> and accept their provisions.";
     return checkboxText;
   }
 
-  static Future<void> showTosUpdateDialog(
-    BuildContext context,
-    AgreementDetails? termsOfUseDetails,
-    AgreementDetails? privacyPolicyDetails,
-  ) {
+  static Future<void> showTosUpdateDialog({
+    required BuildContext context,
+    required AgreementDetails? termsOfUseDetails,
+    required AgreementDetails? privacyPolicyDetails,
+  }) {
     final title = 'Terms and Conditions Update';
     final subtitle =
         'We have updated our Terms and Conditions and Privacy Policy. Please review and accept the updated documents to continue using the app.';
@@ -101,6 +106,9 @@ class AgreementsWidget extends HookConsumerWidget {
                   AgreementsWidget(
                     termsOfUseDetails: termsOfUseDetails,
                     privacyPolicyDetails: privacyPolicyDetails,
+                    onContinue: (context, ref) async {
+                      Navigator.of(context).pop();
+                    },
                   ),
                 ],
               ),

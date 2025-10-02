@@ -211,14 +211,8 @@ class Navigation {
               GoRoute(
                 path: '/consents',
                 builder: (context, state) => ConsentsPage(
-                  consents: {
-                    'privacy':
-                        'I agree to the <a href="https://example.com/privacy">Privacy Policy</a>.',
-                    'terms':
-                        'I accept the <a href="https://example.com/terms">Terms of Service</a>.',
-                  },
-                  onContinue: (consents) {
-                    context.go('/onboarding/signIn');
+                  onAccepted: (context, ref) {
+                    context.go('/onboarding/register');
                   },
                 ),
               ),

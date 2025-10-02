@@ -76,4 +76,34 @@ class FirebaseAgreementsDocumentsDataSource
       }).toList();
     });
   }
+
+  @override
+  Stream<AgreementDetails?> latestEffectivePrivacyPolicyStream() {
+    Query<Object?> query = _privacyPolicyCollection
+        .orderBy('effectiveDate', descending: true)
+        .where('effectiveDate', isLessThanOrEqualTo: Timestamp.now())
+        .limit(1);
+    return query.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return AgreementDetailsFirestore.fromFirestore(
+            data as Map<String, dynamic>);
+      }).firstOrNull;
+    });
+  }
+
+  @override
+  Stream<AgreementDetails?> latestEffectiveTermsOfUseStream() {
+    Query<Object?> query = _termsOfUseCollection
+        .orderBy('effectiveDate', descending: true)
+        .where('effectiveDate', isLessThanOrEqualTo: Timestamp.now())
+        .limit(1);
+    return query.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return AgreementDetailsFirestore.fromFirestore(
+            data as Map<String, dynamic>);
+      }).firstOrNull;
+    });
+  }
 }

@@ -48,8 +48,8 @@ class UtilsPage extends HookConsumerWidget {
             title: const Text('showTosUpdate'),
             onTap: () {
               AgreementsWidget.showTosUpdateDialog(
-                context,
-                AgreementDetails(
+                context: context,
+                termsOfUseDetails: AgreementDetails(
                   effectiveDate: DateTime.now().subtract(
                     const Duration(days: 1),
                   ),
@@ -57,7 +57,7 @@ class UtilsPage extends HookConsumerWidget {
                   version: 'v2.0',
                   extra: {"link_en": "https://facebook.com"},
                 ),
-                AgreementDetails(
+                privacyPolicyDetails: AgreementDetails(
                   effectiveDate: DateTime.now().subtract(
                     const Duration(days: 1),
                   ),

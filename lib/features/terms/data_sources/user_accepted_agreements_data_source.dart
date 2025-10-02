@@ -1,3 +1,6 @@
+import 'package:char_creator/features/authentication/auth_controller.dart';
+import 'package:char_creator/features/terms/data_sources/firebase_user_accepted_agreements_data_source.dart';
+import 'package:char_creator/services/firestore.dart';
 import 'package:riverpod/riverpod.dart';
 
 class UserAcceptedAgreement {
@@ -64,9 +67,19 @@ enum AgreementType {
 }
 
 final userAcceptedAgreementsDataSourceProvider =
-    Provider<UserAcceptedAgreementsDataSource>(
-  (ref) {
-    throw UnimplementedError();
+    FutureProvider<UserAcceptedAgreementsDataSource?>(
+  (ref) async {
+    final firestore = ref.watch(firestoreProvider);
+    final userId = await ref.watch(currentUserProvider.selectAsync(
+      (data) => data?.uid,
+    ));
+    if (userId == null) {
+      throw Exception('User must be logged in to access accepted agreements');
+    }
+    return FirebaseUserAcceptedAgreementsDataSource(
+      uid: userId,
+      firestore: firestore,
+    );
   },
 );
 
