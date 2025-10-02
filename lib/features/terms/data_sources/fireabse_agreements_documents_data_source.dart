@@ -39,15 +39,27 @@ class FirebaseAgreementsDocumentsDataSource
   CollectionReference get _termsOfUseCollection =>
       firestore.collection(termsOfUseCollectionPath);
 
+  CollectionReference collectionForType(AgreementType type) {
+    switch (type) {
+      case AgreementType.termsOfUse:
+        return _termsOfUseCollection;
+      case AgreementType.privacyPolicy:
+        return _privacyPolicyCollection;
+    }
+  }
+
   @override
-  Stream<List<AgreementDetails>> getTermsOfUseDetailsStream({
+  Stream<List<AgreementDetails>> getAgreementDetailsStream({
+    required AgreementType type,
     DateTime? after,
   }) {
+    CollectionReference collection = collectionForType(type);
+
     Query<Object?> query =
-        _termsOfUseCollection.orderBy('effectiveDate', descending: true);
+        collection.orderBy('effectiveDate', descending: true);
     if (after != null) {
-      final afterTimestmap = Timestamp.fromDate(after);
-      query = query.where('effectiveDate', isGreaterThan: afterTimestmap);
+      final afterTimestamp = Timestamp.fromDate(after);
+      query = query.where('effectiveDate', isGreaterThan: afterTimestamp);
     }
     return query.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -59,42 +71,11 @@ class FirebaseAgreementsDocumentsDataSource
   }
 
   @override
-  Stream<List<AgreementDetails>> getPrivacyPolicyDetailsStream({
-    DateTime? after,
+  Stream<AgreementDetails?> latestEffectiveAgreementStream({
+    required AgreementType type,
   }) {
-    Query<Object?> query =
-        _privacyPolicyCollection.orderBy('effectiveDate', descending: true);
-    if (after != null) {
-      final afterTimestmap = Timestamp.fromDate(after);
-      query = query.where('effectiveDate', isGreaterThan: afterTimestmap);
-    }
-    return query.snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return AgreementDetailsFirestore.fromFirestore(
-            data as Map<String, dynamic>);
-      }).toList();
-    });
-  }
-
-  @override
-  Stream<AgreementDetails?> latestEffectivePrivacyPolicyStream() {
-    Query<Object?> query = _privacyPolicyCollection
-        .orderBy('effectiveDate', descending: true)
-        .where('effectiveDate', isLessThanOrEqualTo: Timestamp.now())
-        .limit(1);
-    return query.snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return AgreementDetailsFirestore.fromFirestore(
-            data as Map<String, dynamic>);
-      }).firstOrNull;
-    });
-  }
-
-  @override
-  Stream<AgreementDetails?> latestEffectiveTermsOfUseStream() {
-    Query<Object?> query = _termsOfUseCollection
+    CollectionReference collection = collectionForType(type);
+    Query<Object?> query = collection
         .orderBy('effectiveDate', descending: true)
         .where('effectiveDate', isLessThanOrEqualTo: Timestamp.now())
         .limit(1);

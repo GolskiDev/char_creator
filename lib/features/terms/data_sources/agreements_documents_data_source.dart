@@ -56,16 +56,14 @@ final agreementsDocumentsDataSourceProvider =
 );
 
 abstract class AgreementsDocumentsDataSource {
-  /// If [after] is provided, only emit TOS with effectiveDate > [after].
-  Stream<List<AgreementDetails>> getTermsOfUseDetailsStream({
+  /// If [after] is provided, only emit agreements of [type] with effectiveDate > [after].
+  Stream<List<AgreementDetails>> getAgreementDetailsStream({
+    required AgreementType type,
     DateTime? after,
   });
 
-  /// If [after] is provided, only emit privacy policies with effectiveDate > [after].
-  Stream<List<AgreementDetails>> getPrivacyPolicyDetailsStream({
-    DateTime? after,
+  /// Emits the latest effective agreement of the given [type].
+  Stream<AgreementDetails?> latestEffectiveAgreementStream({
+    required AgreementType type,
   });
-
-  Stream<AgreementDetails?> latestEffectiveTermsOfUseStream();
-  Stream<AgreementDetails?> latestEffectivePrivacyPolicyStream();
 }

@@ -8,31 +8,14 @@ import '../authentication/auth_controller.dart';
 import 'data_sources/agreements_documents_data_source.dart';
 import 'data_sources/firebase_user_accepted_agreements_data_source.dart';
 
-final latestEffectiveTermsOfUseProvider =
-    StreamProvider<AgreementDetails?>((ref) async* {
-  final interactor = await ref.watch(agreementsInteractorProvider.future);
-  if (interactor == null) {
-    return;
-  }
-  yield* interactor.requiredUpdatedTermsOfUseToAccept();
-});
-
-final latestEffectivePrivacyPolicyProvider =
-    StreamProvider<AgreementDetails?>((ref) async* {
-  final interactor = await ref.watch(agreementsInteractorProvider.future);
-  if (interactor == null) {
-    return;
-  }
-  yield* interactor.requiredUpdatedPrivacyPolicyToAccept();
-});
-
 final requiredTermsOfUseToAcceptProvider = StreamProvider<AgreementDetails?>(
   (ref) async* {
     final interactor = await ref.watch(agreementsInteractorProvider.future);
     if (interactor == null) {
       return;
     }
-    yield* interactor.requiredUpdatedTermsOfUseToAccept();
+    yield* interactor
+        .requiredUpdatedAgreementToAccept(AgreementType.termsOfUse);
   },
 );
 
@@ -42,7 +25,8 @@ final requiredPrivacyPolicyToAcceptProvider = StreamProvider<AgreementDetails?>(
     if (interactor == null) {
       return;
     }
-    yield* interactor.requiredUpdatedPrivacyPolicyToAccept();
+    yield* interactor
+        .requiredUpdatedAgreementToAccept(AgreementType.privacyPolicy);
   },
 );
 
@@ -120,7 +104,7 @@ class AgreementsInteractor {
   }) async {
     final agreementCompleter = Completer<void>();
     if (agreementDetails != null) {
-      requiredUpdatedTermsOfUseToAccept().first.then((value) {
+      requiredUpdatedAgreementToAccept(type).first.then((value) {
         if (value == null) {
           agreementCompleter.complete();
         }
@@ -128,7 +112,7 @@ class AgreementsInteractor {
         agreementCompleter.completeError(error);
       });
       userAcceptedAgreementsDataSource.acceptAgreement(
-        type: AgreementType.termsOfUse,
+        type: type,
         version: agreementDetails.version,
       );
     } else {
@@ -137,33 +121,17 @@ class AgreementsInteractor {
     return agreementCompleter.future;
   }
 
-  /// Returns the latest TOS that must be accepted, or null if none required.
-  Stream<AgreementDetails?> requiredUpdatedTermsOfUseToAccept() async* {
-    await for (final userAccepted in userAcceptedAgreementsDataSource
-        .lastAcceptedAgreementStream(AgreementType.termsOfUse)) {
+  /// Returns the latest agreement (TOS or Privacy Policy) that must be accepted, or null if none required.
+  Stream<AgreementDetails?> requiredUpdatedAgreementToAccept(
+      AgreementType type) async* {
+    await for (final userAccepted
+        in userAcceptedAgreementsDataSource.lastAcceptedAgreementStream(type)) {
       final afterDate = userAccepted?.acceptedAt;
       final now = DateTime.now();
-      await for (final tosList in agreementsDocumentsDataSource
-          .getTermsOfUseDetailsStream(after: afterDate)) {
-        final candidates = tosList
-            .where((tos) => tos.effectiveDate.isBefore(now))
-            .toList()
-          ..sort((a, b) => b.effectiveDate.compareTo(a.effectiveDate));
-        yield candidates.firstOrNull;
-      }
-    }
-  }
-
-  /// Returns the latest Privacy Policy that must be accepted, or null if none required.
-  Stream<AgreementDetails?> requiredUpdatedPrivacyPolicyToAccept() async* {
-    await for (final userAccepted in userAcceptedAgreementsDataSource
-        .lastAcceptedAgreementStream(AgreementType.privacyPolicy)) {
-      final afterDate = userAccepted?.acceptedAt;
-      final now = DateTime.now();
-      await for (final policyList in agreementsDocumentsDataSource
-          .getPrivacyPolicyDetailsStream(after: afterDate)) {
-        final candidates = policyList
-            .where((policy) => policy.effectiveDate.isBefore(now))
+      await for (final agreementList in agreementsDocumentsDataSource
+          .getAgreementDetailsStream(type: type, after: afterDate)) {
+        final candidates = agreementList
+            .where((agreement) => agreement.effectiveDate.isBefore(now))
             .toList()
           ..sort((a, b) => b.effectiveDate.compareTo(a.effectiveDate));
         yield candidates.firstOrNull;
