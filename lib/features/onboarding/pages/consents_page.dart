@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../views/default_page_wrapper.dart';
+import '../../terms/data_sources/user_accepted_agreements_data_source.dart';
 import '../../terms/widgets/terms_and_conditions_widget.dart';
 
 class ConsentsPage extends HookConsumerWidget {
@@ -37,7 +38,19 @@ class ConsentsPage extends HookConsumerWidget {
           return AgreementsWidget(
             termsOfUseDetails: tos,
             privacyPolicyDetails: privacyPolicy,
-            onContinue: onAccepted,
+            onContinue: (context, ref) {
+              AgreementsInteractor.waitForSignInAndAccept(
+                ref: ref,
+                type: AgreementType.termsOfUse,
+                agreementDetails: tos,
+              );
+              AgreementsInteractor.waitForSignInAndAccept(
+                ref: ref,
+                type: AgreementType.privacyPolicy,
+                agreementDetails: privacyPolicy,
+              );
+              onAccepted(context, ref);
+            },
           );
         },
       ),

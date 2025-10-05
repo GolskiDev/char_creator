@@ -65,6 +65,10 @@ final agreementsInteractorProvider = FutureProvider<AgreementsInteractor?>(
   },
 );
 
+class AgreementsSubmitter {
+  Future<void> scheduleAgreement() {}
+}
+
 class AgreementsInteractor {
   final UserAcceptedAgreementsDataSource userAcceptedAgreementsDataSource;
   final AgreementsDocumentsDataSource agreementsDocumentsDataSource;

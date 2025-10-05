@@ -17,7 +17,7 @@ class OnboardingHomePage extends HookConsumerWidget {
             child: IconButton(
               icon: Icon(GameSystemViewModel.signIn.icon),
               onPressed: () {
-                context.go('/signIn');
+                context.go('/onboarding/signIn');
               },
             ),
           ),
