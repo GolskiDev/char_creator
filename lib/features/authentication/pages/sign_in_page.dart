@@ -59,6 +59,11 @@ class SignInPage extends HookConsumerWidget {
           onSignedIn?.call(context);
         },
       ),
+      AuthStateChangeAction<UserCreated>(
+        (context, state) {
+          onSignedIn?.call(context);
+        },
+      ),
       AuthStateChangeAction<AuthFailed>(
         (context, state) {
           onError?.call(context);

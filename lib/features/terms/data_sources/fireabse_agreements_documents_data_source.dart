@@ -51,15 +51,15 @@ class FirebaseAgreementsDocumentsDataSource
   @override
   Stream<List<AgreementDetails>> getAgreementDetailsStream({
     required AgreementType type,
-    DateTime? after,
+    DateTime? before,
   }) {
     CollectionReference collection = collectionForType(type);
 
     Query<Object?> query =
         collection.orderBy('effectiveDate', descending: true);
-    if (after != null) {
-      final afterTimestamp = Timestamp.fromDate(after);
-      query = query.where('effectiveDate', isGreaterThan: afterTimestamp);
+    if (before != null) {
+      final afterTimestamp = Timestamp.fromDate(before);
+      query = query.where('effectiveDate', isLessThanOrEqualTo: afterTimestamp);
     }
     return query.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {

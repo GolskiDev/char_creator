@@ -48,7 +48,7 @@ class UtilsPage extends HookConsumerWidget {
             title: const Text('showTosUpdate'),
             onTap: () {
               AgreementsWidget.showTosUpdateDialog(
-                context: context,
+                goRouter: GoRouter.of(context),
                 termsOfUseDetails: AgreementDetails(
                   effectiveDate: DateTime.now().subtract(
                     const Duration(days: 1),

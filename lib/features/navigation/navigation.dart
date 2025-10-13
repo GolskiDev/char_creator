@@ -21,16 +21,49 @@ import '../main_menu/main_menu.dart';
 import '../onboarding/pages/consents_page.dart';
 import '../onboarding/pages/onboarding_explore_spells_page.dart';
 import '../onboarding/pages/onboarding_home_page.dart';
+import '../onboarding/pages/update_agreements_dialog.dart';
+import '../terms/data_sources/agreements_documents_data_source.dart';
+import 'redirect_manager.dart';
 
 final goRouterProvider = Provider(
   (ref) => Navigation.goRouter(ref),
 );
 
 class Navigation {
-  static goRouter(Ref ref) => GoRouter(
+  static GoRouter goRouter(Ref ref) => GoRouter(
         debugLogDiagnostics: kDebugMode,
         initialLocation: '/',
         routes: [
+          GoRoute(
+            path: '/consents',
+            builder: (context, state) {
+              return ConsentsPage(
+                onAccepted: (context, ref) {
+                  context.push('/signIn');
+                },
+              );
+            },
+          ),
+          GoRoute(
+            path: '/signIn',
+            builder: (context, state) => SignInPage.signIn(
+              onSignedIn: (context) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Signed in successfully.'),
+                  ),
+                );
+                context.go('/');
+              },
+              onError: (context) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Error signing in.'),
+                  ),
+                );
+              },
+            ),
+          ),
           GoRoute(
             path: '/initialPage',
             pageBuilder: (context, state) {
@@ -43,16 +76,31 @@ class Navigation {
           GoRoute(
             path: '/',
             redirect: (context, state) async {
-              final isUserSignedIn = await ref.read(
-                isUserSignedInProvider.future,
+              final redirectPath = RedirectManager.getRedirectPath(
+                context: context,
+                state: state,
+                ref: ref,
               );
-              if (!isUserSignedIn) {
-                return '/onboarding';
-              }
-              return null;
+              return redirectPath;
             },
             builder: (context, state) => const MainMenuPage(),
             routes: [
+              GoRoute(
+                path: '/updateAgreements',
+                pageBuilder: (context, state) {
+                  final termsOfUseDetails = (state.extra
+                          as Map<String, dynamic>?)?['termsOfUseDetails']
+                      as AgreementDetails?;
+                  final privacyPolicyDetails = (state.extra
+                          as Map<String, dynamic>?)?['privacyPolicyDetails']
+                      as AgreementDetails?;
+                  return UpdateAgreementsDialog.route(
+                    context: context,
+                    termsOfUseDetails: termsOfUseDetails,
+                    privacyPolicyDetails: privacyPolicyDetails,
+                  );
+                },
+              ),
               GoRoute(
                 path: '/spells',
                 builder: (context, state) => const ListOfSpellsPage(),
@@ -163,28 +211,6 @@ class Navigation {
                     );
                   },
                 ),
-              ),
-              GoRoute(
-                path: '/signIn',
-                builder: (context, state) {
-                  return SignInPage.signIn(
-                    onSignedIn: (context) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Signed in successfully.'),
-                        ),
-                      );
-                      context.go('/');
-                    },
-                    onError: (context) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Error signing in.'),
-                        ),
-                      );
-                    },
-                  );
-                },
               ),
               GoRoute(
                 path: '/register',

@@ -59,7 +59,7 @@ abstract class AgreementsDocumentsDataSource {
   /// If [after] is provided, only emit agreements of [type] with effectiveDate > [after].
   Stream<List<AgreementDetails>> getAgreementDetailsStream({
     required AgreementType type,
-    DateTime? after,
+    DateTime? before,
   });
 
   /// Emits the latest effective agreement of the given [type].

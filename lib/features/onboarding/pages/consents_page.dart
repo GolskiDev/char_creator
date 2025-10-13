@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../views/default_page_wrapper.dart';
 import '../../terms/data_sources/user_accepted_agreements_data_source.dart';
+import '../../terms/new_user_terms.dart';
 import '../../terms/widgets/terms_and_conditions_widget.dart';
 
 class ConsentsPage extends HookConsumerWidget {
@@ -19,10 +20,12 @@ class ConsentsPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final termsOfUseFuture =
-        ref.watch(requiredTermsOfUseToAcceptProvider.future);
-    final privacyPolicyFuture =
-        ref.watch(requiredPrivacyPolicyToAcceptProvider.future);
+    final termsOfUseFuture = ref.watch(
+        latestEffectiveAgreementStreamProvider(AgreementType.termsOfUse)
+            .future);
+    final privacyPolicyFuture = ref.watch(
+        latestEffectiveAgreementStreamProvider(AgreementType.privacyPolicy)
+            .future);
     final together = Future.wait(
       [
         termsOfUseFuture,
@@ -35,22 +38,41 @@ class ConsentsPage extends HookConsumerWidget {
         builder: (BuildContext context, data) {
           final tos = data[0];
           final privacyPolicy = data[1];
-          return AgreementsWidget(
-            termsOfUseDetails: tos,
-            privacyPolicyDetails: privacyPolicy,
-            onContinue: (context, ref) {
-              AgreementsInteractor.waitForSignInAndAccept(
-                ref: ref,
-                type: AgreementType.termsOfUse,
-                agreementDetails: tos,
-              );
-              AgreementsInteractor.waitForSignInAndAccept(
-                ref: ref,
-                type: AgreementType.privacyPolicy,
-                agreementDetails: privacyPolicy,
-              );
-              onAccepted(context, ref);
-            },
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Flexible(
+                  child: Center(
+                    child: Card(
+                      clipBehavior: Clip.hardEdge,
+                      child: Image.asset(
+                        'assets/images/ui/contract.png',
+                      ),
+                    ),
+                  ),
+                ),
+                SafeArea(
+                  top: false,
+                  child: AgreementsWidget(
+                    termsOfUseDetails: tos,
+                    privacyPolicyDetails: privacyPolicy,
+                    onContinue: (context, ref) async {
+                      await ref
+                          .read(agreementSubmitterProvider.notifier)
+                          .scheduleAgreements(
+                            termsOfUse: tos!,
+                            privacyPolicy: privacyPolicy!,
+                          );
+                      if (!context.mounted) {
+                        return;
+                      }
+                      onAccepted(context, ref);
+                    },
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),

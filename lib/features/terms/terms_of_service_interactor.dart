@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:async/async.dart';
 import 'package:char_creator/features/terms/data_sources/user_accepted_agreements_data_source.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,25 +9,27 @@ import '../authentication/auth_controller.dart';
 import 'data_sources/agreements_documents_data_source.dart';
 import 'data_sources/firebase_user_accepted_agreements_data_source.dart';
 
-final requiredTermsOfUseToAcceptProvider = StreamProvider<AgreementDetails?>(
+final requiredUpdatedAgreementsProvider = StreamProvider<
+    ({AgreementDetails? termsOfUse, AgreementDetails? privacyPolicy})>(
   (ref) async* {
     final interactor = await ref.watch(agreementsInteractorProvider.future);
     if (interactor == null) {
       return;
     }
-    yield* interactor
-        .requiredUpdatedAgreementToAccept(AgreementType.termsOfUse);
-  },
-);
-
-final requiredPrivacyPolicyToAcceptProvider = StreamProvider<AgreementDetails?>(
-  (ref) async* {
-    final interactor = await ref.watch(agreementsInteractorProvider.future);
-    if (interactor == null) {
-      return;
-    }
-    yield* interactor
+    final termsOfUseStream =
+        interactor.requiredUpdatedAgreementToAccept(AgreementType.termsOfUse);
+    final privacyPolicyStream = interactor
         .requiredUpdatedAgreementToAccept(AgreementType.privacyPolicy);
+    final zippedStream = StreamZip([
+      termsOfUseStream,
+      privacyPolicyStream,
+    ]);
+    await for (final values in zippedStream) {
+      yield (
+        termsOfUse: values[0],
+        privacyPolicy: values[1],
+      );
+    }
   },
 );
 
@@ -65,8 +68,73 @@ final agreementsInteractorProvider = FutureProvider<AgreementsInteractor?>(
   },
 );
 
-class AgreementsSubmitter {
-  Future<void> scheduleAgreement() {}
+final agreementSubmitterProvider = NotifierProvider<AgreementsSubmitter, void>(
+  () => AgreementsSubmitter(),
+);
+
+/// Used in onboarding for new users or users that are signing in
+class AgreementsSubmitter extends Notifier {
+  List<AgreementDetails> agreementsToAccept = [];
+  bool get isSubmitting => agreementsToAccept.isNotEmpty;
+
+  @override
+  build() {
+    ref.listen(
+      agreementsInteractorProvider.future,
+      (previous, next) async {
+        final interactor = await next;
+        if (interactor == null) {
+          return;
+        }
+        Future.wait(
+          agreementsToAccept.map(
+            (agreement) => interactor.acceptAgreement(
+              agreementDetails: agreement,
+            ),
+          ),
+        );
+        agreementsToAccept.clear();
+      },
+    );
+  }
+
+  Future<void> scheduleAgreements({
+    required AgreementDetails termsOfUse,
+    required AgreementDetails privacyPolicy,
+  }) async {
+    agreementsToAccept.clear();
+    agreementsToAccept.addAll([termsOfUse, privacyPolicy]);
+  }
+}
+
+final updatedAgreementsSubmitterProvider =
+    NotifierProvider<UpdatedAgreementsSubmitter, void>(
+  () => UpdatedAgreementsSubmitter(),
+);
+
+class UpdatedAgreementsSubmitter extends Notifier {
+  @override
+  build() {}
+
+  Future<void> submitAgreements({
+    AgreementDetails? termsOfUse,
+    AgreementDetails? privacyPolicy,
+  }) async {
+    if (termsOfUse != null) {
+      await AgreementsInteractor.waitForSignInAndAccept(
+        ref: ref,
+        agreementDetails: termsOfUse,
+      );
+      print('tos accepted');
+    }
+    if (privacyPolicy != null) {
+      await AgreementsInteractor.waitForSignInAndAccept(
+        ref: ref,
+        agreementDetails: privacyPolicy,
+      );
+      print('privacy policy accepted');
+    }
+  }
 }
 
 class AgreementsInteractor {
@@ -79,20 +147,29 @@ class AgreementsInteractor {
   });
 
   static Future<void> waitForSignInAndAccept({
-    required WidgetRef ref,
-    required AgreementType type,
+    required Ref ref,
     required AgreementDetails? agreementDetails,
   }) async {
     final completer = Completer<void>();
+    final interactor = ref.read(agreementsInteractorProvider).asData?.value;
+    if (interactor != null) {
+      await interactor.acceptAgreement(
+        agreementDetails: agreementDetails,
+      );
+      return;
+    }
     ref.listen(
-      agreementsInteractorProvider.future,
+      agreementsInteractorProvider,
       (previous, next) async {
-        final interactor = await next;
-        if (interactor == null) {
+        final previousInteractor = previous?.asData?.value;
+        final nextInteractor = next.asData?.value;
+        final newIsAvailable = nextInteractor != null;
+        final previousIsAvailable = previousInteractor != null;
+        if (previousIsAvailable && newIsAvailable) {
           return;
         }
-        await interactor.acceptAgreement(
-          type: type,
+        final interactor = nextInteractor ?? previousInteractor;
+        await interactor?.acceptAgreement(
           agreementDetails: agreementDetails,
         );
         completer.complete();
@@ -103,12 +180,13 @@ class AgreementsInteractor {
   }
 
   Future<void> acceptAgreement({
-    required AgreementType type,
     AgreementDetails? agreementDetails,
   }) async {
     final agreementCompleter = Completer<void>();
     if (agreementDetails != null) {
-      requiredUpdatedAgreementToAccept(type).first.then((value) {
+      requiredUpdatedAgreementToAccept(agreementDetails.type)
+          .first
+          .then((value) {
         if (value == null) {
           agreementCompleter.complete();
         }
@@ -116,7 +194,7 @@ class AgreementsInteractor {
         agreementCompleter.completeError(error);
       });
       userAcceptedAgreementsDataSource.acceptAgreement(
-        type: type,
+        type: agreementDetails.type,
         version: agreementDetails.version,
       );
     } else {
@@ -127,18 +205,29 @@ class AgreementsInteractor {
 
   /// Returns the latest agreement (TOS or Privacy Policy) that must be accepted, or null if none required.
   Stream<AgreementDetails?> requiredUpdatedAgreementToAccept(
-      AgreementType type) async* {
-    await for (final userAccepted
+    AgreementType type,
+  ) async* {
+    await for (final userAcceptedAgreement
         in userAcceptedAgreementsDataSource.lastAcceptedAgreementStream(type)) {
-      final afterDate = userAccepted?.acceptedAt;
       final now = DateTime.now();
-      await for (final agreementList in agreementsDocumentsDataSource
-          .getAgreementDetailsStream(type: type, after: afterDate)) {
+      await for (final agreementList
+          in agreementsDocumentsDataSource.getAgreementDetailsStream(
+        type: type,
+      )) {
         final candidates = agreementList
             .where((agreement) => agreement.effectiveDate.isBefore(now))
             .toList()
           ..sort((a, b) => b.effectiveDate.compareTo(a.effectiveDate));
-        yield candidates.firstOrNull;
+        final latest = candidates.firstOrNull;
+        if (userAcceptedAgreement == null) {
+          yield latest;
+        }
+        if (userAcceptedAgreement != null &&
+            latest != null &&
+            userAcceptedAgreement.version != latest.version) {
+          yield latest;
+        }
+        yield null;
       }
     }
   }
