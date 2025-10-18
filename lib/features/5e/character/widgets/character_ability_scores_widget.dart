@@ -1,6 +1,7 @@
 import 'dart:developer' as dev;
 
 import 'package:char_creator/features/5e/game_system_view_model.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -99,6 +100,7 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
       final abilityScoreType = abilityScore.abilityScoreType;
 
       return TableRow(
+        key: ValueKey(abilityScoreType),
         children: [
           ListTile(
             title: Text(abilityScore.gameSystemViewModel.name),
@@ -391,9 +393,16 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
       },
       children: [
         ...legend,
-        ...abilityScoresState.value.abilityScores.entries.map(
+        ...abilityScoresState.value.abilityScores.entries.sorted(
+          (a, b) {
+            return b.value.value?.compareTo(
+                  a.value.value ?? 0,
+                ) ??
+                -1;
+          },
+        ).map(
           (entry) => abilityScoreRow(abilityScore: entry.value),
-        )
+        ),
       ].toList(),
     );
   }
