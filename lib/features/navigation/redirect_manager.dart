@@ -24,6 +24,6 @@ class RedirectManager {
         requiredAgreements.privacyPolicy != null) {
       return '/updateAgreements';
     }
-    return '/';
+    return null;
   }
 }

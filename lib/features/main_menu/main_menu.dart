@@ -52,12 +52,10 @@ class MainMenuPage extends HookConsumerWidget {
               Stack(
                 fit: StackFit.expand,
                 children: [
-                  Expanded(
-                    child: Card(
-                      child: Image.asset(
-                        backgroundPhotoUrl,
-                        fit: BoxFit.cover,
-                      ),
+                  Card(
+                    child: Image.asset(
+                      backgroundPhotoUrl,
+                      fit: BoxFit.cover,
                     ),
                   ),
                   Positioned(
@@ -136,9 +134,13 @@ class MainMenuPage extends HookConsumerWidget {
             itemBuilder: (context, index) {
               if (index == 0) {
                 return mainWidget;
-              } else {
-                return widgets[index - 1];
+              } else if (index == (widgets.length)) {
+                return SafeArea(
+                  top: false,
+                  child: widgets[index - 1],
+                );
               }
+              return widgets[index - 1];
             },
             separatorBuilder: (context, index) => const SizedBox(height: 8.0),
             itemCount: widgets.length + 1,

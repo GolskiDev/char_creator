@@ -35,36 +35,6 @@ class Navigation {
         initialLocation: '/',
         routes: [
           GoRoute(
-            path: '/consents',
-            builder: (context, state) {
-              return ConsentsPage(
-                onAccepted: (context, ref) {
-                  context.push('/signIn');
-                },
-              );
-            },
-          ),
-          GoRoute(
-            path: '/signIn',
-            builder: (context, state) => SignInPage.signIn(
-              onSignedIn: (context) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Signed in successfully.'),
-                  ),
-                );
-                context.go('/');
-              },
-              onError: (context) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Error signing in.'),
-                  ),
-                );
-              },
-            ),
-          ),
-          GoRoute(
             path: '/initialPage',
             pageBuilder: (context, state) {
               return MaterialPage(
@@ -85,6 +55,16 @@ class Navigation {
             },
             builder: (context, state) => const MainMenuPage(),
             routes: [
+              GoRoute(
+                redirect: (context, state) {
+                  if (!kDebugMode) {
+                    return '/';
+                  }
+                  return null;
+                },
+                path: '/utils',
+                builder: (context, state) => const UtilsPage(),
+              ),
               GoRoute(
                 path: '/updateAgreements',
                 pageBuilder: (context, state) {
@@ -185,6 +165,46 @@ class Navigation {
             builder: (context, state) => const OnboardingHomePage(),
             routes: [
               GoRoute(
+                path: '/signInConsents',
+                builder: (context, state) {
+                  return ConsentsPage(
+                    onAccepted: (context, ref) {
+                      context.push('/onboarding/signIn');
+                    },
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/registerConsents',
+                builder: (context, state) {
+                  return ConsentsPage(
+                    onAccepted: (context, ref) {
+                      context.push('/onboarding/register');
+                    },
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/signIn',
+                builder: (context, state) => SignInPage.signIn(
+                  onSignedIn: (context) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Signed in successfully.'),
+                      ),
+                    );
+                    context.go('/');
+                  },
+                  onError: (context) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Error signing in.'),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              GoRoute(
                 path: '/exploreSpells',
                 builder: (context, state) => OnboardingExploreSpellsPage(
                   onContinue: (context) {
@@ -251,16 +271,6 @@ class Navigation {
                 context.go('/');
               },
             ),
-          ),
-          GoRoute(
-            redirect: (context, state) {
-              if (!kDebugMode) {
-                return '/';
-              }
-              return null;
-            },
-            path: '/utils',
-            builder: (context, state) => const UtilsPage(),
           ),
         ],
       );

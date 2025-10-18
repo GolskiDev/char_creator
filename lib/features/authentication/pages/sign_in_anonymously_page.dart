@@ -69,7 +69,7 @@ class SignInAnonymouslyPage extends HookConsumerWidget {
                           currentAction.value = signIn();
                         },
                         child: Text(
-                          'Sign In Anonymously',
+                          'Create Anonymous Account',
                         ),
                       ),
               ),
