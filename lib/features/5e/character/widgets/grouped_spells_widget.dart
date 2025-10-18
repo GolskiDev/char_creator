@@ -1,9 +1,12 @@
+import 'package:char_creator/features/5e/spells/models/spell_casting_time.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../spells/spell_card_page.dart';
+import '../../spells/utils/spell_utils.dart';
 import '../../spells/view_models/spell_view_model.dart';
 import '../../tags.dart';
 
@@ -28,7 +31,20 @@ class GroupedSpellsWidget extends HookConsumerWidget {
         ListView(
           shrinkWrap: true,
           primary: false,
-          children: groupedSpells.entries.map(
+          children: groupedSpells.entries.sorted(
+            (a, b) {
+              switch ((a.key, b.key)) {
+                case (SpellType a, SpellType b):
+                  return a.title.compareTo(b.title);
+                case (int levelA, int levelB):
+                  return levelA.compareTo(levelB);
+                case (String castTimeA, String castTimeB):
+                  return castTimeA.compareTo(castTimeB);
+                default:
+                  return 0;
+              }
+            },
+          ).map(
             (entry) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,6 +63,10 @@ class GroupedSpellsWidget extends HookConsumerWidget {
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                           ],
+                        ),
+                      int level => Text(
+                          SpellUtils.spellLevelString(level),
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                       Object something => Text(
                           something.toString(),
@@ -193,29 +213,16 @@ class GroupedSpellsWidget extends HookConsumerWidget {
     return groupedSpells;
   }
 
-  Map<String, List<SpellViewModel>> _groupByCastingTime(
+  Map<SpellCastingTime, List<SpellViewModel>> _groupByCastingTime(
       List<SpellViewModel> spells) {
-    final Map<String, List<SpellViewModel>> groupedSpells = {};
-    for (final spell in spells) {
-      final castingTime = spell.castingTime?.id ?? 'Unknown';
-      if (!groupedSpells.containsKey(castingTime)) {
-        groupedSpells[castingTime] = [];
-      }
-      groupedSpells[castingTime]!.add(spell);
-    }
-    return groupedSpells;
+    return groupBy(
+      spells,
+      (spell) => spell.castingTime ?? SpellCastingTime.fromString('Unknown'),
+    );
   }
 
-  Map<String, List<SpellViewModel>> _groupByLevel(List<SpellViewModel> spells) {
-    final Map<String, List<SpellViewModel>> groupedSpells = {};
-    for (final spell in spells) {
-      final level = spell.spellLevelString;
-      if (!groupedSpells.containsKey(level)) {
-        groupedSpells[level] = [];
-      }
-      groupedSpells[level]!.add(spell);
-    }
-    return groupedSpells;
+  Map<int, List<SpellViewModel>> _groupByLevel(List<SpellViewModel> spells) {
+    return groupBy(spells, (spell) => spell.spellLevel);
   }
 
   showSpell({

@@ -1,4 +1,5 @@
 import 'package:char_creator/features/5e/character/models/character_5e_skills.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -26,7 +27,11 @@ class CharacterSkillsWidget extends HookConsumerWidget {
       spacing: 4,
       mainAxisSize: MainAxisSize.min,
       children: [
-        ...skills.skills.values.map(
+        ...skills.skills.values.sorted(
+          (a, b) {
+            return a.skillType.name.compareTo(b.skillType.name);
+          },
+        ).map(
           (skillEntry) {
             final skill = skillEntry;
 
