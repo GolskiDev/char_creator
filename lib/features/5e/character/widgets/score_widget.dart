@@ -27,14 +27,16 @@ class ScoreWidget extends HookConsumerWidget {
     final textController = useTextEditingController(
       text: initialValue?.toString() ?? '',
     );
-    final state = useState(initialValue);
 
     final focusNode = useFocusNode();
 
     useEffect(() {
       focusNode.addListener(() async {
         if (!focusNode.hasFocus) {
-          await onChanged?.call(state.value);
+          final currentValue = textController.text;
+
+          final intValue = int.tryParse(currentValue);
+          await onChanged?.call(intValue);
         }
       });
       return null;
@@ -57,10 +59,6 @@ class ScoreWidget extends HookConsumerWidget {
         keyboardType: textInputType,
         controller: textController,
         inputFormatters: inputFormatters,
-        onChanged: (value) {
-          final intValue = int.tryParse(value);
-          state.value = intValue;
-        },
       ),
     );
   }
