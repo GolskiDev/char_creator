@@ -65,13 +65,13 @@ class EditCharacter5ePage extends HookConsumerWidget {
             name: nameController.text,
             classes: classes,
           );
-          await repository.saveCharacter(newCharacter);
+          await repository?.saveCharacter(newCharacter);
         } else {
           final updatedCharacter = character!.copyWith(
             name: nameController.text,
             classesStates: classes,
           );
-          await repository.updateCharacter(updatedCharacter);
+          await repository?.updateCharacter(updatedCharacter);
         }
         if (context.mounted) {
           Navigator.of(context).pop();

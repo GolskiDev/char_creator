@@ -99,7 +99,7 @@ class Character5ePage extends HookConsumerWidget {
                       );
                       final repository =
                           await ref.read(characterRepositoryProvider.future);
-                      await repository.updateCharacter(updatedCharacter);
+                      await repository?.updateCharacter(updatedCharacter);
                       if (!context.mounted) {
                         return;
                       }
@@ -113,7 +113,7 @@ class Character5ePage extends HookConsumerWidget {
                                 spellSlots: updatedSpellSlots,
                               );
                               await repository
-                                  .updateCharacter(updatedCharacter);
+                                  ?.updateCharacter(updatedCharacter);
                             },
                           ),
                         ),
@@ -138,7 +138,7 @@ class Character5ePage extends HookConsumerWidget {
                             );
                             final repository = await ref
                                 .read(characterRepositoryProvider.future);
-                            await repository.updateCharacter(updatedCharacter);
+                            await repository?.updateCharacter(updatedCharacter);
                           },
                         ),
                       ),
@@ -160,7 +160,7 @@ class Character5ePage extends HookConsumerWidget {
                             );
                             final repository = await ref
                                 .read(characterRepositoryProvider.future);
-                            await repository.updateCharacter(updatedCharacter);
+                            await repository?.updateCharacter(updatedCharacter);
                           },
                         ),
                       ),
@@ -230,7 +230,7 @@ class Character5ePage extends HookConsumerWidget {
                     );
                     final repository =
                         await ref.read(characterRepositoryProvider.future);
-                    await repository.updateCharacter(updatedCharacter);
+                    await repository?.updateCharacter(updatedCharacter);
                   },
                   onDelete: () async {
                     final updatedNotes = character.notes.copyWith(
@@ -243,7 +243,7 @@ class Character5ePage extends HookConsumerWidget {
                     );
                     final repository =
                         await ref.read(characterRepositoryProvider.future);
-                    await repository.updateCharacter(updatedCharacter);
+                    await repository?.updateCharacter(updatedCharacter);
                   },
                 ),
               ),
@@ -258,7 +258,7 @@ class Character5ePage extends HookConsumerWidget {
                   );
                   final repository =
                       await ref.read(characterRepositoryProvider.future);
-                  await repository.updateCharacter(updatedCharacter);
+                  await repository?.updateCharacter(updatedCharacter);
                 },
               ),
             ),

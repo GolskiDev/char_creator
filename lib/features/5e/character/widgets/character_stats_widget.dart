@@ -36,7 +36,7 @@ class CharacterStatsWidget extends HookConsumerWidget {
         others: otherProps,
       );
       final repository = await ref.read(characterRepositoryProvider.future);
-      await repository.updateCharacter(updatedCharacter);
+      await repository?.updateCharacter(updatedCharacter);
     }
 
     otherWidget() {
@@ -55,7 +55,7 @@ class CharacterStatsWidget extends HookConsumerWidget {
         abilityScores: abilityScores,
       );
       final repository = await ref.read(characterRepositoryProvider.future);
-      await repository.updateCharacter(updatedCharacter);
+      await repository?.updateCharacter(updatedCharacter);
     }
 
     abilityScoresWidget() {
@@ -74,7 +74,7 @@ class CharacterStatsWidget extends HookConsumerWidget {
         character5eSkills: skills,
       );
       final repository = await ref.read(characterRepositoryProvider.future);
-      await repository.updateCharacter(updatedCharacter);
+      await repository?.updateCharacter(updatedCharacter);
     }
 
     skillsWidget() {

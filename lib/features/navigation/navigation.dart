@@ -236,11 +236,6 @@ class Navigation {
                 path: '/register',
                 builder: (context, state) => SignInPage.register(
                   onAuthenticated: (context) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Registered and signed in successfully.'),
-                      ),
-                    );
                     context.go('/');
                   },
                   onError: (context) {

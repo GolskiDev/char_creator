@@ -10,9 +10,14 @@ final characterRepositoryProvider = FutureProvider(
   (ref) async {
     final localDataSource =
         await ref.watch(characterLocalDataSourceProvider.future);
+    final remoteDataSource =
+        await ref.watch(characterRemoteFirestoreDataSourceProvider.future);
+    if (remoteDataSource == null) {
+      return null;
+    }
     return CharacterRepository(
       localDataSource: localDataSource,
-      remoteDataSource: ref.watch(characterRemoteFirestoreDataSourceProvider),
+      remoteDataSource: remoteDataSource,
     );
   },
 );
@@ -22,6 +27,10 @@ final charactersStreamProvider =
   (ref) async* {
     final characterRepository =
         await ref.watch(characterRepositoryProvider.future);
+    if (characterRepository == null) {
+      yield [];
+      return;
+    }
     yield* characterRepository.allUserCharactersStream;
   },
 );
