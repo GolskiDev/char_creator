@@ -81,6 +81,7 @@ class CharacterStatsWidget extends HookConsumerWidget {
       if (character.abilityScores != null &&
           character.character5eSkills != null) {
         return Card.outlined(
+          clipBehavior: Clip.antiAlias,
           child: ExpansionTile(
             leading: Icon(
               GameSystemViewModel.skills.icon,

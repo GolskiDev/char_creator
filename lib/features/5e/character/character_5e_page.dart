@@ -203,15 +203,12 @@ class Character5ePage extends HookConsumerWidget {
                       ),
                     ),
                   if (characterSpells.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Builder(
-                        builder: (context) {
-                          return GroupedSpellsWidget(
-                            characterSpells: characterSpells,
-                          );
-                        },
-                      ),
+                    Builder(
+                      builder: (context) {
+                        return GroupedSpellsWidget(
+                          characterSpells: characterSpells,
+                        );
+                      },
                     ),
                 ],
               ),

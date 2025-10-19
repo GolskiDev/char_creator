@@ -82,8 +82,11 @@ class GroupedSpellsWidget extends HookConsumerWidget {
                           return Container(
                             width: 200,
                             margin: const EdgeInsets.all(8.0),
-                            child:
-                                smallSpellWidget(groupedSpells, context, spell),
+                            child: AspectRatio(
+                              aspectRatio: 2 / 3,
+                              child: smallSpellWidget(
+                                  groupedSpells, context, spell),
+                            ),
                           );
                         },
                       ).toList(),
@@ -120,23 +123,25 @@ class GroupedSpellsWidget extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (spell.imageUrl != null)
-              Hero(
-                tag: spell.imageUrl!,
-                child: Image.asset(
-                  spell.imageUrl!,
-                  fit: BoxFit.fitWidth,
-                  frameBuilder:
-                      (context, child, frame, wasSynchronouslyLoaded) {
-                    if (wasSynchronouslyLoaded) {
-                      return child;
-                    }
-                    return AnimatedOpacity(
-                      duration: Durations.long1,
-                      curve: Curves.easeIn,
-                      opacity: frame == null ? 0 : 1,
-                      child: child,
-                    );
-                  },
+              Expanded(
+                child: Hero(
+                  tag: spell.imageUrl!,
+                  child: Image.asset(
+                    spell.imageUrl!,
+                    fit: BoxFit.fitWidth,
+                    frameBuilder:
+                        (context, child, frame, wasSynchronouslyLoaded) {
+                      if (wasSynchronouslyLoaded) {
+                        return child;
+                      }
+                      return AnimatedOpacity(
+                        duration: Durations.long1,
+                        curve: Curves.easeIn,
+                        opacity: frame == null ? 0 : 1,
+                        child: child,
+                      );
+                    },
+                  ),
                 ),
               ),
             Padding(
