@@ -133,6 +133,8 @@ class ListOfSpellsPage extends HookConsumerWidget {
       canRequestFocus: true,
     );
 
+    // useListenable(searchFocusNode);
+
     final isSearchVisible =
         searchFocusNode.hasFocus || searchController.text.isNotEmpty;
 
@@ -166,61 +168,46 @@ class ListOfSpellsPage extends HookConsumerWidget {
       builder: (context) {
         return Stack(
           children: [
-            Visibility(
-              visible: !isSearchVisible,
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainInteractivity: true,
-              maintainState: true,
-              maintainSemantics: true,
-              child: GestureDetector(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    'Spells',
-                    style: Theme.of(context).appBarTheme.titleTextStyle,
-                  ),
-                ),
-                onTap: () {
+            TextField(
+              focusNode: searchFocusNode,
+              canRequestFocus: true,
+              controller: searchController,
+              onTap: () {
+                if (!searchFocusNode.hasFocus) {
                   searchFocusNode.requestFocus();
-                  FocusScope.of(context).requestFocus(searchFocusNode);
-                },
-              ),
-            ),
-            Visibility(
-              visible: isSearchVisible,
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainInteractivity: true,
-              maintainState: true,
-              maintainSemantics: true,
-              child: TextField(
-                focusNode: searchFocusNode,
-                canRequestFocus: true,
-                controller: searchController,
-                onTapOutside: (_) {
-                  searchFocusNode.unfocus();
-                },
-                onChanged: (value) {
-                  spellFilters.value = spellFilters.value.copyWith(
-                    searchTextSetter: () {
-                      return value;
-                    },
-                  );
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      spellFilters.value = spellFilters.value.copyWith(
-                        searchTextSetter: () => null,
-                      );
-                      searchController.clear();
-                      searchFocusNode.unfocus();
-                    },
-                  ),
-                ),
+                }
+              },
+              onTapOutside: (_) {
+                searchFocusNode.unfocus();
+              },
+              onChanged: (value) {
+                spellFilters.value = spellFilters.value.copyWith(
+                  searchTextSetter: () {
+                    return value;
+                  },
+                );
+              },
+              decoration: InputDecoration(
+                hintText: 'Search',
+                label: searchFocusNode.hasFocus
+                    ? null
+                    : Text(
+                        'Spells',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                suffixIcon: searchFocusNode.hasFocus
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          spellFilters.value = spellFilters.value.copyWith(
+                            searchTextSetter: () => null,
+                          );
+                          searchController.clear();
+                          searchFocusNode.unfocus();
+                        },
+                      )
+                    : null,
               ),
             ),
           ],
