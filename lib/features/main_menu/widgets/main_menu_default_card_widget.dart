@@ -16,6 +16,9 @@ class MainMenuDefaultCardWidget extends HookConsumerWidget {
     super.key,
   });
 
+  static TextStyle titleStyle(BuildContext context) =>
+      Theme.of(context).textTheme.titleLarge!;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
@@ -36,7 +39,7 @@ class MainMenuDefaultCardWidget extends HookConsumerWidget {
               Spacer(),
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: titleStyle(context),
               ),
             ],
           ),

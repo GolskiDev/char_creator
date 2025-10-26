@@ -1,0 +1,58 @@
+[
+    {
+        "id": "chill-touch",
+        "subtitle": "One touch and suddenly healing is off the menu"
+    },
+    {
+        "id": "dancing-lights",
+        "subtitle": "Your very own glowing disco balls. Party mode: activated."
+    },
+    {
+        "id": "acid-splash",
+        "subtitle": "The magical equivalent of spitting. But, you know… deadlier."
+    },
+    {
+        "id": "druidcraft",
+        "subtitle": "A puff of wind, a leaf falls… hold your applause."
+    },
+    {
+        "id": "fire-bolt",
+        "subtitle": "Your ranged fire tantrum, now in convenient spell form."
+    },
+    {
+        "id": "eldritch-blast",
+        "subtitle": "Force damage!"
+    },
+    {
+        "id": "guidance",
+        "subtitle": "Because nothing says 'I believe in you' like a measly +1d4."
+    },
+    {
+        "id": "guidance",
+        "subtitle": "Helping you succeed… by the tiniest possible margin."
+    },
+    {
+        "id": "light",
+        "subtitle": "Flashy and mildly useful. Also, enemies now know exactly where you are."
+    },
+    {
+        "id": "mage-hand",
+        "subtitle": "Your magical floating hand is here to do chores. Yes, really."
+    },
+    {
+        "id": "mending",
+        "subtitle": "Fixes broken stuff! Magic can’t fix your life though, sorry."
+    },
+    {
+        "id": "mending",
+        "subtitle": "Your wineskin won’t leak anymore. Party saved."
+    },
+    {
+        "id": "message",
+        "subtitle": "Talking behind someone's back just got a magical upgrade."
+    },
+    {
+        "id": "minor-illusion",
+        "subtitle": "Because sometimes, reality just needs a little tweak."
+    }
+]
