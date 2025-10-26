@@ -86,41 +86,44 @@ class MainMenuPage extends HookConsumerWidget {
       ),
     );
 
+    final settingsButton = IconButton(
+      icon: const Icon(Icons.settings),
+      onPressed: () {
+        context.go('/settings');
+      },
+    );
+
+    final blurSigma = 12.0;
+
     return Scaffold(
       extendBody: true,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              context.go('/settings');
-            },
-          ),
-        ],
-      ),
       body: Stack(
         fit: StackFit.expand,
         alignment: Alignment.center,
         children: [
-          ImageFiltered(
-            imageFilter: ImageFilter.blur(
-              sigmaX: 12.0,
-              sigmaY: 12.0,
-            ),
-            child: ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                switch (Theme.of(context).brightness) {
-                  Brightness.dark =>
-                    Theme.of(context).colorScheme.surface.withAlpha(192),
-                  Brightness.light => Colors.transparent,
-                },
-                BlendMode.srcOver,
+          Positioned(
+            top: -2 * blurSigma,
+            bottom: -2 * blurSigma,
+            left: -2 * blurSigma,
+            right: -2 * blurSigma,
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(
+                sigmaX: blurSigma,
+                sigmaY: blurSigma,
               ),
-              child: Image.asset(
-                backgroundPhotoUrl,
-                fit: BoxFit.cover,
+              child: ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  switch (Theme.of(context).brightness) {
+                    Brightness.dark =>
+                      Theme.of(context).colorScheme.surface.withAlpha(192),
+                    Brightness.light => Colors.transparent,
+                  },
+                  BlendMode.srcOver,
+                ),
+                child: Image.asset(
+                  backgroundPhotoUrl,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
@@ -139,7 +142,14 @@ class MainMenuPage extends HookConsumerWidget {
             },
             separatorBuilder: (context, index) => const SizedBox(height: 8.0),
             itemCount: widgets.length + 1,
-          )
+          ),
+          Positioned(
+            top: 0.0,
+            right: 0.0,
+            child: SafeArea(
+              child: settingsButton,
+            ),
+          ),
         ],
       ),
     );
