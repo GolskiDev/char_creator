@@ -162,27 +162,17 @@ class Navigation {
               }
               return null;
             },
-            builder: (context, state) => const OnboardingHomePage(),
+            builder: (context, state) {
+              return ConsentsPage(
+                onAccepted: (context, ref) {
+                  context.push('/onboarding/start');
+                },
+              );
+            },
             routes: [
               GoRoute(
-                path: '/signInConsents',
-                builder: (context, state) {
-                  return ConsentsPage(
-                    onAccepted: (context, ref) {
-                      context.push('/onboarding/signIn');
-                    },
-                  );
-                },
-              ),
-              GoRoute(
-                path: '/registerConsents',
-                builder: (context, state) {
-                  return ConsentsPage(
-                    onAccepted: (context, ref) {
-                      context.push('/onboarding/register');
-                    },
-                  );
-                },
+                path: '/start',
+                builder: (context, state) => const OnboardingHomePage(),
               ),
               GoRoute(
                 path: '/signIn',
@@ -205,14 +195,6 @@ class Navigation {
                 ),
               ),
               GoRoute(
-                path: '/exploreSpells',
-                builder: (context, state) => OnboardingExploreSpellsPage(
-                  onContinue: (context) {
-                    context.go('/onboarding/consents');
-                  },
-                ),
-              ),
-              GoRoute(
                 path: '/signInAnonymously',
                 builder: (context, state) => SignInAnonymouslyPage(
                   onSignedIn: (context) {
@@ -221,7 +203,7 @@ class Navigation {
                         content: Text('Signed in anonymously.'),
                       ),
                     );
-                    context.go('/');
+                    context.go('/onboarding/exploreSpells');
                   },
                   onError: (context) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -236,7 +218,7 @@ class Navigation {
                 path: '/register',
                 builder: (context, state) => SignInPage.register(
                   onAuthenticated: (context) {
-                    context.go('/');
+                    context.go('/onboarding/exploreSpells');
                   },
                   onError: (context) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -249,11 +231,13 @@ class Navigation {
                       context.go('/onboarding/signInAnonymously'),
                 ),
               ),
+
+              /// Currently not used
               GoRoute(
-                path: '/consents',
-                builder: (context, state) => ConsentsPage(
-                  onAccepted: (context, ref) {
-                    context.go('/onboarding/register');
+                path: '/exploreSpells',
+                builder: (context, state) => OnboardingExploreSpellsPage(
+                  onContinue: (context) {
+                    context.go('/onboarding/consents');
                   },
                 ),
               ),

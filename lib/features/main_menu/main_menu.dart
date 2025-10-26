@@ -31,11 +31,6 @@ class MainMenuPage extends HookConsumerWidget {
           title: "Utils",
           path: "/utils",
         ),
-      MainMenuDefaultCardWidget(
-        icon: Icons.settings,
-        title: "Settings",
-        path: "/settings",
-      ),
     ];
 
     final backgroundPhotoUrl = "assets/images/spells/illusory_script.png";

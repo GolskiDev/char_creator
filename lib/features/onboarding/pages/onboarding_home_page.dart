@@ -7,8 +7,9 @@ class OnboardingHomePage extends HookConsumerWidget {
   const OnboardingHomePage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final title = 'Welcome Stranger!';
-    final buttonText = 'Begin Your Journey';
+    final title = 'Hello Adventurer!';
+    final subtitle = "I have no memory of you. Did we meet before?";
+    final buttonText = 'I am new Here';
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -17,7 +18,7 @@ class OnboardingHomePage extends HookConsumerWidget {
             child: IconButton(
               icon: Icon(GameSystemViewModel.signIn.icon),
               onPressed: () {
-                context.push('/onboarding/signInConsents');
+                context.push('/onboarding/signIn');
               },
             ),
           ),
@@ -25,6 +26,7 @@ class OnboardingHomePage extends HookConsumerWidget {
       ),
       body: Center(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Spacer(),
             Padding(
@@ -35,6 +37,14 @@ class OnboardingHomePage extends HookConsumerWidget {
                 textAlign: TextAlign.center,
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                subtitle,
+                style: Theme.of(context).textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+            ),
             Spacer(),
             SafeArea(
               top: false,
@@ -42,7 +52,7 @@ class OnboardingHomePage extends HookConsumerWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: FilledButton(
                   onPressed: () {
-                    context.go('/onboarding/exploreSpells');
+                    context.go('/onboarding/register');
                   },
                   child: Text(buttonText),
                 ),
