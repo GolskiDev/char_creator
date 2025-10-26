@@ -2,355 +2,355 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class GameSystemViewModel {
-  static final strength = GameSystemViewModelItem(
+  static const strength = GameSystemViewModelItem(
     name: 'Strength',
     icon: Icons.fitness_center,
   );
-  static final dexterity = GameSystemViewModelItem(
+  static const dexterity = GameSystemViewModelItem(
     name: 'Dexterity',
     icon: Icons.directions_run,
   );
-  static final constitution = GameSystemViewModelItem(
+  static const constitution = GameSystemViewModelItem(
     name: 'Constitution',
     icon: Icons.health_and_safety_outlined,
   );
-  static final intelligence = GameSystemViewModelItem(
+  static const intelligence = GameSystemViewModelItem(
     name: 'Intelligence',
     icon: Icons.psychology_outlined,
   );
-  static final wisdom = GameSystemViewModelItem(
+  static const wisdom = GameSystemViewModelItem(
     name: 'Wisdom',
     icon: Icons.lightbulb_outline,
   );
-  static final charisma = GameSystemViewModelItem(
+  static const charisma = GameSystemViewModelItem(
     name: 'Charisma',
     icon: Symbols.sentiment_very_satisfied,
   );
 
-  static final spellLevel = GameSystemViewModelItem(
+  static const spellLevel = GameSystemViewModelItem(
     name: 'Spell Level',
     icon: Icons.star,
   );
-  static final castingTime = GameSystemViewModelItem(
+  static const castingTime = GameSystemViewModelItem(
     name: 'Casting Time',
     icon: Icons.timer,
   );
-  static final range = GameSystemViewModelItem(
+  static const range = GameSystemViewModelItem(
     name: 'Range',
     icon: Symbols.swap_calls,
   );
-  static final duration = GameSystemViewModelItem(
+  static const duration = GameSystemViewModelItem(
     name: 'Duration',
     icon: Icons.timelapse,
   );
-  static final concentration = GameSystemViewModelItem(
+  static const concentration = GameSystemViewModelItem(
     name: 'Requires Concentration',
     icon: Symbols.mindfulness,
   );
-  static final ritual = GameSystemViewModelItem(
+  static const ritual = GameSystemViewModelItem(
     name: 'Can Be Cast As Ritual',
     icon: Symbols.person_celebrate,
   );
-  static final verbalComponent = GameSystemViewModelItem(
+  static const verbalComponent = GameSystemViewModelItem(
     name: 'Verbal Component',
     icon: Icons.record_voice_over,
   );
-  static final somaticComponent = GameSystemViewModelItem(
+  static const somaticComponent = GameSystemViewModelItem(
     name: 'Somatic Component',
     icon: Icons.waving_hand,
   );
-  static final materialComponent = GameSystemViewModelItem(
+  static const materialComponent = GameSystemViewModelItem(
     name: 'Material Component',
     icon: Icons.category,
   );
-  static final school = GameSystemViewModelItem(
+  static const school = GameSystemViewModelItem(
     name: 'School',
     icon: Icons.book,
   );
-  static final spellType = GameSystemViewModelItem(
+  static const spellType = GameSystemViewModelItem(
     name: 'Spell Type',
     icon: Symbols.emoji_symbols,
   );
-  static final characterClass = GameSystemViewModelItem(
+  static const characterClass = GameSystemViewModelItem(
     name: 'Class',
     icon: Symbols.identity_platform,
   );
 
-  static final character = GameSystemViewModelItem(
+  static const character = GameSystemViewModelItem(
     name: 'Character',
     icon: Symbols.person,
   );
 
-  static final spells = GameSystemViewModelItem(
+  static const spells = GameSystemViewModelItem(
     name: 'Spells',
     icon: Symbols.magic_button,
   );
 
-  static final atHigherLevels = GameSystemViewModelItem(
+  static const atHigherLevels = GameSystemViewModelItem(
     name: 'At Higher Levels',
     icon: Symbols.arrow_circle_up,
   );
 
-  static final abilityScores = GameSystemViewModelItem(
+  static const abilityScores = GameSystemViewModelItem(
     name: 'Ability Scores',
     icon: Icons.bar_chart,
   );
 
-  static final modifier = GameSystemViewModelItem(
+  static const modifier = GameSystemViewModelItem(
     name: 'Modifier',
     icon: Icons.add_circle_outline,
   );
 
-  static final savingThrowModifier = GameSystemViewModelItem(
+  static const savingThrowModifier = GameSystemViewModelItem(
     name: 'Saving Throw',
     icon: Icons.security,
   );
 
-  static final skills = GameSystemViewModelItem(
+  static const skills = GameSystemViewModelItem(
     name: 'Skills',
     icon: Symbols.emoji_objects,
   );
 
-  static final athletics = GameSystemViewModelItem(
+  static const athletics = GameSystemViewModelItem(
     name: 'Athletics',
     icon: Symbols.sports_gymnastics,
   );
-  static final acrobatics = GameSystemViewModelItem(
+  static const acrobatics = GameSystemViewModelItem(
     name: 'Acrobatics',
     icon: Symbols.sports_kabaddi,
   );
-  static final sleightOfHand = GameSystemViewModelItem(
+  static const sleightOfHand = GameSystemViewModelItem(
     name: 'Sleight of Hand',
     icon: Symbols.handshake,
   );
-  static final stealth = GameSystemViewModelItem(
+  static const stealth = GameSystemViewModelItem(
     name: 'Stealth',
     icon: Symbols.visibility_off,
   );
-  static final arcana = GameSystemViewModelItem(
+  static const arcana = GameSystemViewModelItem(
     name: 'Arcana',
     icon: Symbols.auto_awesome,
   );
-  static final history = GameSystemViewModelItem(
+  static const history = GameSystemViewModelItem(
     name: 'History',
     icon: Symbols.history_edu,
   );
-  static final investigation = GameSystemViewModelItem(
+  static const investigation = GameSystemViewModelItem(
     name: 'Investigation',
     icon: Symbols.search,
   );
-  static final nature = GameSystemViewModelItem(
+  static const nature = GameSystemViewModelItem(
     name: 'Nature',
     icon: Symbols.park,
   );
-  static final religion = GameSystemViewModelItem(
+  static const religion = GameSystemViewModelItem(
     name: 'Religion',
     icon: Symbols.temple_hindu,
   );
-  static final animalHandling = GameSystemViewModelItem(
+  static const animalHandling = GameSystemViewModelItem(
     name: 'Animal Handling',
     icon: Symbols.pets,
   );
-  static final insight = GameSystemViewModelItem(
+  static const insight = GameSystemViewModelItem(
     name: 'Insight',
     icon: Symbols.lightbulb,
   );
-  static final medicine = GameSystemViewModelItem(
+  static const medicine = GameSystemViewModelItem(
     name: 'Medicine',
     icon: Symbols.medical_services,
   );
-  static final perception = GameSystemViewModelItem(
+  static const perception = GameSystemViewModelItem(
     name: 'Perception',
     icon: Symbols.visibility,
   );
-  static final survival = GameSystemViewModelItem(
+  static const survival = GameSystemViewModelItem(
     name: 'Survival',
     icon: Symbols.camping,
   );
-  static final deception = GameSystemViewModelItem(
+  static const deception = GameSystemViewModelItem(
     name: 'Deception',
     icon: Symbols.mood_bad,
   );
-  static final intimidation = GameSystemViewModelItem(
+  static const intimidation = GameSystemViewModelItem(
     name: 'Intimidation',
     icon: Symbols.warning,
   );
-  static final performance = GameSystemViewModelItem(
+  static const performance = GameSystemViewModelItem(
     name: 'Performance',
     icon: Symbols.theater_comedy,
   );
-  static final persuasion = GameSystemViewModelItem(
+  static const persuasion = GameSystemViewModelItem(
     name: 'Persuasion',
     icon: Symbols.thumb_up,
   );
 
-  static final conditions = GameSystemViewModelItem(
+  static const conditions = GameSystemViewModelItem(
     name: 'Conditions',
     icon: Symbols.warning_amber,
   );
 
-  static final blinded = GameSystemViewModelItem(
+  static const blinded = GameSystemViewModelItem(
     name: 'Blinded',
     icon: Symbols.visibility_off,
   );
-  static final charmed = GameSystemViewModelItem(
+  static const charmed = GameSystemViewModelItem(
     name: 'Charmed',
     icon: Symbols.favorite,
   );
-  static final deafened = GameSystemViewModelItem(
+  static const deafened = GameSystemViewModelItem(
     name: 'Deafened',
     icon: Symbols.hearing_disabled,
   );
-  static final frightened = GameSystemViewModelItem(
+  static const frightened = GameSystemViewModelItem(
     name: 'Frightened',
     icon: Symbols.warning,
   );
-  static final grappled = GameSystemViewModelItem(
+  static const grappled = GameSystemViewModelItem(
     name: 'Grappled',
     icon: Symbols.sports_mma,
   );
-  static final incapacitated = GameSystemViewModelItem(
+  static const incapacitated = GameSystemViewModelItem(
     name: 'Incapacitated',
     icon: Symbols.bed,
   );
-  static final invisible = GameSystemViewModelItem(
+  static const invisible = GameSystemViewModelItem(
     name: 'Invisible',
     icon: Symbols.visibility,
   );
-  static final paralyzed = GameSystemViewModelItem(
+  static const paralyzed = GameSystemViewModelItem(
     name: 'Paralyzed',
     icon: Symbols.accessibility_new,
   );
-  static final petrified = GameSystemViewModelItem(
+  static const petrified = GameSystemViewModelItem(
     name: 'Petrified',
     icon: Icons.terrain,
   );
-  static final poisoned = GameSystemViewModelItem(
+  static const poisoned = GameSystemViewModelItem(
     name: 'Poisoned',
     icon: Symbols.science,
   );
-  static final prone = GameSystemViewModelItem(
+  static const prone = GameSystemViewModelItem(
     name: 'Prone',
     icon: Symbols.airline_seat_flat,
   );
-  static final restrained = GameSystemViewModelItem(
+  static const restrained = GameSystemViewModelItem(
     name: 'Restrained',
     icon: Symbols.lock,
   );
-  static final stunned = GameSystemViewModelItem(
+  static const stunned = GameSystemViewModelItem(
     name: 'Stunned',
     icon: Symbols.flash_on,
   );
-  static final unconscious = GameSystemViewModelItem(
+  static const unconscious = GameSystemViewModelItem(
     name: 'Unconscious',
     icon: Symbols.hotel,
   );
 
-  static final exhaustionLevel0 = GameSystemViewModelItem(
+  static const exhaustionLevel0 = GameSystemViewModelItem(
     name: 'No Exhaustion',
     icon: Symbols.sentiment_very_satisfied,
   );
-  static final exhaustionLevel1 = GameSystemViewModelItem(
+  static const exhaustionLevel1 = GameSystemViewModelItem(
     name: 'Exhaustion Level 1',
     icon: Symbols.directions_walk,
   );
-  static final exhaustionLevel2 = GameSystemViewModelItem(
+  static const exhaustionLevel2 = GameSystemViewModelItem(
     name: 'Exhaustion Level 2',
     icon: Symbols.stairs,
   );
-  static final exhaustionLevel3 = GameSystemViewModelItem(
+  static const exhaustionLevel3 = GameSystemViewModelItem(
     name: 'Exhaustion Level 3',
     icon: Symbols.airline_seat_recline_extra,
   );
-  static final exhaustionLevel4 = GameSystemViewModelItem(
+  static const exhaustionLevel4 = GameSystemViewModelItem(
     name: 'Exhaustion Level 4',
     icon: Symbols.battery_low,
   );
-  static final exhaustionLevel5 = GameSystemViewModelItem(
+  static const exhaustionLevel5 = GameSystemViewModelItem(
     name: 'Exhaustion Level 5',
     icon: Symbols.battery_alert,
   );
-  static final exhaustionLevel6 = GameSystemViewModelItem(
+  static const exhaustionLevel6 = GameSystemViewModelItem(
     name: 'Exhaustion Level 6',
     icon: Symbols.cancel,
   );
 
-  static final spellSlots = GameSystemViewModelItem(
+  static const spellSlots = GameSystemViewModelItem(
     name: 'Spell Slots',
     icon: Symbols.water_drop,
   );
 
-  static final maxHp = GameSystemViewModelItem(
+  static const maxHp = GameSystemViewModelItem(
     name: 'Max HP',
     icon: Symbols.favorite,
   );
 
-  static final currentHp = GameSystemViewModelItem(
+  static const currentHp = GameSystemViewModelItem(
     name: 'Current HP',
     icon: Symbols.heart_broken,
   );
 
-  static final temporaryHp = GameSystemViewModelItem(
+  static const temporaryHp = GameSystemViewModelItem(
     name: 'Temporary HP',
     icon: Symbols.heart_plus,
   );
 
-  static final armorClass = GameSystemViewModelItem(
+  static const armorClass = GameSystemViewModelItem(
     name: 'Armor Class',
     icon: Symbols.shield,
   );
 
-  static final initiative = GameSystemViewModelItem(
+  static const initiative = GameSystemViewModelItem(
     name: 'Initiative',
     icon: Symbols.flash_on,
   );
 
-  static final speed = GameSystemViewModelItem(
+  static const speed = GameSystemViewModelItem(
     name: 'Speed',
     icon: Symbols.directions_walk,
   );
 
-  static final rules = GameSystemViewModelItem(
+  static const rules = GameSystemViewModelItem(
     name: 'Rules',
     icon: Symbols.receipt_long,
   );
 
-  static final note = GameSystemViewModelItem(
+  static const note = GameSystemViewModelItem(
     name: 'Note',
     icon: Symbols.note,
   );
 
-  static final cardMode = GameSystemViewModelItem(
+  static const cardMode = GameSystemViewModelItem(
     name: 'Card Mode',
     icon: Symbols.view_module,
   );
 
-  static final listMode = GameSystemViewModelItem(
+  static const listMode = GameSystemViewModelItem(
     name: 'List Mode',
     icon: Symbols.view_list,
   );
 
-  static final customValue = GameSystemViewModelItem(
+  static const customValue = GameSystemViewModelItem(
     name: 'Custom Value',
     icon: Symbols.adjust,
   );
 
-  static final account = GameSystemViewModelItem(
+  static const account = GameSystemViewModelItem(
     name: 'Account',
     icon: Symbols.account_circle,
   );
 
-  static final contactUs = GameSystemViewModelItem(
+  static const contactUs = GameSystemViewModelItem(
     name: 'Contact Us',
     icon: Symbols.email,
   );
 
-  static final updateAvailable = GameSystemViewModelItem(
+  static const updateAvailable = GameSystemViewModelItem(
     name: 'Update Available',
     icon: Symbols.system_update,
   );
 
-  static final signIn = GameSystemViewModelItem(
+  static const signIn = GameSystemViewModelItem(
     name: 'Sign In',
     icon: Symbols.login,
   );
@@ -361,7 +361,7 @@ class GameSystemViewModelItem {
   final String? link;
   final IconData? icon;
 
-  GameSystemViewModelItem({
+  const GameSystemViewModelItem({
     required this.name,
     this.link,
     this.icon,

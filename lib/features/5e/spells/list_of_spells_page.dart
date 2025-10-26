@@ -8,11 +8,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../character/character_provider.dart';
 import '../character/models/character_5e_class_model_v1.dart';
 import '../character/models/character_5e_model_v1.dart';
 import 'spell_card_page.dart';
 import 'utils/spell_utils.dart';
 import 'view_models/spell_view_model.dart';
+import 'widgets/add_spell_to_character_widget.dart';
 import 'widgets/add_to_character_menu.dart';
 import 'widgets/spell_filter_drawer.dart';
 
@@ -61,70 +63,10 @@ class ListOfSpellsPage extends HookConsumerWidget {
           )
         : [];
 
-    addToCharacterWidgetBuilder(SpellViewModel spell) {
-      final isSpellAdded = selectedCharacter != null &&
-          selectedCharacter.knownSpells.contains(spell.id);
-      return IconButton(
-        icon: isSpellAdded
-            ? const Icon(Symbols.person_check)
-            : const Icon(Symbols.add),
-        onPressed: () async {
-          if (selectedCharacter != null) {
-            Character5eModelV1 updatedCharacter;
-            if (isSpellAdded) {
-              updatedCharacter = selectedCharacter.removeSpellForCharacter(
-                spellId: spell.id,
-                onlyUnprepare: false,
-              );
-            } else {
-              try {
-                updatedCharacter = selectedCharacter.addSpellForCharacter(
-                  spellId: spell.id,
-                );
-              } on MultipleClassesWithSpellFoundException catch (_) {
-                final selectedClassId = await showDialog<String?>(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('Select Class'),
-                      content: SingleChildScrollView(
-                        child: ListBody(
-                          children: selectedCharacter.classesStates.map(
-                            (classState) {
-                              final classModel = classState.classModel;
-                              return RadioListTile<String>(
-                                title: Text(classModel.className ?? ''),
-                                value: classModel.id,
-                                groupValue: selectedCharacterId.value,
-                                onChanged: (value) {
-                                  Navigator.of(context).pop(value);
-                                },
-                              );
-                            },
-                          ).toList(),
-                        ),
-                      ),
-                    );
-                  },
-                );
-                if (selectedClassId == null) {
-                  return;
-                }
-                updatedCharacter = selectedCharacter.addSpellForCharacter(
-                  spellId: spell.id,
-                  classId: selectedClassId,
-                );
-              }
-            }
-            final repository =
-                await ref.read(characterRepositoryProvider.future);
-            await repository?.updateCharacter(updatedCharacter);
-          }
-        },
-      );
-    }
-
-    final isAddToCharacterEnabled = selectedCharacter != null;
+    final isAddAllToCharacterEnabled = selectedCharacter != null;
+    final showAddButton = useState<bool>(selectedCharacter != null);
+    final isAddButtonVisible =
+        showAddButton.value || isAddAllToCharacterEnabled;
 
     final searchController = useTextEditingController(
       text: spellFilters.value.searchText,
@@ -155,12 +97,23 @@ class ListOfSpellsPage extends HookConsumerWidget {
           isListMode.value = !isListMode.value;
         },
       ),
+      MenuItemButton(
+        leadingIcon: Icon(
+          Symbols.add,
+        ),
+        child: showAddButton.value
+            ? Text("Hide Add Button")
+            : Text("Show Add Button"),
+        onPressed: () {
+          showAddButton.value = !showAddButton.value;
+        },
+      ),
       SubmenuButton(
         menuChildren: addToCharacterEntries,
         leadingIcon: Icon(
           Symbols.person_add,
         ),
-        child: Text("Add to Character"),
+        child: Text("Add all to"),
       )
     ];
 
@@ -215,106 +168,114 @@ class ListOfSpellsPage extends HookConsumerWidget {
       },
     );
 
-    return Scaffold(
-      endDrawer: spellFilterDrawer(
-        allSpells,
-        characters,
-        spellFilters,
-      ),
-      appBar: AppBar(
-        title: appBarTitle,
-        actions: [
-          MenuAnchor(
-            menuChildren: menuEntries,
-            builder: (context, menuController, child) {
-              return IconButton(
-                icon: const Icon(Icons.more_vert),
-                isSelected: menuController.isOpen,
-                onPressed: () {
-                  menuController.isOpen
-                      ? menuController.close()
-                      : menuController.open();
-                },
-              );
-            },
-          ),
-          Builder(
-            builder: (context) {
-              return IconButton(
-                icon: const Icon(Icons.tune),
-                onPressed: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
-              );
-            },
-          ),
-        ],
-      ),
-      floatingActionButton: isSearchVisible
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                searchFocusNode.requestFocus();
-                FocusScope.of(context).requestFocus(searchFocusNode);
-              },
-              child: const Icon(Icons.search),
-            ),
-      body: allSpells.when(
-        data: (cantrips) {
-          final filteredSpells =
-              spellFilters.value.filterSpells(cantrips.map((e) => e).toList())
-                ..sort(
-                  (a, b) {
-                    return a.spellLevel == b.spellLevel
-                        ? a.name.compareTo(b.name)
-                        : a.spellLevel.compareTo(b.spellLevel);
+    return SelectedCharacterIdProvider(
+      selectedCharacterId: selectedCharacterId.value,
+      child: Scaffold(
+        endDrawer: spellFilterDrawer(
+          allSpells,
+          characters,
+          spellFilters,
+        ),
+        appBar: AppBar(
+          title: appBarTitle,
+          actions: [
+            MenuAnchor(
+              menuChildren: menuEntries,
+              builder: (context, menuController, child) {
+                return IconButton(
+                  icon: const Icon(Icons.more_vert),
+                  isSelected: menuController.isOpen,
+                  onPressed: () {
+                    menuController.isOpen
+                        ? menuController.close()
+                        : menuController.open();
                   },
                 );
-          return SafeArea(
-            child: GestureDetector(
-              onScaleEnd: (details) {
-                if (details.scaleVelocity < 0) {
-                  isListMode.value = true;
-                } else if (details.scaleVelocity > 0) {
-                  isListMode.value = false;
-                }
               },
-              child: Builder(
-                builder: (context) {
-                  if (isListMode.value) {
-                    return listView(
-                      filteredSpells,
-                      isAddToCharacterEnabled,
-                      addToCharacterWidgetBuilder,
-                    );
-                  }
-                  return gridView(
-                    context,
-                    filteredSpells,
-                    isAddToCharacterEnabled,
-                    addToCharacterWidgetBuilder,
-                  );
-                },
-              ),
             ),
-          );
-        },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
+            Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: const Icon(Icons.tune),
+                  onPressed: () {
+                    Scaffold.of(context).openEndDrawer();
+                  },
+                );
+              },
+            ),
+          ],
         ),
-        error: (error, stack) {
-          return Center(
-            child: Text('Error: $error'),
-          );
-        },
+        floatingActionButton: isSearchVisible
+            ? null
+            : FloatingActionButton(
+                onPressed: () {
+                  searchFocusNode.requestFocus();
+                  FocusScope.of(context).requestFocus(searchFocusNode);
+                },
+                child: const Icon(Icons.search),
+              ),
+        body: allSpells.when(
+          data: (cantrips) {
+            final filteredSpells =
+                spellFilters.value.filterSpells(cantrips.map((e) => e).toList())
+                  ..sort(
+                    (a, b) {
+                      return a.spellLevel == b.spellLevel
+                          ? a.name.compareTo(b.name)
+                          : a.spellLevel.compareTo(b.spellLevel);
+                    },
+                  );
+            return SafeArea(
+              child: GestureDetector(
+                onScaleEnd: (details) {
+                  if (details.scaleVelocity < 0) {
+                    isListMode.value = true;
+                  } else if (details.scaleVelocity > 0) {
+                    isListMode.value = false;
+                  }
+                },
+                child: Builder(
+                  builder: (context) {
+                    if (isListMode.value) {
+                      return listView(
+                        filteredSpells,
+                        isAddButtonVisible,
+                        (spell) => AddSpellToCharacterWidget(
+                          spellViewModel: spell,
+                        ),
+                      );
+                    }
+                    return gridView(
+                      context,
+                      filteredSpells,
+                      isAddButtonVisible,
+                      (spell) => AddSpellToCharacterWidget(
+                        spellViewModel: spell,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+          loading: () => const Center(
+            child: CircularProgressIndicator(),
+          ),
+          error: (error, stack) {
+            return Center(
+              child: Text('Error: $error'),
+            );
+          },
+        ),
       ),
     );
   }
 
   ListView listView(
-      List<SpellViewModel> filteredSpells,
-      bool isAddToCharacterEnabled,
-      IconButton Function(SpellViewModel spell) addToCharacterWidgetBuilder) {
+    List<SpellViewModel> filteredSpells,
+    bool isQuickAddEnabled,
+    Widget Function(SpellViewModel spell) addToCharacterWidgetBuilder,
+  ) {
     return ListView.separated(
       padding: EdgeInsets.symmetric(
         horizontal: 8,
@@ -342,18 +303,23 @@ class ListOfSpellsPage extends HookConsumerWidget {
             Card.outlined(
               clipBehavior: Clip.antiAlias,
               child: ListTile(
-                leading: isAddToCharacterEnabled
+                leading: isQuickAddEnabled
                     ? addToCharacterWidgetBuilder(spellViewModel)
                     : null,
                 title: Text(spellViewModel.name),
                 onTap: () {
+                  final selectedCharacterId =
+                      SelectedCharacterIdProvider.maybeOf(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return SpellCardPage(
-                          id: spellViewModel.id,
-                          spellsFuture: Future.value(filteredSpells),
+                        return SelectedCharacterIdProvider(
+                          selectedCharacterId: selectedCharacterId,
+                          child: SpellCardPage(
+                            id: spellViewModel.id,
+                            spellsFuture: Future.value(filteredSpells),
+                          ),
                         );
                       },
                     ),
@@ -375,8 +341,8 @@ class ListOfSpellsPage extends HookConsumerWidget {
   Widget gridView(
     BuildContext context,
     List<SpellViewModel> filteredSpells,
-    bool isAddToCharacterEnabled,
-    IconButton Function(SpellViewModel spell) addToCharacterWidgetBuilder,
+    bool isQuickAddEnabled,
+    Widget Function(SpellViewModel spell) addToCharacterWidgetBuilder,
   ) {
     final Map<int, List<SpellViewModel>> spellGroupedByLevel =
         filteredSpells.groupListsBy(
@@ -424,13 +390,21 @@ class ListOfSpellsPage extends HookConsumerWidget {
                         clipBehavior: Clip.antiAlias,
                         child: InkWell(
                           onTap: () {
+                            final selectedCharacterId =
+                                SelectedCharacterIdProvider.maybeOf(
+                              context,
+                            );
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return SpellCardPage(
-                                    id: spellViewModel.id,
-                                    spellsFuture: Future.value(filteredSpells),
+                                  return SelectedCharacterIdProvider(
+                                    selectedCharacterId: selectedCharacterId,
+                                    child: SpellCardPage(
+                                      id: spellViewModel.id,
+                                      spellsFuture:
+                                          Future.value(filteredSpells),
+                                    ),
                                   );
                                 },
                               ),
@@ -442,13 +416,14 @@ class ListOfSpellsPage extends HookConsumerWidget {
                               SmallSpellWidget(
                                 spell: spellViewModel,
                               ),
-                              if (isAddToCharacterEnabled)
+                              if (isQuickAddEnabled)
                                 Align(
                                   alignment: Alignment.topRight,
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: addToCharacterWidgetBuilder(
-                                        spellViewModel),
+                                      spellViewModel,
+                                    ),
                                   ),
                                 ),
                             ],

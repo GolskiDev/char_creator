@@ -3,12 +3,13 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
+import '../../game_system_view_model.dart';
 import '../../spells/spell_card_page.dart';
 import '../../spells/utils/spell_utils.dart';
 import '../../spells/view_models/spell_view_model.dart';
 import '../../tags.dart';
+import '../character_provider.dart';
 
 class GroupedSpellsWidget extends HookConsumerWidget {
   final List<SpellViewModel> characterSpells;
@@ -19,7 +20,7 @@ class GroupedSpellsWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedGrouping = useState('All');
+    final selectedGrouping = useState(GameSystemViewModel.spellLevel.name);
 
     final groupedSpells = _groupSpells(characterSpells, selectedGrouping.value);
 
@@ -164,19 +165,22 @@ class GroupedSpellsWidget extends HookConsumerWidget {
         showSelectedIcon: false,
         segments: [
           ButtonSegment(
-            value: 'Type',
-            tooltip: 'Spell Type',
-            icon: Icon(Symbols.emoji_symbols),
+            value: GameSystemViewModel.spellType.name,
+            tooltip: GameSystemViewModel.spellType.name,
+            icon: Icon(GameSystemViewModel.spellType.icon),
+            label: Text(GameSystemViewModel.spellType.name),
           ),
           ButtonSegment(
-            value: 'Level',
-            tooltip: 'Level',
-            icon: Icon(Icons.star),
+            value: GameSystemViewModel.spellLevel.name,
+            tooltip: GameSystemViewModel.spellLevel.name,
+            icon: Icon(GameSystemViewModel.spellLevel.icon),
+            label: Text(GameSystemViewModel.spellLevel.name),
           ),
           ButtonSegment(
-            value: 'Casting Time',
-            tooltip: 'Casting Time',
-            icon: Icon(Icons.timer),
+            value: GameSystemViewModel.castingTime.name,
+            tooltip: GameSystemViewModel.castingTime.name,
+            icon: Icon(GameSystemViewModel.castingTime.icon),
+            label: Text(GameSystemViewModel.castingTime.name),
           ),
         ],
         selected: {selectedGrouping.value},
@@ -194,7 +198,7 @@ class GroupedSpellsWidget extends HookConsumerWidget {
     String grouping,
   ) {
     switch (grouping) {
-      case 'Type':
+      case 'Spell Type':
         return _groupByType(spells);
       case 'Casting Time':
         return _groupByCastingTime(spells);
@@ -235,12 +239,16 @@ class GroupedSpellsWidget extends HookConsumerWidget {
     required String spellId,
     required List<SpellViewModel> spells,
   }) {
+    final selectedCharacterId = SelectedCharacterIdProvider.maybeOf(context);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SpellCardPage(
-          id: spellId,
-          spellsFuture: Future.value(spells),
+        builder: (context) => SelectedCharacterIdProvider(
+          selectedCharacterId: selectedCharacterId,
+          child: SpellCardPage(
+            id: spellId,
+            spellsFuture: Future.value(spells),
+          ),
         ),
       ),
     );

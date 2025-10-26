@@ -5,6 +5,7 @@ import 'package:markdown/markdown.dart' hide Text;
 
 import '../../game_system_view_model.dart';
 import '../view_models/spell_view_model.dart';
+import 'add_spell_to_character_widget.dart';
 
 class SpellCardWidget extends ConsumerWidget {
   const SpellCardWidget({
@@ -242,21 +243,34 @@ class SpellCardWidget extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Hero(
-                        tag: spell.name,
-                        child: Material(
-                          child: ListTile(
-                            title: Text(
-                              spell.name,
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                            ),
+                            child: Hero(
+                              tag: spell.name,
+                              child: Material(
+                                child: ListTile(
+                                  title: Text(
+                                    spell.name,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: AddSpellToCharacterWidget(
+                            spellViewModel: spell,
+                          ),
+                        ),
+                      ],
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
