@@ -47,7 +47,7 @@ class ConsentsPage extends HookConsumerWidget {
                     child: Card(
                       clipBehavior: Clip.hardEdge,
                       child: Image.asset(
-                        'assets/images/ui/contract.png',
+                        'assets/images/ui/contract.webp',
                       ),
                     ),
                   ),

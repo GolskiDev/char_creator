@@ -140,10 +140,10 @@ class NewScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final someSpells = [
-      'assets/images/spells/acid_arrow.png',
-      'assets/images/spells/aid.png',
-      'assets/images/spells/animal_friendship.png',
-      'assets/images/spells/banishment.png',
+      'assets/images/spells/acid_arrow.webp',
+      'assets/images/spells/aid.webp',
+      'assets/images/spells/animal_friendship.webp',
+      'assets/images/spells/banishment.webp',
     ];
 
     final pageController = usePageController(

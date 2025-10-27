@@ -19,7 +19,7 @@ class SpellImagesRepository {
 
   Future<bool> fileExists(String spellSlug) async {
     try {
-      final assetPath = '$_basePath$spellSlug.png';
+      final assetPath = imageNameToPath(spellSlug);
       await rootBundle.load(assetPath);
       return true;
     } catch (e) {
@@ -31,7 +31,7 @@ class SpellImagesRepository {
     final imageName = spellSlugToImageName(spellSlug);
     final exists = await fileExists(imageName);
     if (exists) {
-      return '$_basePath$imageName.png';
+      return imageNameToPath(imageName);
     } else {
       return null;
     }
@@ -39,5 +39,9 @@ class SpellImagesRepository {
 
   String spellSlugToImageName(String spellSlug) {
     return spellSlug.replaceAll('-', '_');
+  }
+
+  String imageNameToPath(String imageName) {
+    return '$_basePath$imageName.webp';
   }
 }
