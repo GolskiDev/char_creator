@@ -43,7 +43,7 @@ final spellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
       },
     ).toList();
 
-    final spellViewModels = Future.wait(
+    final spellViewModels = await Future.wait(
       spellViewModelsFutures,
     );
 

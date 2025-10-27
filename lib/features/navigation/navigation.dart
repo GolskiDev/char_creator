@@ -90,7 +90,7 @@ class Navigation {
                     builder: (context, state) => Consumer(
                       builder: (context, ref, child) {
                         final spellsFuture =
-                            ref.read(spellViewModelsProvider.future);
+                            ref.watch(spellViewModelsProvider.future);
                         return SpellCardPage(
                           id: state.pathParameters['id']!,
                           spellsFuture: spellsFuture,
