@@ -13,6 +13,7 @@ class SmallSpellWidget extends HookConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final placeholderImagePath = 'assets/images/ui/placeholder.webp';
     return Card.outlined(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -39,6 +40,22 @@ class SmallSpellWidget extends HookConsumerWidget {
                     );
                   },
                 ),
+              ),
+            if (spell.imageUrl == null)
+              Image.asset(
+                placeholderImagePath,
+                fit: BoxFit.cover,
+                frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                  if (wasSynchronouslyLoaded) {
+                    return child;
+                  }
+                  return AnimatedOpacity(
+                    duration: Durations.medium1,
+                    curve: Curves.easeIn,
+                    opacity: frame == null ? 0 : 1,
+                    child: child,
+                  );
+                },
               ),
             Align(
               alignment: Alignment.bottomCenter,

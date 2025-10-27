@@ -171,10 +171,15 @@ class ListOfSpellsPage extends HookConsumerWidget {
     return SelectedCharacterIdProvider(
       selectedCharacterId: selectedCharacterId.value,
       child: Scaffold(
-        endDrawer: spellFilterDrawer(
-          allSpells,
-          characters,
-          spellFilters,
+        endDrawer: Theme(
+          data: Theme.of(context).copyWith(
+            visualDensity: VisualDensity.compact,
+          ),
+          child: spellFilterDrawer(
+            allSpells,
+            characters,
+            spellFilters,
+          ),
         ),
         endDrawerEnableOpenDragGesture: false,
         appBar: AppBar(
