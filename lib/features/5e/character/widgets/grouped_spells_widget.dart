@@ -81,7 +81,7 @@ class GroupedSpellsWidget extends HookConsumerWidget {
                       children: entry.value.map(
                         (spell) {
                           return Container(
-                            width: 200,
+                            width: 150,
                             margin: const EdgeInsets.all(8.0),
                             child: AspectRatio(
                               aspectRatio: 2 / 3,

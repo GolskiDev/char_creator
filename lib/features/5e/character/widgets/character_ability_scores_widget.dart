@@ -395,10 +395,9 @@ class CharacterAbilityScoresWidget extends HookConsumerWidget {
         ...legend,
         ...abilityScoresState.value.abilityScores.entries.sorted(
           (a, b) {
-            return b.value.value?.compareTo(
-                  a.value.value ?? 0,
-                ) ??
-                -1;
+            return a.key.name.compareTo(
+              b.key.name,
+            );
           },
         ).map(
           (entry) => abilityScoreRow(abilityScore: entry.value),

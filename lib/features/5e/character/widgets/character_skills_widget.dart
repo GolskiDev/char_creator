@@ -89,7 +89,7 @@ class CharacterSkillsWidget extends HookConsumerWidget {
                       title: Text(skill.gameSystemViewModel.name),
                       leading: Icon(skill.gameSystemViewModel.icon),
                       trailing: SizedBox(
-                        width: 50,
+                        width: 70,
                         height: 50,
                         child: Card.filled(
                           child: Stack(

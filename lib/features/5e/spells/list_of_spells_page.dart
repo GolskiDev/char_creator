@@ -176,6 +176,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
           characters,
           spellFilters,
         ),
+        endDrawerEnableOpenDragGesture: false,
         appBar: AppBar(
           title: appBarTitle,
           actions: [
