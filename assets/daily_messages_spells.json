@@ -1,58 +1,112 @@
 [
     {
-        "id": "chill-touch",
+        "id": "6855077e-db0c-46c0-b52e-c8f9138ab7c0",
+        "spellId": "chill-touch",
         "subtitle": "One touch and suddenly healing is off the menu"
     },
     {
-        "id": "dancing-lights",
+        "id": "e9372745-ed0c-47dd-878a-dd000893e74b",
+        "spellId": "dancing-lights",
         "subtitle": "Your very own glowing disco balls. Party mode: activated."
     },
     {
-        "id": "acid-splash",
+        "id": "29294528-8894-47c4-80c4-d01aa8c488e6",
+        "spellId": "acid-splash",
         "subtitle": "The magical equivalent of spitting. But, you know… deadlier."
     },
     {
-        "id": "druidcraft",
+        "id": "1193f54e-20ac-422a-a898-8f313f7cf5b6",
+        "spellId": "druidcraft",
         "subtitle": "A puff of wind, a leaf falls… hold your applause."
     },
     {
-        "id": "fire-bolt",
+        "id": "2b812a7a-e9ea-4bfe-85af-e06aa1558720",
+        "spellId": "fire-bolt",
         "subtitle": "Your ranged fire tantrum, now in convenient spell form."
     },
     {
-        "id": "eldritch-blast",
+        "id": "af6fac84-8d4a-428e-a4e7-fcf741e4a4d8",
+        "spellId": "eldritch-blast",
         "subtitle": "Force damage!"
     },
     {
-        "id": "guidance",
+        "id": "8aff816d-5de5-41da-a4dd-c5202aa5fbea",
+        "spellId": "guidance",
         "subtitle": "Because nothing says 'I believe in you' like a measly +1d4."
     },
     {
-        "id": "guidance",
+        "id": "a4eb1708-8d8e-4807-953b-b442a78212c5",
+        "spellId": "guidance",
         "subtitle": "Helping you succeed… by the tiniest possible margin."
     },
     {
-        "id": "light",
+        "id": "a5a658f2-dafa-46fc-9a6c-8a56034ebdd4",
+        "spellId": "light",
         "subtitle": "Flashy and mildly useful. Also, enemies now know exactly where you are."
     },
     {
-        "id": "mage-hand",
+        "id": "b59ce45c-c0ad-4aa3-a6b1-bfb13a064a2e",
+        "spellId": "mage-hand",
         "subtitle": "Your magical floating hand is here to do chores. Yes, really."
     },
     {
-        "id": "mending",
+        "id": "6aa5761e-e7f2-45f3-9358-b5a5eaf95501",
+        "spellId": "mending",
         "subtitle": "Fixes broken stuff! Magic can’t fix your life though, sorry."
     },
     {
-        "id": "mending",
+        "id": "df67a3bb-b64b-417d-8159-51f393aa4c05",
+        "spellId": "mending",
         "subtitle": "Your wineskin won’t leak anymore. Party saved."
     },
     {
-        "id": "message",
+        "id": "873e54c7-7418-4fe1-9060-43c962cfd7fd",
+        "spellId": "message",
         "subtitle": "Talking behind someone's back just got a magical upgrade."
     },
     {
-        "id": "minor-illusion",
-        "subtitle": "Because sometimes, reality just needs a little tweak."
+        "id": "feb74fcb-f40e-4241-ba55-1ef15e1734c2",
+        "spellId": "minor-illusion",
+        "subtitle": "Your fake chair won’t hold anyone! This gives me an idea..."
+    },
+    {
+        "id": "677e0ea6-e3ef-4d57-b68b-efbad0debccd",
+        "spellId": "poison-spray",
+        "subtitle": "Because when words fail, try a puff of toxic air."
+    },
+    {
+        "id": "bbae764b-fd93-40da-9e9b-bca277602ae8",
+        "spellId": "prestidigitation",
+        "subtitle": "Flavor your soup or summon confetti. Peak wizardry, really."
+    },
+    {
+        "id": "3850ca84-132b-4685-a42d-ff233e08f641",
+        "spellId": "produce-flame",
+        "subtitle": "You made a tiny fireball! Try not to burn your eyebrows off."
+    },
+    {
+        "id": "f7cba02b-4bc3-4577-81b7-ba8f0671b727",
+        "spellId": "produce-flame",
+        "subtitle": "Bright, flickery, and mildly destructive. Just like your party."
+    },
+    {
+        "id": "fdfe30a8-bfa0-4746-a2a4-b1243b003444",
+        "spellId": "ray-of-frost",
+        "subtitle": "Cast & Chill. Watch enemies in slow motion."
+    },
+    {
+        "id": "0f999566-e374-4580-bdef-607a5af4f9cb",
+        "spellId": "resistance",
+        "subtitle": "Probably won't save you... But the effort counts, right?"
+    },
+    {
+        "id": "65829289-66ef-4976-a9e0-b812a003faea",
+        "spellId": "sacred-flame",
+        "subtitle": "Nothing says ‘divine wrath’ like glowing light and 1d8 pain."
+    },
+    {
+        "id": "10cd1f7e-c31e-4a95-baa2-e99e076c7b58",
+        "spellId": "shillelagh",
+        "subtitle": "Turn your humble stick into a d8-wielding nature-enhanced menace."
     }
 ]

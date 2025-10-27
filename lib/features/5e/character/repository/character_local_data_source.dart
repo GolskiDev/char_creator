@@ -19,7 +19,7 @@ final characterLocalDataSourceProvider =
 
 class UserCharactersLocalDataSource {
   static const String _storageKey = 'characters';
-  final SharedPreferences prefs;
+  final SharedPreferencesWithCache prefs;
 
   UserCharactersLocalDataSource(this.prefs);
 

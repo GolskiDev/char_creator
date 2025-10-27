@@ -4,24 +4,34 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../utils/shared_preferences.dart';
 import '../models/character_5e_class_model_v1.dart';
 import 'character_classes_remote_data_source.dart';
 
-final characterClassesRepositoryProvider = Provider(
-  (ref) => CharacterClassesRepository(
-    remoteDataSource: ref.watch(characterClassesRemoteDataSourceProvider),
-  ),
+final characterClassesRepositoryProvider = FutureProvider(
+  (ref) async {
+    final sharedPreferences = await ref.watch(sharedPreferencesProvider.future);
+    return CharacterClassesRepository(
+      remoteDataSource: ref.watch(characterClassesRemoteDataSourceProvider),
+      sharedPreferences: sharedPreferences,
+    );
+  },
 );
 
 final characterClassesStreamProvider =
     StreamProvider<List<ICharacter5eClassModelV1>>(
-  (ref) => ref.watch(characterClassesRepositoryProvider).stream,
+  (ref) async* {
+    final repository =
+        await ref.watch(characterClassesRepositoryProvider.future);
+    yield* repository.stream;
+  },
 );
 
 class CharacterClassesRepository {
   static const String _storageKey = 'character_classes';
 
   final CharacterClassesRemoteDataSource remoteDataSource;
+  final SharedPreferencesWithCache sharedPreferences;
 
   Stream<List<ICharacter5eClassModelV1>> get stream => _controller.stream;
 
@@ -29,8 +39,10 @@ class CharacterClassesRepository {
   late final StreamSubscription<List<ICharacter5eClassModelV1>>
       _remoteStreamSubscription;
 
-  CharacterClassesRepository({required this.remoteDataSource})
-      : _controller =
+  CharacterClassesRepository({
+    required this.remoteDataSource,
+    required this.sharedPreferences,
+  }) : _controller =
             StreamController<List<ICharacter5eClassModelV1>>.broadcast() {
     _controller.onListen = _refreshStream;
 
@@ -61,19 +73,17 @@ class CharacterClassesRepository {
 
   Future<void> saveCharacterClass(
       ICharacter5eClassModelV1 characterClass) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String encodedClass = _encodeCharacterClass(characterClass);
-    List<String> classes = prefs.getStringList(_storageKey) ?? [];
+    List<String> classes = sharedPreferences.getStringList(_storageKey) ?? [];
     classes.add(encodedClass);
-    await prefs.setStringList(_storageKey, classes);
+    await sharedPreferences.setStringList(_storageKey, classes);
 
     await _refreshStream();
   }
 
   Future<List<ICharacter5eClassModelV1>> getAllCharacterClasses() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    final List<String>? encodedClasses = prefs.getStringList(_storageKey);
+    final List<String>? encodedClasses =
+        sharedPreferences.getStringList(_storageKey);
     final sharedPrefsClasses = encodedClasses ?? [];
 
     final classes = sharedPrefsClasses
@@ -86,26 +96,25 @@ class CharacterClassesRepository {
   }
 
   Future<void> updateCharacterClass(
-      ICharacter5eClassModelV1 updatedClass) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> classes = prefs.getStringList(_storageKey) ?? [];
+    ICharacter5eClassModelV1 updatedClass,
+  ) async {
+    List<String> classes = sharedPreferences.getStringList(_storageKey) ?? [];
     final int index = classes.indexWhere((c) =>
         Character5eCustomClassModelV1.fromMap(json.decode(c)).id ==
         updatedClass.id);
     if (index != -1) {
       classes[index] = _encodeCharacterClass(updatedClass);
-      await prefs.setStringList(_storageKey, classes);
+      await sharedPreferences.setStringList(_storageKey, classes);
     }
 
     await _refreshStream();
   }
 
   Future<void> deleteCharacterClass(String classId) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> classes = prefs.getStringList(_storageKey) ?? [];
+    List<String> classes = sharedPreferences.getStringList(_storageKey) ?? [];
     classes.removeWhere((c) =>
         Character5eCustomClassModelV1.fromMap(json.decode(c)).id == classId);
-    await prefs.setStringList(_storageKey, classes);
+    await sharedPreferences.setStringList(_storageKey, classes);
 
     await _refreshStream();
   }
