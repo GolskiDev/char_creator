@@ -58,6 +58,7 @@ class DailyMessagesSpells {
 
   static String assetPath = 'assets/daily_messages_spells.json';
   static String readSpellIdsKey = 'read_daily_message_spells';
+  static String lastResetKey = 'last_reset_daily_message_spells';
 
   DailyMessagesSpells({
     required this.spellImagesRepository,
@@ -68,6 +69,16 @@ class DailyMessagesSpells {
     final dailyMessages = await getDailyMessageSpells();
 
     final readSpellIds = await getAllReadSpellIds();
+
+    if (!await shouldGetNewDailyMessage()) {
+      DailyMessageSpellViewModel? lastDailyMessage = await getLastDailyMessage(
+        readSpellIds,
+        dailyMessages,
+      );
+      if (lastDailyMessage != null) {
+        return lastDailyMessage;
+      }
+    }
 
     dailyMessages.removeWhere(
       (message) => readSpellIds.contains(message.spellId),
@@ -87,6 +98,7 @@ class DailyMessagesSpells {
         continue;
       }
       markSpellAsRead(dailyMessage.spellId);
+      setTimeOfNewMessageFetched(DateTime.now());
       return DailyMessageSpellViewModel(
         spellId: dailyMessage.spellId,
         subtitle: dailyMessage.subtitle,
@@ -98,6 +110,30 @@ class DailyMessagesSpells {
       subtitle: dailyMessagesShuffled.first.subtitle,
       imageUrl: '',
     );
+  }
+
+  Future<DailyMessageSpellViewModel?> getLastDailyMessage(
+    List<String> readSpellIds,
+    List<DailyMessageSpellModel> dailyMessages,
+  ) async {
+    final lastShownSpellId = readSpellIds.lastOrNull;
+    if (lastShownSpellId != null) {
+      final dailyMessage = dailyMessages.firstWhere(
+        (message) => message.spellId == lastShownSpellId,
+        orElse: () => dailyMessages.first,
+      );
+      final imagePath =
+          await spellImagesRepository.getImagePath(dailyMessage.spellId);
+
+      if (imagePath != null) {
+        return DailyMessageSpellViewModel(
+          spellId: dailyMessage.spellId,
+          subtitle: dailyMessage.subtitle,
+          imageUrl: imagePath,
+        );
+      }
+    }
+    return null;
   }
 
   Future<bool> spellImageExists(String spellSlug) async {
@@ -143,5 +179,31 @@ class DailyMessagesSpells {
 
   Future<void> clearReadSpells() async {
     await sharedPreferences.remove(readSpellIdsKey);
+  }
+
+  Future<bool> shouldGetNewDailyMessage() async {
+    final lastReset = await getTimeOfLastMessageFetched();
+    final now = DateTime.now();
+
+    if (lastReset == null) {
+      return true;
+    }
+
+    return now.difference(lastReset).inHours >= 20;
+  }
+
+  Future<void> setTimeOfNewMessageFetched(DateTime dateTime) async {
+    await sharedPreferences.setString(
+      lastResetKey,
+      dateTime.toIso8601String(),
+    );
+  }
+
+  Future<DateTime?> getTimeOfLastMessageFetched() async {
+    final lastResetString = sharedPreferences.getString(lastResetKey);
+    if (lastResetString == null) {
+      return null;
+    }
+    return DateTime.tryParse(lastResetString);
   }
 }
