@@ -52,6 +52,7 @@ dependencies:
   # ui
   material_symbols_icons:
   google_fonts: 
+  flutter_launcher_icons:
 
 dev_dependencies:
   flutter_test:

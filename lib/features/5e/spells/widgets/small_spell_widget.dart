@@ -33,7 +33,7 @@ class SmallSpellWidget extends HookConsumerWidget {
                       return child;
                     }
                     return AnimatedOpacity(
-                      duration: Durations.medium1,
+                      duration: Durations.long1,
                       curve: Curves.easeIn,
                       opacity: frame == null ? 0 : 1,
                       child: child,
@@ -50,7 +50,7 @@ class SmallSpellWidget extends HookConsumerWidget {
                     return child;
                   }
                   return AnimatedOpacity(
-                    duration: Durations.medium1,
+                    duration: Durations.long1,
                     curve: Curves.easeIn,
                     opacity: frame == null ? 0 : 1,
                     child: child,

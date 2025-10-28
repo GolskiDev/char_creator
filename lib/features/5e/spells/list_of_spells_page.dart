@@ -356,7 +356,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
     );
 
     return CustomScrollView(
-      cacheExtent: MediaQuery.of(context).size.height,
+      cacheExtent: MediaQuery.of(context).size.height * 2,
       slivers: [
         ...spellGroupedByLevel.entries
             .map(
