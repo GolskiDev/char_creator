@@ -1,4 +1,4 @@
-package com.example.char_creator
+package dev.golski.spellsandtools
 
 import io.flutter.embedding.android.FlutterActivity
 
