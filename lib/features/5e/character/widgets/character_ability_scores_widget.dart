@@ -1,6 +1,6 @@
 import 'dart:developer' as dev;
 
-import 'package:char_creator/features/5e/game_system_view_model.dart';
+import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

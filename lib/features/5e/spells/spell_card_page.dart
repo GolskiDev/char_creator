@@ -1,4 +1,4 @@
-import 'package:char_creator/common/widgets/loading_indicator.dart';
+import 'package:spells_and_tools/common/widgets/loading_indicator.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

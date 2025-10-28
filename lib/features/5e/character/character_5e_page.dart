@@ -1,5 +1,5 @@
-import 'package:char_creator/features/5e/character/widgets/character_stats_widget.dart';
-import 'package:char_creator/features/5e/character/widgets/notes/character_5e_note_widget.dart';
+import 'package:spells_and_tools/features/5e/character/widgets/character_stats_widget.dart';
+import 'package:spells_and_tools/features/5e/character/widgets/notes/character_5e_note_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';

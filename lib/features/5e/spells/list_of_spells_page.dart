@@ -1,7 +1,7 @@
-import 'package:char_creator/features/5e/character/repository/character_repository.dart';
-import 'package:char_creator/features/5e/game_system_view_model.dart';
-import 'package:char_creator/features/5e/spells/filters/spell_model_filters_state.dart';
-import 'package:char_creator/features/5e/spells/widgets/small_spell_widget.dart';
+import 'package:spells_and_tools/features/5e/character/repository/character_repository.dart';
+import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
+import 'package:spells_and_tools/features/5e/spells/filters/spell_model_filters_state.dart';
+import 'package:spells_and_tools/features/5e/spells/widgets/small_spell_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';

@@ -1,4 +1,4 @@
-import 'package:char_creator/features/5e/spells/srd/srd_repository.dart';
+import 'package:spells_and_tools/features/5e/spells/srd/srd_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:riverpod/riverpod.dart';
 

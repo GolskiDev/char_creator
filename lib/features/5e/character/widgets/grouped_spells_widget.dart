@@ -1,4 +1,4 @@
-import 'package:char_creator/features/5e/spells/models/spell_casting_time.dart';
+import 'package:spells_and_tools/features/5e/spells/models/spell_casting_time.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';

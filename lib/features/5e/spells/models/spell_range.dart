@@ -1,4 +1,4 @@
-import 'package:char_creator/common/interfaces/identifiable.dart';
+import 'package:spells_and_tools/common/interfaces/identifiable.dart';
 
 sealed class SpellRange implements Identifiable {
   static SpellRange fromString(String range) {

@@ -1,4 +1,4 @@
-import 'package:char_creator/features/5e/character/models/character_5e_spell_slots.dart';
+import 'package:spells_and_tools/features/5e/character/models/character_5e_spell_slots.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

@@ -1,7 +1,7 @@
-import 'package:char_creator/common/interfaces/identifiable.dart';
-import 'package:char_creator/features/5e/character/models/character_5e_ability_scores.dart';
-import 'package:char_creator/features/5e/character/models/character_5e_note.dart';
-import 'package:char_creator/features/5e/character/models/character_5e_skills.dart';
+import 'package:spells_and_tools/common/interfaces/identifiable.dart';
+import 'package:spells_and_tools/features/5e/character/models/character_5e_ability_scores.dart';
+import 'package:spells_and_tools/features/5e/character/models/character_5e_note.dart';
+import 'package:spells_and_tools/features/5e/character/models/character_5e_skills.dart';
 import 'package:collection/collection.dart';
 
 import 'character_5e_class_state_model_v1.dart';

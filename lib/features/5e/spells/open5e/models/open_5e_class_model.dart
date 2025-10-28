@@ -1,4 +1,4 @@
-import 'package:char_creator/views/default_page_wrapper.dart';
+import 'package:spells_and_tools/views/default_page_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html_table/flutter_html_table.dart';

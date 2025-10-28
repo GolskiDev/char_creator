@@ -1,5 +1,5 @@
-import 'package:char_creator/features/5e/game_system_view_model.dart';
-import 'package:char_creator/features/contact_us/contact_us.dart';
+import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
+import 'package:spells_and_tools/features/contact_us/contact_us.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

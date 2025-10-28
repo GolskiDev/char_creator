@@ -1,4 +1,4 @@
-import 'package:char_creator/features/5e/game_system_view_model.dart';
+import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

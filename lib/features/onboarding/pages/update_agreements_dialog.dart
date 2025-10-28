@@ -1,4 +1,4 @@
-import 'package:char_creator/features/navigation/dialog_route.dart';
+import 'package:spells_and_tools/features/navigation/dialog_route.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

@@ -1,4 +1,4 @@
-import 'package:char_creator/common/interfaces/identifiable.dart';
+import 'package:spells_and_tools/common/interfaces/identifiable.dart';
 
 sealed class SpellCastingTime implements Identifiable {
   static SpellCastingTime fromString(String castingTime) {

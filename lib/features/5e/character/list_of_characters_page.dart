@@ -1,4 +1,4 @@
-import 'package:char_creator/features/5e/character/models/character_5e_model_v1.dart';
+import 'package:spells_and_tools/features/5e/character/models/character_5e_model_v1.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:char_creator/services/package_info.dart';
+import 'package:spells_and_tools/services/package_info.dart';
 import 'package:riverpod/riverpod.dart';
 
 final updateLinkSourceProvider = Provider(

@@ -1,6 +1,6 @@
-import 'package:char_creator/features/authentication/auth_controller.dart';
-import 'package:char_creator/features/terms/data_sources/firebase_user_accepted_agreements_data_source.dart';
-import 'package:char_creator/services/firestore.dart';
+import 'package:spells_and_tools/features/authentication/auth_controller.dart';
+import 'package:spells_and_tools/features/terms/data_sources/firebase_user_accepted_agreements_data_source.dart';
+import 'package:spells_and_tools/services/firestore.dart';
 import 'package:riverpod/riverpod.dart';
 
 class UserAcceptedAgreement {

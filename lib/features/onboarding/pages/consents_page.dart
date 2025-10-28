@@ -1,4 +1,4 @@
-import 'package:char_creator/features/terms/terms_of_service_interactor.dart';
+import 'package:spells_and_tools/features/terms/terms_of_service_interactor.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
