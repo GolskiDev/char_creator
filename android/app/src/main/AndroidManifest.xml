@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="char_creator"
+        android:label="Spells &amp; Tools"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
