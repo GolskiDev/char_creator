@@ -1,3 +1,4 @@
+import 'package:char_creator/common/widgets/loading_indicator.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -23,48 +24,20 @@ class SpellCardPage extends HookConsumerWidget {
 
     final List<SpellViewModel> spells;
 
-    switch (spellsAsync) {
-      case AsyncSnapshot(
-          data: final List<SpellViewModel> loadedSpells,
-        ):
-        spells = loadedSpells;
-        break;
-      case AsyncError error:
-        return Scaffold(
-          body: Center(
-            child: Text('Error: ${error.error}'),
-          ),
-        );
-      default:
-        return Scaffold(
-          appBar: AppBar(),
-          body: const Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-    }
+    spells = spellsAsync.data ?? [];
 
-    final spell = spells.firstWhereOrNull(
-      (spellViewModel) => spellViewModel.id == id,
-    );
+    final spell = spells.firstWhereOrNull((spell) => spell.id == id);
 
-    if (spell == null) {
-      return Scaffold(
-        body: Center(
-          child: Text('Spell not found'),
-        ),
+    Widget? defaultBuilder() {
+      if (spell == null) {
+        return null;
+      }
+      final currentIndex = useState<int>(spells.indexOf(spell));
+      final pageController = usePageController(
+        viewportFraction: 1,
+        initialPage: currentIndex.value,
       );
-    }
-
-    final currentIndex = useState<int>(spells.indexOf(spell));
-
-    final pageController = usePageController(
-      viewportFraction: 1,
-      initialPage: currentIndex.value,
-    );
-
-    return Scaffold(
-      body: PageView(
+      return PageView(
         controller: pageController,
         dragStartBehavior: DragStartBehavior.down,
         children: spells.map(
@@ -74,6 +47,29 @@ class SpellCardPage extends HookConsumerWidget {
             );
           },
         ).toList(),
+      );
+    }
+
+    spellNotFound() => Center(
+          child: Text("I can't remember that spell..."),
+        );
+
+    body() => defaultBuilder() ?? spellNotFound();
+
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          body(),
+          LoadingIndicatorWidget(
+            isVisible: switch (spellsAsync.connectionState) {
+              ConnectionState.waiting => false,
+              ConnectionState.active => true,
+              ConnectionState.done => false,
+              ConnectionState.none => false,
+            },
+          ),
+        ],
       ),
     );
   }

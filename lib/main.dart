@@ -5,6 +5,7 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'features/5e/spells/view_models/spell_view_model.dart';
 import 'features/navigation/navigation.dart';
 import 'features/terms/terms_of_service_interactor.dart';
 import 'features/terms/widgets/terms_and_conditions_widget.dart';
@@ -53,6 +54,8 @@ class App extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(goRouterProvider);
     final isDarkModeEnabled = ref.watch(isDarkModeEnabledProvider);
+    /// just to initialize the spells
+    ref.read(spellViewModelsProvider.future);
 
     return MaterialApp.router(
       localizationsDelegates: [

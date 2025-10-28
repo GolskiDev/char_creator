@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -21,7 +22,8 @@ class Open5eSpellsLocalCache {
     }
 
     final spellsCacheData = await spellsCacheFile.file.readAsString();
-    final List<dynamic> spellsCacheJson = jsonDecode(spellsCacheData);
+    final result = await compute(jsonDecode, spellsCacheData);
+    final List<dynamic> spellsCacheJson = List.from(result);
     final List<Open5eSpellModelV1> spellsCache = spellsCacheJson
         .map(
           (spell) => Open5eSpellModelV1.fromJson(spell),

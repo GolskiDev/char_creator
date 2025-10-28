@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,7 +20,7 @@ class Open5eSpellsRemoteDataSource {
 
     while (nextUrl != null) {
       final result = await http.get(Uri.parse(nextUrl));
-      final map = jsonDecode(result.body);
+      final map = await compute(jsonDecode, result.body);
 
       spells.addAll(
         List<Open5eSpellModelV1>.from(

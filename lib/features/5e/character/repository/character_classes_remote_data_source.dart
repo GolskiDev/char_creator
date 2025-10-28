@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,7 +35,7 @@ class CharacterClassesRemoteDataSource {
   Future<List<Map<String, dynamic>>> get _characterClassJson async {
     final jsonFilePath = "assets/character_classes.json";
     final jsonString = await rootBundle.loadString(jsonFilePath);
-    final jsonData = jsonDecode(jsonString) as List<dynamic>;
+    final jsonData = await compute(jsonDecode, jsonString) as List<dynamic>;
     return jsonData.map((json) => Map<String, dynamic>.from(json)).toList();
   }
 }

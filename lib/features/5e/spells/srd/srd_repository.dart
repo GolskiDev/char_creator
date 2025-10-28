@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -22,7 +23,7 @@ final srdRepositoryProvider = Provider<SRDRepository>(
 class SRDRepository {
   Future<List<SpellViewModel>> getAllSpells() async {
     final spellsFile = await rootBundle.loadString('assets/spells.json');
-    final map = jsonDecode(spellsFile) as List<dynamic>;
+    final map = await compute(jsonDecode, spellsFile) as List<dynamic>;
     final spells = map
         .map(
           (e) => SRDSpellModel.fromJson(e as Map<String, dynamic>),
