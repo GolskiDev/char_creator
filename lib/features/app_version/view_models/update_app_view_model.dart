@@ -1,5 +1,4 @@
 import 'package:riverpod/riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../app_version_interactor.dart';
 
@@ -32,13 +31,4 @@ class UpdateAppViewModel {
     required this.title,
     this.updateLink,
   });
-
-  Future<void> launchUpdateLink() {
-    if (updateLink != null) {
-      final uri = Uri.parse(updateLink!);
-      return launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      return Future.value();
-    }
-  }
 }
