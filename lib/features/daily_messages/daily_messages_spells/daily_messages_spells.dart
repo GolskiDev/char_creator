@@ -189,7 +189,7 @@ class DailyMessagesSpells {
       return true;
     }
 
-    return now.difference(lastReset).inHours >= 20;
+    return now.difference(lastReset).inHours >= 12;
   }
 
   Future<void> setTimeOfNewMessageFetched(DateTime dateTime) async {
