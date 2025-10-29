@@ -102,7 +102,7 @@ class AgreementsWidget extends HookConsumerWidget {
     required AgreementDetails? termsOfUseDetails,
     required AgreementDetails? privacyPolicyDetails,
   }) {
-    goRouter.push('/updateAgreements', extra: {
+    goRouter.go('/updateAgreements', extra: {
       'termsOfUseDetails': termsOfUseDetails,
       'privacyPolicyDetails': privacyPolicyDetails,
     });

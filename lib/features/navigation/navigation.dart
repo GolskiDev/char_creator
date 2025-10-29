@@ -1,11 +1,11 @@
-import 'package:spells_and_tools/features/5e/spells/view_models/spell_view_model.dart';
-import 'package:spells_and_tools/features/authentication/auth_controller.dart';
-import 'package:spells_and_tools/views/initial_page.dart';
-import 'package:spells_and_tools/views/settings_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spells_and_tools/features/5e/spells/view_models/spell_view_model.dart';
+import 'package:spells_and_tools/features/authentication/auth_controller.dart';
+import 'package:spells_and_tools/views/initial_page.dart';
+import 'package:spells_and_tools/views/settings_page.dart';
 
 import '../../utils/utils_page.dart';
 import '../../views/see_you_soon_page.dart';
@@ -56,16 +56,6 @@ class Navigation {
             builder: (context, state) => const MainMenuPage(),
             routes: [
               GoRoute(
-                redirect: (context, state) {
-                  if (!kDebugMode) {
-                    return '/';
-                  }
-                  return null;
-                },
-                path: '/utils',
-                builder: (context, state) => const UtilsPage(),
-              ),
-              GoRoute(
                 path: '/updateAgreements',
                 pageBuilder: (context, state) {
                   final termsOfUseDetails = (state.extra
@@ -80,6 +70,16 @@ class Navigation {
                     privacyPolicyDetails: privacyPolicyDetails,
                   );
                 },
+              ),
+              GoRoute(
+                redirect: (context, state) {
+                  if (!kDebugMode) {
+                    return '/';
+                  }
+                  return null;
+                },
+                path: '/utils',
+                builder: (context, state) => const UtilsPage(),
               ),
               GoRoute(
                 path: '/spells',

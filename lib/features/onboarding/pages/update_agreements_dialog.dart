@@ -1,6 +1,6 @@
-import 'package:spells_and_tools/features/navigation/dialog_route.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spells_and_tools/features/navigation/dialog_route.dart';
 
 import '../../terms/data_sources/agreements_documents_data_source.dart';
 import '../../terms/terms_of_service_interactor.dart';
@@ -43,7 +43,7 @@ class UpdateAgreementsDialog {
                             termsOfUse: termsOfUseDetails,
                           );
                       if (context.mounted) {
-                        context.go('/');
+                        context.pop();
                       }
                     },
                   ),

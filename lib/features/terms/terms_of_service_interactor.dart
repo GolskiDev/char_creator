@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:async/async.dart';
-import 'package:spells_and_tools/features/terms/data_sources/user_accepted_agreements_data_source.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spells_and_tools/features/terms/data_sources/user_accepted_agreements_data_source.dart';
 
 import '../../services/firestore.dart';
 import '../authentication/auth_controller.dart';
@@ -120,19 +120,27 @@ class UpdatedAgreementsSubmitter extends Notifier {
     AgreementDetails? termsOfUse,
     AgreementDetails? privacyPolicy,
   }) async {
-    if (termsOfUse != null) {
-      await AgreementsInteractor.waitForSignInAndAccept(
-        ref: ref,
-        agreementDetails: termsOfUse,
-      );
-      print('tos accepted');
-    }
-    if (privacyPolicy != null) {
-      await AgreementsInteractor.waitForSignInAndAccept(
-        ref: ref,
-        agreementDetails: privacyPolicy,
-      );
-      print('privacy policy accepted');
+    try {
+      List<Future<void>> futures = [];
+      if (termsOfUse != null) {
+        futures.add(
+          AgreementsInteractor.waitForSignInAndAccept(
+            ref: ref,
+            agreementDetails: termsOfUse,
+          ),
+        );
+      }
+      if (privacyPolicy != null) {
+        futures.add(
+          AgreementsInteractor.waitForSignInAndAccept(
+            ref: ref,
+            agreementDetails: privacyPolicy,
+          ),
+        );
+      }
+      await Future.wait(futures);
+    } catch (e) {
+      print(e);
     }
   }
 }
@@ -182,25 +190,22 @@ class AgreementsInteractor {
   Future<void> acceptAgreement({
     AgreementDetails? agreementDetails,
   }) async {
-    final agreementCompleter = Completer<void>();
     if (agreementDetails != null) {
-      requiredUpdatedAgreementToAccept(agreementDetails.type)
-          .first
-          .then((value) {
-        if (value == null) {
-          agreementCompleter.complete();
+      try {
+        final requiredToAccept =
+            await requiredUpdatedAgreementToAccept(agreementDetails.type).first;
+        if (requiredToAccept == null) {
+          return;
         }
-      }).catchError((error) {
-        agreementCompleter.completeError(error);
-      });
-      userAcceptedAgreementsDataSource.acceptAgreement(
-        type: agreementDetails.type,
-        version: agreementDetails.version,
-      );
-    } else {
-      agreementCompleter.complete();
+        return userAcceptedAgreementsDataSource.acceptAgreement(
+          type: agreementDetails.type,
+          version: agreementDetails.version,
+        );
+      } catch (e) {
+        return;
+      }
     }
-    return agreementCompleter.future;
+    return;
   }
 
   /// Returns the latest agreement (TOS or Privacy Policy) that must be accepted, or null if none required.
@@ -226,8 +231,9 @@ class AgreementsInteractor {
             latest != null &&
             userAcceptedAgreement.version != latest.version) {
           yield latest;
+        } else {
+          yield null;
         }
-        yield null;
       }
     }
   }
