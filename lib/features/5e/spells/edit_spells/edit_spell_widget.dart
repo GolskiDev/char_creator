@@ -7,10 +7,26 @@ class EditSpellPage extends HookConsumerWidget {
   const EditSpellPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Extracted controllers and state
+    final nameController = useTextEditingController();
+    final descriptionController = useTextEditingController();
+    final spellLevelController = useTextEditingController();
+    final materialComponentController = useTextEditingController();
+    final spellDurationController = useTextEditingController();
+    final spellRangeController = useTextEditingController();
+    final spellCastingTimeController = useTextEditingController();
+    final atHigherLevelsController = useTextEditingController();
+    final spellTypeController = useTextEditingController();
+
+    final requiresConcentration = useState(false);
+    final canBeCastAsRitual = useState(false);
+    final requiresVerbalComponent = useState(false);
+    final requiresSomaticComponent = useState(false);
+    final requiresMaterialComponent = useState(false);
+
     Widget nameEditor() {
-      final textController = useTextEditingController();
       return TextField(
-        controller: textController,
+        controller: nameController,
         decoration: const InputDecoration(
           labelText: 'Spell Name',
         ),
@@ -18,9 +34,8 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget descriptionEditor() {
-      final textController = useTextEditingController();
       return TextField(
-        controller: textController,
+        controller: descriptionController,
         decoration: const InputDecoration(
           labelText: 'Spell Description',
         ),
@@ -29,9 +44,8 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget spellLevelEditor() {
-      final textController = useTextEditingController();
       return TextField(
-        controller: textController,
+        controller: spellLevelController,
         decoration: const InputDecoration(
           labelText: 'Spell Level',
         ),
@@ -40,7 +54,6 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget requiresConcentrationEditor() {
-      final requiresConcentration = useState(false);
       final viewModel = GameSystemViewModel.concentration;
       final title = viewModel.name;
       final icon = viewModel.icon;
@@ -57,7 +70,6 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget canBeCastAsRitualEditor() {
-      final canBeCastAsRitual = useState(false);
       final viewModel = GameSystemViewModel.ritual;
       final title = viewModel.name;
       final icon = viewModel.icon;
@@ -74,7 +86,6 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget requiresVerbalComponentEditor() {
-      final requiresMaterialComponent = useState(false);
       final viewModel = GameSystemViewModel.verbalComponent;
       final title = viewModel.name;
       final icon = viewModel.icon;
@@ -83,15 +94,14 @@ class EditSpellPage extends HookConsumerWidget {
         thumbIcon: WidgetStateProperty.all(
           Icon(icon),
         ),
-        value: requiresMaterialComponent.value,
+        value: requiresVerbalComponent.value,
         onChanged: (value) {
-          requiresMaterialComponent.value = value;
+          requiresVerbalComponent.value = value;
         },
       );
     }
 
     Widget requiresSomaticComponentEditor() {
-      final requiresSomaticComponent = useState(false);
       final viewModel = GameSystemViewModel.somaticComponent;
       final title = viewModel.name;
       final icon = viewModel.icon;
@@ -111,7 +121,6 @@ class EditSpellPage extends HookConsumerWidget {
       final viewModel = GameSystemViewModel.materialComponent;
       final title = viewModel.name;
       final icon = viewModel.icon;
-      final requiresMaterialComponent = useState(false);
       return SwitchListTile(
         title: Text(title),
         thumbIcon: WidgetStateProperty.all(
@@ -125,9 +134,8 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget materialComponentEditor() {
-      final textController = useTextEditingController();
       return TextField(
-        controller: textController,
+        controller: materialComponentController,
         decoration: const InputDecoration(
           labelText: 'Material Component',
         ),
@@ -135,9 +143,8 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget spellDurationEditor() {
-      final textController = useTextEditingController();
       return TextField(
-        controller: textController,
+        controller: spellDurationController,
         decoration: const InputDecoration(
           labelText: 'Spell Duration',
         ),
@@ -145,9 +152,8 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget spellRangeEditor() {
-      final textController = useTextEditingController();
       return TextField(
-        controller: textController,
+        controller: spellRangeController,
         decoration: const InputDecoration(
           labelText: 'Spell Range',
         ),
@@ -155,9 +161,8 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget SpellCastingTimeEditor() {
-      final textController = useTextEditingController();
       return TextField(
-        controller: textController,
+        controller: spellCastingTimeController,
         decoration: const InputDecoration(
           labelText: 'Spell Casting Time',
         ),
@@ -165,9 +170,8 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget atHigherLevelsEditor() {
-      final textController = useTextEditingController();
       return TextField(
-        controller: textController,
+        controller: atHigherLevelsController,
         decoration: const InputDecoration(
           labelText: 'At Higher Levels',
         ),
@@ -175,9 +179,8 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget spellTypeEditor() {
-      final textController = useTextEditingController();
       return TextField(
-        controller: textController,
+        controller: spellTypeController,
         decoration: const InputDecoration(
           labelText: 'Spell Type',
         ),
@@ -197,7 +200,7 @@ class EditSpellPage extends HookConsumerWidget {
           requiresVerbalComponentEditor(),
           requiresSomaticComponentEditor(),
           requiresMaterialComponentEditor(),
-          materialComponentEditor(),
+          if (requiresMaterialComponent.value) materialComponentEditor(),
           spellDurationEditor(),
           spellRangeEditor(),
           SpellCastingTimeEditor(),
