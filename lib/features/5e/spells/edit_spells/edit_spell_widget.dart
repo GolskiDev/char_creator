@@ -3,6 +3,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
 
+import '../utils/spell_utils.dart';
+
 class EditSpellPage extends HookConsumerWidget {
   const EditSpellPage({super.key});
   @override
@@ -10,7 +12,7 @@ class EditSpellPage extends HookConsumerWidget {
     // Extracted controllers and state
     final nameController = useTextEditingController();
     final descriptionController = useTextEditingController();
-    final spellLevelController = useTextEditingController();
+    final spellLevel = useState<int?>(null);
     final materialComponentController = useTextEditingController();
     final spellDurationController = useTextEditingController();
     final spellRangeController = useTextEditingController();
@@ -24,32 +26,62 @@ class EditSpellPage extends HookConsumerWidget {
     final requiresSomaticComponent = useState(false);
     final requiresMaterialComponent = useState(false);
 
+    final textFieldPadding = const EdgeInsets.only(
+      top: 8.0,
+      bottom: 2.0,
+    );
+
     Widget nameEditor() {
-      return TextField(
-        controller: nameController,
-        decoration: const InputDecoration(
-          labelText: 'Spell Name',
+      return Padding(
+        padding: textFieldPadding,
+        child: TextField(
+          controller: nameController,
+          decoration: const InputDecoration(
+            labelText: 'Spell Name',
+          ),
         ),
       );
     }
 
     Widget descriptionEditor() {
-      return TextField(
-        controller: descriptionController,
-        decoration: const InputDecoration(
-          labelText: 'Spell Description',
+      return Padding(
+        padding: textFieldPadding,
+        child: TextField(
+          controller: descriptionController,
+          decoration: const InputDecoration(
+            labelText: 'Spell Description',
+          ),
+          maxLines: null,
         ),
-        maxLines: null,
       );
     }
 
     Widget spellLevelEditor() {
-      return TextField(
-        controller: spellLevelController,
-        decoration: const InputDecoration(
-          labelText: 'Spell Level',
+      final availableSpellLevels = List<int>.generate(10, (index) => index);
+      final viewModel = GameSystemViewModel.spellLevel;
+      final title = viewModel.name;
+      final icon = viewModel.icon;
+      levelFormatter(int level) => SpellUtils.spellLevelString(level);
+      return Padding(
+        padding: textFieldPadding,
+        child: DropdownButtonFormField<int>(
+          decoration: InputDecoration(
+            labelText: title,
+            prefixIcon: Icon(icon),
+          ),
+          initialValue: null,
+          items: availableSpellLevels
+              .map(
+                (level) => DropdownMenuItem<int>(
+                  value: level,
+                  child: Text(levelFormatter(level)),
+                ),
+              )
+              .toList(),
+          onChanged: (value) {
+            spellLevel.value = value;
+          },
         ),
-        keyboardType: TextInputType.number,
       );
     }
 
@@ -160,7 +192,7 @@ class EditSpellPage extends HookConsumerWidget {
       );
     }
 
-    Widget SpellCastingTimeEditor() {
+    Widget spellCastingTimeEditor() {
       return TextField(
         controller: spellCastingTimeController,
         decoration: const InputDecoration(
@@ -203,7 +235,7 @@ class EditSpellPage extends HookConsumerWidget {
           if (requiresMaterialComponent.value) materialComponentEditor(),
           spellDurationEditor(),
           spellRangeEditor(),
-          SpellCastingTimeEditor(),
+          spellCastingTimeEditor(),
           atHigherLevelsEditor(),
           spellTypeEditor(),
         ]
