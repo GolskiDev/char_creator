@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spells_and_tools/features/5e/spells/edit_spells/edit_spell_widget.dart'
+    show EditSpellPage;
 import 'package:spells_and_tools/features/5e/spells/view_models/spell_view_model.dart';
 import 'package:spells_and_tools/features/authentication/auth_controller.dart';
 import 'package:spells_and_tools/views/initial_page.dart';
@@ -85,6 +87,14 @@ class Navigation {
                 path: '/spells',
                 builder: (context, state) => const ListOfSpellsPage(),
                 routes: [
+                  GoRoute(
+                    path: '/edit',
+                    builder: (context, state) => Consumer(
+                      builder: (context, ref, child) {
+                        return EditSpellPage();
+                      },
+                    ),
+                  ),
                   GoRoute(
                     path: '/:id',
                     builder: (context, state) => Consumer(
