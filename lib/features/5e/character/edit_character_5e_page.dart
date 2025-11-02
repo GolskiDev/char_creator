@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/features/5e/character/widgets/character_delete_confirm_dialog.dart';
 
 import 'models/character_5e_class_model_v1.dart';
 import 'models/character_5e_class_state_model_v1.dart';
@@ -82,6 +84,26 @@ class EditCharacter5ePage extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(isNewCharacter ? 'Create Character' : 'Edit Character'),
+        actions: [
+          if (!isNewCharacter)
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () async {
+                if (isNewCharacter) return;
+                final charId = character?.id;
+                if (charId == null) return;
+                final confirm =
+                    await CharacterDeleteConfirmDialog.showDialog(context);
+                if (confirm != true) return;
+                final repository =
+                    await ref.watch(characterRepositoryProvider.future);
+                await repository?.deleteCharacter(charId);
+                if (context.mounted) {
+                  context.go('/characters');
+                }
+              },
+            ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
