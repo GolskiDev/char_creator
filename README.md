@@ -1,8 +1,3 @@
-# char_creator
+# spells_and_tools
 
-App that helps users build their own fictional worlds and characters. The app
-uses a LLM’s to assist users in developing their ideas. Interface that allows
-users to extract ideas and values from ChatGPT and provide them as context
-for further conversation with the LLM. Based on user input it also features tips
-for the users. System is designed flexibility in their creative process.
-
+Manage your characters and spells in a straightforward, visual way for your campaign in the most popular system of TTRPGs compatible with SRD 5e (2014). The spellbook lets you filter spells by name, concentration, ritual, components, school, casting time, range, duration, level, type, class, or display the spells that you can add to your character.
