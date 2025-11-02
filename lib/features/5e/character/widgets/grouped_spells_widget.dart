@@ -1,11 +1,11 @@
-import 'package:spells_and_tools/features/5e/spells/models/spell_casting_time.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/features/5e/spells/models/spell_casting_time.dart';
 
 import '../../game_system_view_model.dart';
-import '../../spells/spell_card_page.dart';
+import '../../spells/pages/spell_card_page.dart';
 import '../../spells/utils/spell_utils.dart';
 import '../../spells/view_models/spell_view_model.dart';
 import '../../tags.dart';

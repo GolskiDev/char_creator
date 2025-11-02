@@ -1,22 +1,22 @@
-import 'package:spells_and_tools/features/5e/character/repository/character_repository.dart';
-import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
-import 'package:spells_and_tools/features/5e/spells/filters/spell_model_filters_state.dart';
-import 'package:spells_and_tools/features/5e/spells/widgets/small_spell_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:spells_and_tools/features/5e/character/repository/character_repository.dart';
+import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
+import 'package:spells_and_tools/features/5e/spells/filters/spell_model_filters_state.dart';
+import 'package:spells_and_tools/features/5e/spells/widgets/small_spell_widget.dart';
 
-import '../character/character_provider.dart';
-import '../character/models/character_5e_class_model_v1.dart';
-import '../character/models/character_5e_model_v1.dart';
+import '../../character/character_provider.dart';
+import '../../character/models/character_5e_class_model_v1.dart';
+import '../../character/models/character_5e_model_v1.dart';
+import '../utils/spell_utils.dart';
+import '../view_models/spell_view_model.dart';
+import '../widgets/add_spell_to_character_widget.dart';
+import '../widgets/add_to_character_menu.dart';
+import '../widgets/spell_filter_drawer.dart';
 import 'spell_card_page.dart';
-import 'utils/spell_utils.dart';
-import 'view_models/spell_view_model.dart';
-import 'widgets/add_spell_to_character_widget.dart';
-import 'widgets/add_to_character_menu.dart';
-import 'widgets/spell_filter_drawer.dart';
 
 class ListOfSpellsPage extends HookConsumerWidget {
   final String? targetCharacterId;

@@ -1,12 +1,12 @@
-import 'package:spells_and_tools/common/widgets/loading_indicator.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/common/widgets/loading_indicator.dart';
 
-import 'view_models/spell_view_model.dart';
-import 'widgets/card_widget.dart';
+import '../view_models/spell_view_model.dart';
+import '../widgets/card_widget.dart';
 
 class SpellCardPage extends HookConsumerWidget {
   final String id;
