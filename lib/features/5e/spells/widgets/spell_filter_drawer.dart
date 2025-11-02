@@ -1,8 +1,9 @@
-import 'package:spells_and_tools/features/5e/spells/filters/spell_model_filters_state.dart';
-import 'package:spells_and_tools/features/5e/spells/utils/spell_utils.dart';
-import 'package:spells_and_tools/features/5e/tags.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/features/5e/spells/filters/spell_model_filters_state.dart';
+import 'package:spells_and_tools/features/5e/spells/models/spell_school.dart';
+import 'package:spells_and_tools/features/5e/spells/utils/spell_utils.dart';
+import 'package:spells_and_tools/features/5e/tags.dart';
 
 import '../../character/models/character_5e_class_model_v1.dart';
 import '../../character/models/character_5e_model_v1.dart';
@@ -22,7 +23,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
       onRequiresSomaticComponentChanged;
   final Function(bool? requiresMaterialComponent)
       onRequiresMaterialComponentChanged;
-  final Function(Set<String> selectedSchools) onSelectedSchoolsChanged;
+  final Function(Set<SpellSchool> selectedSchools) onSelectedSchoolsChanged;
   final Function(Set<String> castingTimeIds) onCastingTimeChanged;
   final Function(Set<String> rangeIds) onRangeChanged;
   final Function(Set<String> durationIds) onDurationChanged;
@@ -327,16 +328,16 @@ class SpellFilterDrawer extends HookConsumerWidget {
           alignment: WrapAlignment.start,
           children: allSpellModels
               .map((spell) => spell.school)
-              .where((school) => school != null)
+              .nonNulls
               .toSet()
               .map(
                 (school) => FilterChip(
                   visualDensity: VisualDensity.compact,
-                  label: Text(school!),
+                  label: Text(school.name),
                   selected: filters.selectedSchools.contains(school),
                   onSelected: (selected) {
                     final updatedSchools =
-                        Set<String>.from(filters.selectedSchools);
+                        Set<SpellSchool>.from(filters.selectedSchools);
                     if (selected) {
                       updatedSchools.add(school);
                     } else {

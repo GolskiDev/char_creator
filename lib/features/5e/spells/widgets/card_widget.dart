@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:markdown/markdown.dart' hide Text;
+import 'package:spells_and_tools/features/5e/spells/models/spell_school.dart';
 
 import '../../game_system_view_model.dart';
 import '../view_models/spell_view_model.dart';
@@ -102,76 +103,79 @@ class SpellCardWidget extends ConsumerWidget {
       );
     }
 
-    List<Widget> spellTraits = [
-      ListTile(
-        visualDensity: VisualDensity.compact,
-        leading: Icon(GameSystemViewModel.spellLevel.icon),
-        title: Text(spell.spellLevelString),
-        subtitle: Text(GameSystemViewModel.spellLevel.name),
-      ),
-      if (spell.castingTime != null)
+    List<Widget> spellTraitsBuilder() {
+      final spellSchool = spell.school;
+      return [
         ListTile(
           visualDensity: VisualDensity.compact,
-          leading: Icon(GameSystemViewModel.castingTime.icon),
-          title: Text(spell.castingTime.toString()),
-          subtitle: Text(GameSystemViewModel.castingTime.name),
+          leading: Icon(GameSystemViewModel.spellLevel.icon),
+          title: Text(spell.spellLevelString),
+          subtitle: Text(GameSystemViewModel.spellLevel.name),
         ),
-      if (spell.range != null)
-        ListTile(
-          visualDensity: VisualDensity.compact,
-          leading: Icon(GameSystemViewModel.range.icon),
-          title: Text(spell.range.toString()),
-          subtitle: Text(GameSystemViewModel.range.name),
-        ),
-      if (spell.duration != null)
-        ListTile(
-          visualDensity: VisualDensity.compact,
-          leading: Icon(GameSystemViewModel.duration.icon),
-          title: Text(spell.duration.toString()),
-          subtitle: Text(GameSystemViewModel.duration.name),
-        ),
-      if (spell.requiresConcentration != null)
-        ListTile(
-          visualDensity: VisualDensity.compact,
-          leading: Icon(GameSystemViewModel.concentration.icon),
-          title: Text(spell.requiresConcentration! ? 'Yes' : 'No'),
-          subtitle: Text(GameSystemViewModel.concentration.name),
-        ),
-      if (spell.canBeCastAsRitual != null)
-        ListTile(
-          visualDensity: VisualDensity.compact,
-          leading: Icon(GameSystemViewModel.ritual.icon),
-          title: Text(spell.canBeCastAsRitual! ? 'Yes' : 'No'),
-          subtitle: Text(GameSystemViewModel.ritual.name),
-        ),
-      if (components() != null) components()!,
-      if (spell.material != null)
-        ListTile(
-          visualDensity: VisualDensity.compact,
-          titleAlignment: ListTileTitleAlignment.center,
-          title: Text(
-            GameSystemViewModel.materialComponent.name,
-            textAlign: TextAlign.center,
+        if (spell.castingTime != null)
+          ListTile(
+            visualDensity: VisualDensity.compact,
+            leading: Icon(GameSystemViewModel.castingTime.icon),
+            title: Text(spell.castingTime.toString()),
+            subtitle: Text(GameSystemViewModel.castingTime.name),
           ),
-          subtitle: Text(
-            spell.material!,
-            textAlign: TextAlign.center,
+        if (spell.range != null)
+          ListTile(
+            visualDensity: VisualDensity.compact,
+            leading: Icon(GameSystemViewModel.range.icon),
+            title: Text(spell.range.toString()),
+            subtitle: Text(GameSystemViewModel.range.name),
           ),
-        ),
-      if (spell.school != null)
-        ListTile(
-          visualDensity: VisualDensity.compact,
-          leading: Icon(GameSystemViewModel.school.icon),
-          title: Text(spell.school!),
-          subtitle: Text(GameSystemViewModel.school.name),
-        ),
-    ]
-        .map(
-          (e) => Card(
-            child: Center(child: e),
+        if (spell.duration != null)
+          ListTile(
+            visualDensity: VisualDensity.compact,
+            leading: Icon(GameSystemViewModel.duration.icon),
+            title: Text(spell.duration.toString()),
+            subtitle: Text(GameSystemViewModel.duration.name),
           ),
-        )
-        .toList();
+        if (spell.requiresConcentration != null)
+          ListTile(
+            visualDensity: VisualDensity.compact,
+            leading: Icon(GameSystemViewModel.concentration.icon),
+            title: Text(spell.requiresConcentration! ? 'Yes' : 'No'),
+            subtitle: Text(GameSystemViewModel.concentration.name),
+          ),
+        if (spell.canBeCastAsRitual != null)
+          ListTile(
+            visualDensity: VisualDensity.compact,
+            leading: Icon(GameSystemViewModel.ritual.icon),
+            title: Text(spell.canBeCastAsRitual! ? 'Yes' : 'No'),
+            subtitle: Text(GameSystemViewModel.ritual.name),
+          ),
+        if (components() != null) components()!,
+        if (spell.material != null)
+          ListTile(
+            visualDensity: VisualDensity.compact,
+            titleAlignment: ListTileTitleAlignment.center,
+            title: Text(
+              GameSystemViewModel.materialComponent.name,
+              textAlign: TextAlign.center,
+            ),
+            subtitle: Text(
+              spell.material!,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        if (spellSchool != null)
+          ListTile(
+            visualDensity: VisualDensity.compact,
+            leading: Icon(GameSystemViewModel.school.icon),
+            title: Text(spellSchool.name),
+            subtitle: Text(GameSystemViewModel.school.name),
+          ),
+      ]
+          .map(
+            (e) => Card(
+              child: Center(child: e),
+            ),
+          )
+          .toList();
+    }
 
     final atHigherLevelsWidget = spell.atHigherLevels != null
         ? Card(
@@ -198,6 +202,8 @@ class SpellCardWidget extends ConsumerWidget {
             ),
           )
         : null;
+
+    final spellTraits = spellTraitsBuilder();
 
     return SafeArea(
       child: SingleChildScrollView(

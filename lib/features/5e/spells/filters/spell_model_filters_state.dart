@@ -2,6 +2,7 @@ import 'package:spells_and_tools/features/5e/character/models/character_5e_model
 
 import '../../character/models/character_5e_class_model_v1.dart';
 import '../../tags.dart';
+import '../models/spell_school.dart';
 import '../view_models/spell_view_model.dart';
 
 class SpellModelFiltersState {
@@ -11,7 +12,7 @@ class SpellModelFiltersState {
   final bool? requiresVerbalComponent;
   final bool? requiresSomaticComponent;
   final bool? requiresMaterialComponent;
-  final Set<String> selectedSchools;
+  final Set<SpellSchool> selectedSchools;
   final Set<String> castingTimeIds;
   final Set<String> rangeIds;
   final Set<String> durationIds;
@@ -44,7 +45,7 @@ class SpellModelFiltersState {
     bool? Function()? requiresVerbalComponentSetter,
     bool? Function()? requiresSomaticComponentSetter,
     bool? Function()? requiresMaterialComponentSetter,
-    Set<String>? selectedSchools,
+    Set<SpellSchool>? selectedSchools,
     Set<String>? castingTimeIds,
     Set<String>? rangeIds,
     Set<String>? durationIds,
@@ -141,7 +142,7 @@ class SpellModelFiltersState {
     return material == requiresMaterialComponent;
   }
 
-  bool spellIsInSelectedSchools(String? school) {
+  bool spellIsInSelectedSchools(SpellSchool? school) {
     if (selectedSchools.isEmpty) {
       return true;
     }

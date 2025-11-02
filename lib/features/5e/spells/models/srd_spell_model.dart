@@ -2,6 +2,7 @@ import '../view_models/spell_view_model.dart';
 import 'spell_casting_time.dart';
 import 'spell_duration.dart';
 import 'spell_range.dart';
+import 'spell_school.dart';
 
 class SRDSpellModelV1 {
   final String id;
@@ -64,7 +65,7 @@ class SRDSpellModelV1 {
       name: name,
       description: description,
       spellLevel: level,
-      school: school,
+      school: SpellSchool.fromString(school ?? 'unknown'),
       atHigherLevels: atHigherLevels,
       requiresConcentration: requiresConcentration,
       canBeCastAsRitual: ritual,

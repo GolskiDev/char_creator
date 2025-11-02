@@ -1,6 +1,6 @@
-import 'package:spells_and_tools/features/5e/spells/srd/srd_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:spells_and_tools/features/5e/spells/srd/srd_repository.dart';
 
 import '../../character/models/character_5e_class_model_v1.dart';
 import '../../character/repository/character_classes_repository.dart';
@@ -8,6 +8,7 @@ import '../../tags.dart';
 import '../models/spell_casting_time.dart';
 import '../models/spell_duration.dart';
 import '../models/spell_range.dart';
+import '../models/spell_school.dart';
 import '../spell_images/spell_images_repository.dart';
 import '../utils/spell_utils.dart';
 
@@ -58,7 +59,7 @@ class SpellViewModel {
 
   final int spellLevel;
 
-  final String? school;
+  final SpellSchool? school;
 
   final bool? requiresConcentration;
   final bool? canBeCastAsRitual;
@@ -104,7 +105,7 @@ class SpellViewModel {
     String? name,
     String? description,
     int? spellLevel,
-    String? school,
+    SpellSchool? school,
     bool? requiresConcentration,
     bool? canBeCastAsRitual,
     bool? requiresVerbalComponent,
