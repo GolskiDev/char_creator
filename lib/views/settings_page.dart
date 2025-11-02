@@ -1,8 +1,8 @@
-import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
-import 'package:spells_and_tools/features/contact_us/contact_us.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
+import 'package:spells_and_tools/features/contact_us/contact_us.dart';
 
 import '../theme.dart';
 
@@ -32,7 +32,7 @@ class SettingsPage extends HookConsumerWidget {
         leading: Icon(GameSystemViewModel.contactUs.icon),
         title: Text(GameSystemViewModel.contactUs.name),
         onTap: () {
-          ContactUs.sendMail();
+          ContactUs.sendMail(context, ref);
         },
       ),
     ];
