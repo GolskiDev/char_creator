@@ -1,9 +1,9 @@
-import '../models/spell_casting_time.dart';
-import '../models/spell_duration.dart';
-import '../models/spell_range.dart';
 import '../view_models/spell_view_model.dart';
+import 'spell_casting_time.dart';
+import 'spell_duration.dart';
+import 'spell_range.dart';
 
-class SRDSpellModel {
+class SRDSpellModelV1 {
   final String id;
   final String name;
   final int level;
@@ -20,7 +20,7 @@ class SRDSpellModel {
   final String? atHigherLevels;
   final String description;
 
-  SRDSpellModel({
+  SRDSpellModelV1({
     required this.id,
     required this.name,
     required this.level,
@@ -38,8 +38,8 @@ class SRDSpellModel {
     required this.description,
   });
 
-  factory SRDSpellModel.fromJson(Map<String, dynamic> json) {
-    return SRDSpellModel(
+  factory SRDSpellModelV1.fromJson(Map<String, dynamic> json) {
+    return SRDSpellModelV1(
       id: json['id'] as String,
       name: json['name'] as String,
       level: json['level'] as int,
