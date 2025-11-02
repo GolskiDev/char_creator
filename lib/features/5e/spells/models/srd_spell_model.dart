@@ -38,7 +38,7 @@ class SRDSpellModelV1 {
     required this.description,
   });
 
-  factory SRDSpellModelV1.fromJson(Map<String, dynamic> json) {
+  factory SRDSpellModelV1.fromMap(Map<String, dynamic> json) {
     return SRDSpellModelV1(
       id: json['id'] as String,
       name: json['name'] as String,
