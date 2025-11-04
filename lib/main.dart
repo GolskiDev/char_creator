@@ -54,8 +54,9 @@ class App extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(goRouterProvider);
     final isDarkModeEnabled = ref.watch(isDarkModeEnabledProvider);
+
     /// just to initialize the spells
-    ref.read(spellViewModelsProvider.future);
+    ref.read(srdSpellViewModelsProvider.future);
 
     return MaterialApp.router(
       localizationsDelegates: [

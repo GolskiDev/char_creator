@@ -1,8 +1,8 @@
+import '../models/spell_casting_time.dart';
+import '../models/spell_duration.dart';
+import '../models/spell_range.dart';
+import '../models/spell_school.dart';
 import '../view_models/spell_view_model.dart';
-import 'spell_casting_time.dart';
-import 'spell_duration.dart';
-import 'spell_range.dart';
-import 'spell_school.dart';
 
 class SRDSpellModelV1 {
   final String id;

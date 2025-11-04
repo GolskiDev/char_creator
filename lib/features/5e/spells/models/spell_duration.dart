@@ -47,6 +47,56 @@ sealed class SpellDuration implements Identifiable {
         return SpellDurationCustom();
     }
   }
+
+  bool compareTo(SpellDuration other) {
+    final orderedByTime = [
+      Instantaneous(),
+      OneRound(),
+      UpToOneRound(),
+      OneMinuteExact(),
+      OneMinute(),
+      UpToTenMinutes(),
+      TenMinutes(),
+      UpToOneHour(),
+      OneHour(),
+      UpToTwoHours(),
+      EightHours(),
+      UpToEightHours(),
+      TwentyFourHours(),
+      UpToTwentyFourHours(),
+      TenDays(),
+      SevenDays(),
+      ThirtyDays(),
+      UntilDispelled(),
+      UntilDispelledOrTriggered(),
+      Special(),
+    ];
+    return orderedByTime.indexWhere((element) => element == this) <
+        orderedByTime.indexWhere((element) => element == other);
+  }
+
+  static List<SpellDuration> get all => [
+        Instantaneous(),
+        OneRound(),
+        OneMinute(),
+        TenMinutes(),
+        OneHour(),
+        EightHours(),
+        TwentyFourHours(),
+        UpToTenMinutes(),
+        UpToOneHour(),
+        UpToTwentyFourHours(),
+        TenDays(),
+        UntilDispelled(),
+        Special(),
+        OneMinuteExact(),
+        SevenDays(),
+        UpToEightHours(),
+        ThirtyDays(),
+        UntilDispelledOrTriggered(),
+        UpToTwoHours(),
+        UpToOneRound(),
+      ];
 }
 
 class Instantaneous extends SpellDuration {

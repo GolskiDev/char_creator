@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../models/srd_spell_model.dart';
 import '../view_models/spell_view_model.dart';
+import 'srd_spell_model.dart';
 
 final allSRDSpellsProvider = FutureProvider<List<SpellViewModel>>(
   (ref) async {

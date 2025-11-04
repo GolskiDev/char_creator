@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spells_and_tools/features/5e/spells/edit_spells/edit_spell_widget.dart'
+import 'package:spells_and_tools/features/5e/spells/edit_spells/edit_spell_page.dart'
     show EditSpellPage;
 import 'package:spells_and_tools/features/5e/spells/view_models/spell_view_model.dart';
 import 'package:spells_and_tools/features/authentication/auth_controller.dart';
@@ -88,7 +88,7 @@ class Navigation {
                 builder: (context, state) => const ListOfSpellsPage(),
                 routes: [
                   GoRoute(
-                    path: '/edit',
+                    path: '/new',
                     builder: (context, state) => Consumer(
                       builder: (context, ref, child) {
                         return EditSpellPage();
@@ -100,13 +100,24 @@ class Navigation {
                     builder: (context, state) => Consumer(
                       builder: (context, ref, child) {
                         final spellsFuture =
-                            ref.read(spellViewModelsProvider.future);
+                            ref.read(srdSpellViewModelsProvider.future);
                         return SpellCardPage(
                           id: state.pathParameters['id']!,
                           spellsFuture: spellsFuture,
                         );
                       },
                     ),
+                    routes: [
+                      GoRoute(
+                        path: '/edit',
+                        builder: (context, state) {
+                          final spellId = state.pathParameters['id']!;
+                          return EditSpellPage(
+                            spellId: spellId,
+                          );
+                        },
+                      )
+                    ],
                   ),
                 ],
               ),

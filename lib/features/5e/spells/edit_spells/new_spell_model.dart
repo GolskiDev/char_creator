@@ -1,61 +1,11 @@
-import 'package:collection/collection.dart';
-import 'package:riverpod/riverpod.dart';
-import 'package:spells_and_tools/common/interfaces/identifiable.dart';
-import 'package:spells_and_tools/features/5e/spells/srd/srd_repository.dart';
-
 import '../../character/models/character_5e_class_model_v1.dart';
-import '../../character/repository/character_classes_repository.dart';
 import '../../tags.dart';
 import '../models/spell_casting_time.dart';
 import '../models/spell_duration.dart';
 import '../models/spell_range.dart';
 import '../models/spell_school.dart';
-import '../spell_images/spell_images_repository.dart';
-import '../utils/spell_utils.dart';
 
-final srdSpellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
-  (ref) async {
-    final spellModels = await ref.watch(allSRDSpellsProvider.future);
-    final characterClasses =
-        await ref.watch(characterClassesStreamProvider.future);
-    final spellTypes = SpellTags.spellTypes;
-
-    final spellViewModelsFutures = spellModels.map(
-      (srdSpellViewModel) async {
-        final spellImageUrl = await ref
-            .watch(spellImagePathProvider(srdSpellViewModel.id).future);
-
-        final spellType = spellTypes.entries.firstWhereOrNull(
-          (entry) {
-            return entry.key == srdSpellViewModel.id;
-          },
-        )?.value;
-
-        return srdSpellViewModel.copyWith(
-          imageUrl: spellImageUrl,
-          spellTypes: spellType,
-          classes: characterClasses.where(
-            (characterClass) {
-              return characterClass.availableSpells.contains(
-                srdSpellViewModel.id,
-              );
-            },
-          ).toSet(),
-        );
-      },
-    ).toList();
-
-    final spellViewModels = await Future.wait(
-      spellViewModelsFutures,
-    );
-
-    return spellViewModels;
-  },
-);
-
-class SpellViewModel implements Identifiable {
-  @override
-  final String id;
+class NewSpellModel {
   final String name;
   final String description;
 
@@ -81,8 +31,7 @@ class SpellViewModel implements Identifiable {
   final Set<SpellType> spellTypes;
   final Set<ICharacter5eClassModelV1> characterClasses;
 
-  SpellViewModel({
-    required this.id,
+  NewSpellModel({
     required this.name,
     required this.description,
     required this.spellLevel,
@@ -102,8 +51,7 @@ class SpellViewModel implements Identifiable {
     this.characterClasses = const {},
   });
 
-  SpellViewModel copyWith({
-    String? id,
+  NewSpellModel copyWith({
     String? name,
     String? description,
     int? spellLevel,
@@ -122,8 +70,7 @@ class SpellViewModel implements Identifiable {
     Set<SpellType>? spellTypes,
     Set<ICharacter5eClassModelV1>? classes,
   }) {
-    return SpellViewModel(
-      id: id ?? this.id,
+    return NewSpellModel(
       name: name ?? this.name,
       description: description ?? this.description,
       spellLevel: spellLevel ?? this.spellLevel,
@@ -147,10 +94,37 @@ class SpellViewModel implements Identifiable {
       characterClasses: classes ?? this.characterClasses,
     );
   }
-}
 
-extension SpellLevelString on SpellViewModel {
-  String get spellLevelString {
-    return SpellUtils.spellLevelString(spellLevel);
+  static int maxNameLength = 150;
+  static int maxDescriptionLength = 5000;
+
+  static String? validateName(String? name) {
+    if (name == null || name.isEmpty) {
+      return 'Name cannot be empty';
+    }
+    if (name.length > maxNameLength) {
+      return 'Name cannot be longer than $maxNameLength characters';
+    }
+    return null;
+  }
+
+  static String? validateDescription(String? description) {
+    if (description == null || description.isEmpty) {
+      return 'Description cannot be empty';
+    }
+    if (description.length > maxDescriptionLength) {
+      return 'Description cannot be longer than $maxDescriptionLength characters';
+    }
+    return '';
+  }
+
+  static String? validateSpellLevel(int? level) {
+    if (level == null) {
+      return 'Spell level is required';
+    }
+    if (level < 0 || level > 9) {
+      return 'Spell level must be between 0 and 9';
+    }
+    return null;
   }
 }

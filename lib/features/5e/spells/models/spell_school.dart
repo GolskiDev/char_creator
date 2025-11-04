@@ -25,6 +25,30 @@ sealed class SpellSchool {
   }
 
   @override
+  String toString() {
+    switch (this) {
+      case Abjuration():
+        return 'abjuration';
+      case Alteration():
+        return 'alteration';
+      case Evocation():
+        return 'evocation';
+      case Illusion():
+        return 'illusion';
+      case Necromancy():
+        return 'necromancy';
+      case Conjuration():
+        return 'conjuration';
+      case Divination():
+        return 'divination';
+      case Enchantment():
+        return 'enchantment';
+      case Unknown():
+        return 'Unknown';
+    }
+  }
+
+  @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is SpellSchool && other.runtimeType == runtimeType;

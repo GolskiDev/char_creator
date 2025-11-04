@@ -10,7 +10,7 @@ import '../../character/models/character_5e_model_v1.dart';
 import '../../game_system_view_model.dart';
 import '../view_models/spell_view_model.dart';
 
-class SpellFilterDrawer extends HookConsumerWidget {
+class SpellFilterDrawerWidget extends HookConsumerWidget {
   final List<SpellViewModel> allSpellModels;
   final List<Character5eModelV1> characters;
   final SpellModelFiltersState filters;
@@ -33,7 +33,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
       onCharacterClassesChanged;
   final Function(Character5eModelV1? character) onCharacterChanged;
 
-  const SpellFilterDrawer({
+  const SpellFilterDrawerWidget({
     super.key,
     required this.allSpellModels,
     required this.characters,

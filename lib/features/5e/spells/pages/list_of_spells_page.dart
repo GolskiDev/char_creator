@@ -27,7 +27,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allSpells = ref.watch(spellViewModelsProvider);
+    final allSpells = ref.watch(srdSpellViewModelsProvider);
     final allCharactersAsync = ref.watch(charactersStreamProvider);
 
     final selectedCharacterId = useState<String?>(targetCharacterId);
@@ -446,12 +446,12 @@ class ListOfSpellsPage extends HookConsumerWidget {
     );
   }
 
-  SpellFilterDrawer spellFilterDrawer(
+  SpellFilterDrawerWidget spellFilterDrawer(
     AsyncValue<List<SpellViewModel>> allCantrips,
     List<Character5eModelV1> characters,
     ValueNotifier<SpellModelFiltersState> spellFilters,
   ) {
-    return SpellFilterDrawer(
+    return SpellFilterDrawerWidget(
       allSpellModels: allCantrips.when(
         skipLoadingOnReload: true,
         data: (cantrips) => cantrips.toList(),

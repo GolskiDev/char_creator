@@ -1,10 +1,10 @@
-import 'package:spells_and_tools/features/5e/character/widgets/character_stats_widget.dart';
-import 'package:spells_and_tools/features/5e/character/widgets/notes/character_5e_note_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/features/5e/character/widgets/character_stats_widget.dart';
+import 'package:spells_and_tools/features/5e/character/widgets/notes/character_5e_note_widget.dart';
 
 import '../game_system_view_model.dart';
 import '../spells/view_models/spell_view_model.dart';
@@ -27,7 +27,7 @@ class Character5ePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final charactersAsync = ref.watch(charactersStreamProvider);
-    final spellsAsync = ref.watch(spellViewModelsProvider);
+    final spellsAsync = ref.watch(srdSpellViewModelsProvider);
 
     final List<SpellViewModel> spellViewModels;
     switch (spellsAsync) {

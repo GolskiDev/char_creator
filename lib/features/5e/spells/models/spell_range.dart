@@ -39,6 +39,51 @@ sealed class SpellRange implements Identifiable {
         return RangeCustom();
     }
   }
+
+  bool compareTo(SpellRange other) {
+    final orderedRanges = [
+      RangeCustom(),
+      Self(),
+      Touch(),
+      Sight(),
+      Unlimited(),
+      Feet30(),
+      Feet60(),
+      Feet120(),
+      Feet10(),
+      Feet150(),
+      Mile1(),
+      Feet300(),
+      Feet500(),
+      Special(),
+      Feet100(),
+      Miles500(),
+      Feet5(),
+    ];
+
+    return orderedRanges.indexWhere((range) => range == this) <
+        orderedRanges.indexWhere((range) => range == other);
+  }
+
+  static List<SpellRange> get all => [
+        RangeCustom(),
+        Self(),
+        Touch(),
+        Sight(),
+        Unlimited(),
+        Feet30(),
+        Feet60(),
+        Feet120(),
+        Feet10(),
+        Feet150(),
+        Mile1(),
+        Feet300(),
+        Feet500(),
+        Special(),
+        Feet100(),
+        Miles500(),
+        Feet5(),
+      ];
 }
 
 class RangeCustom extends SpellRange {

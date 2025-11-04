@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -212,7 +213,28 @@ enum SpellType {
   buff,
   debuff,
   control,
-  utility,
+  utility;
+
+  static SpellType? fromString(String string) {
+    return SpellType.values.firstWhereOrNull(
+      (element) {
+        return element.name == string || element.name == string.toLowerCase();
+      },
+    );
+  }
+
+  static Set<SpellType> fromStringList(Iterable<String> strings) {
+    return strings
+        .map((element) => SpellType.fromString(element))
+        .nonNulls
+        .toSet();
+  }
+}
+
+extension SpellTypeList on Iterable<SpellType> {
+  List<String> toStringList() {
+    return map((element) => element.name).toList();
+  }
 }
 
 extension SpellTypeIcon on SpellType {
