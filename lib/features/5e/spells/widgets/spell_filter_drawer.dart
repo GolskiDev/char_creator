@@ -14,7 +14,6 @@ class SpellFilterDrawerWidget extends HookConsumerWidget {
   final List<SpellViewModel> allSpellModels;
   final List<Character5eModelV1> characters;
   final SpellModelFiltersState filters;
-
   final Function(bool? requiresConcentration) onRequiresConcentrationChanged;
   final Function(bool? canBeCastAsRitual) onCanBeCastAsRitualChanged;
   final Function(bool? requiresVerbalComponent)
@@ -32,6 +31,7 @@ class SpellFilterDrawerWidget extends HookConsumerWidget {
   final Function(Set<ICharacter5eClassModelV1> characterClasses)
       onCharacterClassesChanged;
   final Function(Character5eModelV1? character) onCharacterChanged;
+  final Function(Set<String> collections) onCollectionsChanged;
 
   const SpellFilterDrawerWidget({
     super.key,
@@ -51,6 +51,7 @@ class SpellFilterDrawerWidget extends HookConsumerWidget {
     required this.onSpellTypesChanged,
     required this.onCharacterClassesChanged,
     required this.onCharacterChanged,
+    required this.onCollectionsChanged,
   });
 
   @override
@@ -72,6 +73,10 @@ class SpellFilterDrawerWidget extends HookConsumerWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
+              if (filters.collections.isNotEmpty || characters.isNotEmpty) ...[
+                Divider(),
+                _buildCollectionFilter(context),
+              ],
               if (characters.isNotEmpty) ...[
                 Divider(),
                 _buildCharacterFilter(context),
@@ -104,6 +109,50 @@ class SpellFilterDrawerWidget extends HookConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCollectionFilter(
+    BuildContext context,
+  ) {
+    return ExpansionTile(
+      initiallyExpanded: filters.collections.isNotEmpty,
+      childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
+      title: Row(
+        children: [
+          Icon(GameSystemViewModel.collection.icon),
+          const SizedBox(width: 16),
+          Text(
+            GameSystemViewModel.collection.name,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ],
+      ),
+      children: [
+        Wrap(
+          spacing: 8,
+          alignment: WrapAlignment.start,
+          children: {"User", "SRD"}
+              .map(
+                (collection) => FilterChip(
+                  visualDensity: VisualDensity.compact,
+                  label: Text(collection),
+                  selected: filters.collections.contains(collection),
+                  onSelected: (selected) {
+                    final updatedCollections =
+                        Set<String>.from(filters.collections);
+                    if (selected) {
+                      updatedCollections.add(collection);
+                    } else {
+                      updatedCollections.remove(collection);
+                    }
+                    onCollectionsChanged(updatedCollections);
+                  },
+                ),
+              )
+              .toList(),
+        ),
+      ],
     );
   }
 

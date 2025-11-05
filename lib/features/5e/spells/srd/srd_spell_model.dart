@@ -66,7 +66,7 @@ class SRDSpellModelV1 {
       name: name,
       description: description,
       spellLevel: level,
-      school: SpellSchool.fromString(school ?? 'unknown'),
+      school: SpellSchool.tryFromString(school ?? 'unknown'),
       atHigherLevels: atHigherLevels,
       requiresConcentration: requiresConcentration,
       canBeCastAsRitual: ritual,

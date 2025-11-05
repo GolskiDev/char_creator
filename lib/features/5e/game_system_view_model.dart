@@ -374,6 +374,11 @@ class GameSystemViewModel {
     name: 'Edit',
     icon: Symbols.edit,
   );
+
+  static const collection = GameSystemViewModelItem(
+    name: 'Collection',
+    icon: Symbols.folder,
+  );
 }
 
 class GameSystemViewModelItem {

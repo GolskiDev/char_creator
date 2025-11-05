@@ -20,7 +20,30 @@ sealed class SpellSchool {
       case 'enchantment':
         return Enchantment();
       default:
-        return Unknown();
+        throw Exception('Unknown spell school: $schoolName');
+    }
+  }
+
+  static SpellSchool? tryFromString(String schoolName) {
+    switch (schoolName.toLowerCase()) {
+      case 'abjuration':
+        return Abjuration();
+      case 'alteration':
+        return Alteration();
+      case 'evocation':
+        return Evocation();
+      case 'illusion':
+        return Illusion();
+      case 'necromancy':
+        return Necromancy();
+      case 'conjuration':
+        return Conjuration();
+      case 'divination':
+        return Divination();
+      case 'enchantment':
+        return Enchantment();
+      default:
+        return null;
     }
   }
 

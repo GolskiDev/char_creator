@@ -96,7 +96,7 @@ class BaseSpellModel {
       description: map['description'] as String,
       spellLevel: map['spellLevel'] as int,
       school: map['school'] != null
-          ? SpellSchool.fromString(map['school'] as String)
+          ? SpellSchool.tryFromString(map['school'] as String)
           : null,
       requiresConcentration: map['requiresConcentration'] as bool?,
       canBeCastAsRitual: map['canBeCastAsRitual'] as bool?,
@@ -147,6 +147,7 @@ class BaseSpellModel {
 
   static int maxNameLength = 150;
   static int maxDescriptionLength = 5000;
+  static int maxMaterialLength = 200;
 
   static String? validateName(String? name) {
     if (name == null || name.isEmpty) {

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:spells_and_tools/features/5e/character/repository/character_repository.dart';
@@ -72,14 +73,8 @@ class ListOfSpellsPage extends HookConsumerWidget {
     final searchController = useTextEditingController(
       text: spellFilters.value.searchText,
     );
-    final searchFocusNode = useFocusNode(
-      canRequestFocus: true,
-    );
 
     // useListenable(searchFocusNode);
-
-    final isSearchVisible =
-        searchFocusNode.hasFocus || searchController.text.isNotEmpty;
 
     final isListMode = useState(false);
 
@@ -123,17 +118,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
         return Stack(
           children: [
             TextField(
-              focusNode: searchFocusNode,
-              canRequestFocus: true,
               controller: searchController,
-              onTap: () {
-                if (!searchFocusNode.hasFocus) {
-                  searchFocusNode.requestFocus();
-                }
-              },
-              onTapOutside: (_) {
-                searchFocusNode.unfocus();
-              },
               onChanged: (value) {
                 spellFilters.value = spellFilters.value.copyWith(
                   searchTextSetter: () {
@@ -143,25 +128,16 @@ class ListOfSpellsPage extends HookConsumerWidget {
               },
               decoration: InputDecoration(
                 hintText: 'Search',
-                label: searchFocusNode.hasFocus
-                    ? null
-                    : Text(
-                        'Spells',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
                 floatingLabelBehavior: FloatingLabelBehavior.never,
-                suffixIcon: searchFocusNode.hasFocus
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          spellFilters.value = spellFilters.value.copyWith(
-                            searchTextSetter: () => null,
-                          );
-                          searchController.clear();
-                          searchFocusNode.unfocus();
-                        },
-                      )
-                    : null,
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    spellFilters.value = spellFilters.value.copyWith(
+                      searchTextSetter: () => null,
+                    );
+                    searchController.clear();
+                  },
+                ),
               ),
             ),
           ],
@@ -212,15 +188,12 @@ class ListOfSpellsPage extends HookConsumerWidget {
             ),
           ],
         ),
-        floatingActionButton: isSearchVisible
-            ? null
-            : FloatingActionButton(
-                onPressed: () {
-                  searchFocusNode.requestFocus();
-                  FocusScope.of(context).requestFocus(searchFocusNode);
-                },
-                child: const Icon(Icons.search),
-              ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            context.go('/spells/new');
+          },
+          child: const Icon(Icons.add),
+        ),
         body: allSpells.when(
           data: (cantrips) {
             final filteredSpells =
@@ -535,6 +508,11 @@ class ListOfSpellsPage extends HookConsumerWidget {
       onCharacterChanged: (character) {
         spellFilters.value = spellFilters.value.copyWith(
           characterSetter: () => character,
+        );
+      },
+      onCollectionsChanged: (collections) {
+        spellFilters.value = spellFilters.value.copyWith(
+          collections: collections,
         );
       },
     );

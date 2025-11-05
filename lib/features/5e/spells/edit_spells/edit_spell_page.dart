@@ -52,7 +52,7 @@ class EditSpellPage extends HookConsumerWidget {
       spell?.castingTime,
     );
     final atHigherLevelsController = useTextEditingController(
-      text: spell?.atHigherLevels ?? ' ',
+      text: spell?.atHigherLevels,
     );
     final spellTypeController = useState<Set<SpellType>>(
       <SpellType>{
@@ -106,7 +106,7 @@ class EditSpellPage extends HookConsumerWidget {
         subtitle: TextFormField(
           minLines: 1,
           validator: BaseSpellModel.validateDescription,
-          maxLines: 30,
+          maxLines: 50,
           controller: descriptionController,
           decoration: InputDecoration(
             labelText: title,
@@ -129,7 +129,7 @@ class EditSpellPage extends HookConsumerWidget {
               prefixIcon: Icon(icon),
             ),
             validator: BaseSpellModel.validateSpellLevel,
-            initialValue: null,
+            initialValue: spellLevel.value,
             items: availableSpellLevels
                 .map(
                   (level) => DropdownMenuItem<int>(
@@ -233,6 +233,7 @@ class EditSpellPage extends HookConsumerWidget {
         leading: Icon(icon),
         title: TextField(
           controller: materialComponentController,
+          maxLength: BaseSpellModel.maxMaterialLength,
           decoration: InputDecoration(
             labelText: title,
           ),
@@ -252,6 +253,7 @@ class EditSpellPage extends HookConsumerWidget {
             labelText: viewModel.name,
             prefixIcon: Icon(viewModel.icon),
           ),
+          initialValue: spellDurationController.value,
           items: availableDurations
               .map(
                 (duration) => DropdownMenuItem<SpellDuration>(
@@ -279,6 +281,7 @@ class EditSpellPage extends HookConsumerWidget {
             labelText: title,
             prefixIcon: Icon(icon),
           ),
+          initialValue: spellRangeController.value,
           items: availableRanges
               .map(
                 (range) => DropdownMenuItem<SpellRange>(
@@ -306,6 +309,7 @@ class EditSpellPage extends HookConsumerWidget {
             labelText: title,
             prefixIcon: Icon(icon),
           ),
+          initialValue: spellCastingTimeController.value,
           items: availableSpellingTimes
               .map(
                 (castingTime) => DropdownMenuItem<SpellCastingTime>(
@@ -331,11 +335,12 @@ class EditSpellPage extends HookConsumerWidget {
       final title = viewModel.name;
       final icon = viewModel.icon;
       return ListTile(
-        title: Text(title),
         leading: Icon(icon),
         subtitle: TextField(
           controller: atHigherLevelsController,
-          decoration: const InputDecoration(),
+          decoration: InputDecoration(
+            labelText: title,
+          ),
         ),
       );
     }
@@ -387,6 +392,7 @@ class EditSpellPage extends HookConsumerWidget {
               child: descriptionEditor(),
             ),
             spellLevelEditor(),
+            spellCastingTimeEditor(),
             requiresConcentrationEditor(),
             canBeCastAsRitualEditor(),
             requiresVerbalComponentEditor(),
@@ -395,7 +401,6 @@ class EditSpellPage extends HookConsumerWidget {
             if (requiresMaterialComponent.value) materialComponentEditor(),
             spellDurationEditor(),
             spellRangeEditor(),
-            spellCastingTimeEditor(),
             atHigherLevelsEditor(),
             spellTypeEditor(),
           ]
@@ -424,34 +429,13 @@ class EditSpellPage extends HookConsumerWidget {
         final name = nameController.text;
         final description = descriptionController.text;
         final lvl = spellLevel.value;
+        final material = materialComponentController.text.isEmpty
+            ? null
+            : materialComponentController.text;
+        final atHigherLevels = atHigherLevelsController.text.isEmpty
+            ? null
+            : atHigherLevelsController.text;
         if (lvl == null) {
-          return;
-        }
-
-        final spell = BaseSpellModel(
-          name: name,
-          description: description,
-          spellLevel: lvl,
-          canBeCastAsRitual: canBeCastAsRitual.value,
-          requiresConcentration: requiresConcentration.value,
-          requiresVerbalComponent: requiresVerbalComponent.value,
-          requiresSomaticComponent: requiresSomaticComponent.value,
-          requiresMaterialComponent: requiresMaterialComponent.value,
-          material: requiresMaterialComponent.value
-              ? materialComponentController.text
-              : null,
-          duration: spellDurationController.value,
-          range: spellRangeController.value,
-          castingTime: spellCastingTimeController.value,
-          atHigherLevels: atHigherLevelsController.text,
-          spellTypes: spellTypeController.value,
-        );
-
-        if (isEditing) {
-          final userSpell = theSpell.copyWith(
-            spell: spell,
-          );
-          await repository.updateSpell(userSpell);
           return;
         }
 
@@ -464,26 +448,54 @@ class EditSpellPage extends HookConsumerWidget {
           requiresVerbalComponent: requiresVerbalComponent.value,
           requiresSomaticComponent: requiresSomaticComponent.value,
           requiresMaterialComponent: requiresMaterialComponent.value,
-          material: requiresMaterialComponent.value
-              ? materialComponentController.text
-              : null,
+          material: requiresMaterialComponent.value ? material : null,
           duration: spellDurationController.value,
           range: spellRangeController.value,
           castingTime: spellCastingTimeController.value,
-          atHigherLevels: atHigherLevelsController.text,
+          atHigherLevels: atHigherLevels,
           spellTypes: spellTypeController.value,
         );
-        await repository.addSpell(newSpell);
+
+        if (isEditing) {
+          final userSpell = theSpell.copyWith(
+            spell: spell,
+          );
+          await repository.updateSpell(userSpell);
+        } else {
+          await repository.addSpell(newSpell);
+        }
         if (context.mounted) {
           context.pop();
         }
       }
     }
 
+    deleteSpell() async {
+      if (isEditing) {
+        final repository = await ref.watch(userSpellsRepositoryProvider.future);
+        if (repository == null) {
+          return;
+        }
+        await repository.deleteSpell(theSpell.id);
+        if (context.mounted) {
+          context.go('/spells');
+        }
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Spell'),
+        title: Text(
+          isEditing ? 'Edit Spell' : 'New Spell',
+        ),
         actions: [
+          if (isEditing)
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () async {
+                await deleteSpell();
+              },
+            ),
           IconButton(
             icon: Icon(save.icon),
             tooltip: save.name,
