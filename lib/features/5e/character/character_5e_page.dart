@@ -1,13 +1,14 @@
-import 'package:spells_and_tools/features/5e/character/widgets/character_stats_widget.dart';
-import 'package:spells_and_tools/features/5e/character/widgets/notes/character_5e_note_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/features/5e/character/widgets/character_stats_widget.dart';
+import 'package:spells_and_tools/features/5e/character/widgets/notes/character_5e_note_widget.dart';
 
 import '../game_system_view_model.dart';
 import '../spells/view_models/spell_view_model.dart';
+import '../spells/view_models/spell_view_models_provider.dart';
 import 'models/character_5e_model_v1.dart';
 import 'models/character_5e_spell_slots.dart';
 import 'repository/character_repository.dart';

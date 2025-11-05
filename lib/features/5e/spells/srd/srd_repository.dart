@@ -26,7 +26,7 @@ class SRDRepository {
     final map = await compute(jsonDecode, spellsFile) as List<dynamic>;
     final spells = map
         .map(
-          (e) => SRDSpellModel.fromJson(e as Map<String, dynamic>),
+          (e) => SRDSpellModelV1.fromMap(e as Map<String, dynamic>),
         )
         .toList();
 

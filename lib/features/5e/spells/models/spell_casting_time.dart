@@ -8,6 +8,8 @@ sealed class SpellCastingTime implements Identifiable {
       case '1 bonus action':
         return OneBonusAction();
       case '1 reaction':
+      case '1 reaction, which you take when you see a creature within 60 feet of you casting a spell':
+      case '1 reaction, which you take in response to being damaged by a creature within 60 feet of you that you can see':
         return OneReaction();
       case '1 minute':
       case 'up to 1 minute':
@@ -21,18 +23,45 @@ sealed class SpellCastingTime implements Identifiable {
       case '8 hours':
       case 'up to 8 hours':
         return EightHours();
-      case '1 reaction, which you take when you see a creature within 60 feet of you casting a spell':
-        return ReactionToCreatureCastingSpell();
       case '24 hours':
         return TwentyFourHours();
-      case '1 reaction, which you take in response to being damaged by a creature within 60 feet of you that you can see':
-        return ReactionToBeingDamaged();
       case '12 hours':
         return TwelveHours();
       default:
         return SpellCastingTimeCustom();
     }
   }
+
+  bool compareTo(SpellCastingTime other) {
+    final orderedCastingTimes = [
+      OneBonusAction(),
+      SpellCastingTimeCustom(),
+      OneAction(),
+      OneReaction(),
+      OneMinute(),
+      TenMinutes(),
+      OneHour(),
+      EightHours(),
+      TwentyFourHours(),
+      TwelveHours(),
+    ];
+
+    return orderedCastingTimes.indexWhere((ct) => ct == this) <
+        orderedCastingTimes.indexWhere((ct) => ct == other);
+  }
+
+  static List<SpellCastingTime> get all => [
+        OneAction(),
+        OneBonusAction(),
+        OneReaction(),
+        OneMinute(),
+        TenMinutes(),
+        OneHour(),
+        EightHours(),
+        TwentyFourHours(),
+        TwelveHours(),
+        SpellCastingTimeCustom(),
+      ];
 }
 
 class OneAction extends SpellCastingTime {
@@ -147,23 +176,6 @@ class EightHours extends SpellCastingTime {
   int get hashCode => 7;
 }
 
-class ReactionToCreatureCastingSpell extends SpellCastingTime {
-  @override
-  get id => toString();
-
-  @override
-  toString() =>
-      '1 reaction, which you take when you see a creature within 60 feet of you casting a spell';
-
-  @override
-  bool operator ==(Object other) {
-    return other is ReactionToCreatureCastingSpell;
-  }
-
-  @override
-  int get hashCode => 8;
-}
-
 class TwentyFourHours extends SpellCastingTime {
   @override
   get id => toString();
@@ -178,23 +190,6 @@ class TwentyFourHours extends SpellCastingTime {
 
   @override
   int get hashCode => 9;
-}
-
-class ReactionToBeingDamaged extends SpellCastingTime {
-  @override
-  get id => toString();
-
-  @override
-  toString() =>
-      '1 reaction, which you take in response to being damaged by a creature within 60 feet of you that you can see';
-
-  @override
-  bool operator ==(Object other) {
-    return other is ReactionToBeingDamaged;
-  }
-
-  @override
-  int get hashCode => 10;
 }
 
 class TwelveHours extends SpellCastingTime {

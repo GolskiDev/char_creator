@@ -1,22 +1,24 @@
+import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:spells_and_tools/features/5e/character/repository/character_repository.dart';
 import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
 import 'package:spells_and_tools/features/5e/spells/filters/spell_model_filters_state.dart';
 import 'package:spells_and_tools/features/5e/spells/widgets/small_spell_widget.dart';
-import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
-import '../character/character_provider.dart';
-import '../character/models/character_5e_class_model_v1.dart';
-import '../character/models/character_5e_model_v1.dart';
+import '../../character/character_provider.dart';
+import '../../character/models/character_5e_class_model_v1.dart';
+import '../../character/models/character_5e_model_v1.dart';
+import '../utils/spell_utils.dart';
+import '../view_models/spell_view_model.dart';
+import '../view_models/spell_view_models_provider.dart';
+import '../widgets/add_spell_to_character_widget.dart';
+import '../widgets/add_to_character_menu.dart';
+import '../widgets/spell_filter_drawer.dart';
 import 'spell_card_page.dart';
-import 'utils/spell_utils.dart';
-import 'view_models/spell_view_model.dart';
-import 'widgets/add_spell_to_character_widget.dart';
-import 'widgets/add_to_character_menu.dart';
-import 'widgets/spell_filter_drawer.dart';
 
 class ListOfSpellsPage extends HookConsumerWidget {
   final String? targetCharacterId;
@@ -71,14 +73,8 @@ class ListOfSpellsPage extends HookConsumerWidget {
     final searchController = useTextEditingController(
       text: spellFilters.value.searchText,
     );
-    final searchFocusNode = useFocusNode(
-      canRequestFocus: true,
-    );
 
     // useListenable(searchFocusNode);
-
-    final isSearchVisible =
-        searchFocusNode.hasFocus || searchController.text.isNotEmpty;
 
     final isListMode = useState(false);
 
@@ -122,17 +118,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
         return Stack(
           children: [
             TextField(
-              focusNode: searchFocusNode,
-              canRequestFocus: true,
               controller: searchController,
-              onTap: () {
-                if (!searchFocusNode.hasFocus) {
-                  searchFocusNode.requestFocus();
-                }
-              },
-              onTapOutside: (_) {
-                searchFocusNode.unfocus();
-              },
               onChanged: (value) {
                 spellFilters.value = spellFilters.value.copyWith(
                   searchTextSetter: () {
@@ -142,25 +128,16 @@ class ListOfSpellsPage extends HookConsumerWidget {
               },
               decoration: InputDecoration(
                 hintText: 'Search',
-                label: searchFocusNode.hasFocus
-                    ? null
-                    : Text(
-                        'Spells',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
                 floatingLabelBehavior: FloatingLabelBehavior.never,
-                suffixIcon: searchFocusNode.hasFocus
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          spellFilters.value = spellFilters.value.copyWith(
-                            searchTextSetter: () => null,
-                          );
-                          searchController.clear();
-                          searchFocusNode.unfocus();
-                        },
-                      )
-                    : null,
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    spellFilters.value = spellFilters.value.copyWith(
+                      searchTextSetter: () => null,
+                    );
+                    searchController.clear();
+                  },
+                ),
               ),
             ),
           ],
@@ -211,15 +188,12 @@ class ListOfSpellsPage extends HookConsumerWidget {
             ),
           ],
         ),
-        floatingActionButton: isSearchVisible
-            ? null
-            : FloatingActionButton(
-                onPressed: () {
-                  searchFocusNode.requestFocus();
-                  FocusScope.of(context).requestFocus(searchFocusNode);
-                },
-                child: const Icon(Icons.search),
-              ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            context.go('/spells/new');
+          },
+          child: const Icon(Icons.add),
+        ),
         body: allSpells.when(
           data: (cantrips) {
             final filteredSpells =
@@ -446,12 +420,12 @@ class ListOfSpellsPage extends HookConsumerWidget {
     );
   }
 
-  SpellFilterDrawer spellFilterDrawer(
+  SpellFilterDrawerWidget spellFilterDrawer(
     AsyncValue<List<SpellViewModel>> allCantrips,
     List<Character5eModelV1> characters,
     ValueNotifier<SpellModelFiltersState> spellFilters,
   ) {
-    return SpellFilterDrawer(
+    return SpellFilterDrawerWidget(
       allSpellModels: allCantrips.when(
         skipLoadingOnReload: true,
         data: (cantrips) => cantrips.toList(),
@@ -534,6 +508,11 @@ class ListOfSpellsPage extends HookConsumerWidget {
       onCharacterChanged: (character) {
         spellFilters.value = spellFilters.value.copyWith(
           characterSetter: () => character,
+        );
+      },
+      onCollectionsChanged: (collections) {
+        spellFilters.value = spellFilters.value.copyWith(
+          collections: collections,
         );
       },
     );

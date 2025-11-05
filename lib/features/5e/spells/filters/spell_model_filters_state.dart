@@ -2,16 +2,18 @@ import 'package:spells_and_tools/features/5e/character/models/character_5e_model
 
 import '../../character/models/character_5e_class_model_v1.dart';
 import '../../tags.dart';
+import '../models/spell_school.dart';
 import '../view_models/spell_view_model.dart';
 
 class SpellModelFiltersState {
   final String? searchText;
+  final Set<String> collections;
   final bool? requiresConcentration;
   final bool? canBeCastAsRitual;
   final bool? requiresVerbalComponent;
   final bool? requiresSomaticComponent;
   final bool? requiresMaterialComponent;
-  final Set<String> selectedSchools;
+  final Set<SpellSchool> selectedSchools;
   final Set<String> castingTimeIds;
   final Set<String> rangeIds;
   final Set<String> durationIds;
@@ -22,6 +24,7 @@ class SpellModelFiltersState {
 
   SpellModelFiltersState({
     this.searchText,
+    this.collections = const {},
     this.requiresConcentration,
     this.canBeCastAsRitual,
     this.requiresVerbalComponent,
@@ -44,7 +47,7 @@ class SpellModelFiltersState {
     bool? Function()? requiresVerbalComponentSetter,
     bool? Function()? requiresSomaticComponentSetter,
     bool? Function()? requiresMaterialComponentSetter,
-    Set<String>? selectedSchools,
+    Set<SpellSchool>? selectedSchools,
     Set<String>? castingTimeIds,
     Set<String>? rangeIds,
     Set<String>? durationIds,
@@ -52,6 +55,7 @@ class SpellModelFiltersState {
     Set<SpellType>? spellTypes,
     Set<ICharacter5eClassModelV1>? characterClasses,
     Character5eModelV1? Function()? characterSetter,
+    Set<String>? collections,
   }) {
     return SpellModelFiltersState(
       searchText: searchTextSetter != null ? searchTextSetter() : searchText,
@@ -78,7 +82,20 @@ class SpellModelFiltersState {
       spellTypes: spellTypes ?? this.spellTypes,
       characterClasses: characterClasses ?? this.characterClasses,
       character: characterSetter != null ? characterSetter() : character,
+      collections: collections ?? this.collections,
     );
+  }
+
+  bool spellIsFromCollection(String? ownerId) {
+    if (collections.isEmpty) {
+      return true;
+    }
+
+    if (ownerId == 'system') {
+      return collections.contains('SRD');
+    } else {
+      return collections.contains('User');
+    }
   }
 
   bool spellNameContainsSearchText(String name) {
@@ -141,7 +158,7 @@ class SpellModelFiltersState {
     return material == requiresMaterialComponent;
   }
 
-  bool spellIsInSelectedSchools(String? school) {
+  bool spellIsInSelectedSchools(SpellSchool? school) {
     if (selectedSchools.isEmpty) {
       return true;
     }
@@ -234,7 +251,8 @@ class SpellModelFiltersState {
             spellInType(spell.spellTypes) &&
             (isCharacterFilterUsed
                 ? spellIsForCharacter(spell)
-                : spellMatchesCharacterClasses(spell.characterClasses));
+                : spellMatchesCharacterClasses(spell.characterClasses)) &&
+            spellIsFromCollection(spell.ownerId);
       },
     ).toList();
   }

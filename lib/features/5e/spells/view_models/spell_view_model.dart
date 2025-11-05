@@ -1,6 +1,7 @@
-import 'package:spells_and_tools/features/5e/spells/srd/srd_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:spells_and_tools/common/interfaces/identifiable.dart';
+import 'package:spells_and_tools/features/5e/spells/srd/srd_repository.dart';
 
 import '../../character/models/character_5e_class_model_v1.dart';
 import '../../character/repository/character_classes_repository.dart';
@@ -8,10 +9,11 @@ import '../../tags.dart';
 import '../models/spell_casting_time.dart';
 import '../models/spell_duration.dart';
 import '../models/spell_range.dart';
+import '../models/spell_school.dart';
 import '../spell_images/spell_images_repository.dart';
 import '../utils/spell_utils.dart';
 
-final spellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
+final srdSpellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
   (ref) async {
     final spellModels = await ref.watch(allSRDSpellsProvider.future);
     final characterClasses =
@@ -51,14 +53,16 @@ final spellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
   },
 );
 
-class SpellViewModel {
+class SpellViewModel implements Identifiable {
+  @override
   final String id;
+  final String ownerId;
   final String name;
   final String description;
 
   final int spellLevel;
 
-  final String? school;
+  final SpellSchool? school;
 
   final bool? requiresConcentration;
   final bool? canBeCastAsRitual;
@@ -80,6 +84,7 @@ class SpellViewModel {
 
   SpellViewModel({
     required this.id,
+    required this.ownerId,
     required this.name,
     required this.description,
     required this.spellLevel,
@@ -104,7 +109,7 @@ class SpellViewModel {
     String? name,
     String? description,
     int? spellLevel,
-    String? school,
+    SpellSchool? school,
     bool? requiresConcentration,
     bool? canBeCastAsRitual,
     bool? requiresVerbalComponent,
@@ -121,6 +126,7 @@ class SpellViewModel {
   }) {
     return SpellViewModel(
       id: id ?? this.id,
+      ownerId: ownerId,
       name: name ?? this.name,
       description: description ?? this.description,
       spellLevel: spellLevel ?? this.spellLevel,
@@ -149,5 +155,14 @@ class SpellViewModel {
 extension SpellLevelString on SpellViewModel {
   String get spellLevelString {
     return SpellUtils.spellLevelString(spellLevel);
+  }
+}
+
+extension CanEditSpell on SpellViewModel {
+  bool get canEdit {
+    if (ownerId == 'system') {
+      return false;
+    }
+    return true;
   }
 }

@@ -1,9 +1,10 @@
 import '../models/spell_casting_time.dart';
 import '../models/spell_duration.dart';
 import '../models/spell_range.dart';
+import '../models/spell_school.dart';
 import '../view_models/spell_view_model.dart';
 
-class SRDSpellModel {
+class SRDSpellModelV1 {
   final String id;
   final String name;
   final int level;
@@ -20,7 +21,7 @@ class SRDSpellModel {
   final String? atHigherLevels;
   final String description;
 
-  SRDSpellModel({
+  SRDSpellModelV1({
     required this.id,
     required this.name,
     required this.level,
@@ -38,8 +39,8 @@ class SRDSpellModel {
     required this.description,
   });
 
-  factory SRDSpellModel.fromJson(Map<String, dynamic> json) {
-    return SRDSpellModel(
+  factory SRDSpellModelV1.fromMap(Map<String, dynamic> json) {
+    return SRDSpellModelV1(
       id: json['id'] as String,
       name: json['name'] as String,
       level: json['level'] as int,
@@ -60,11 +61,12 @@ class SRDSpellModel {
 
   SpellViewModel toSpellViewModel() {
     return SpellViewModel(
+      ownerId: 'system',
       id: id,
       name: name,
       description: description,
       spellLevel: level,
-      school: school,
+      school: SpellSchool.tryFromString(school ?? 'unknown'),
       atHigherLevels: atHigherLevels,
       requiresConcentration: requiresConcentration,
       canBeCastAsRitual: ritual,

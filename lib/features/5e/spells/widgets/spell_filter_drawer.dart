@@ -1,19 +1,19 @@
-import 'package:spells_and_tools/features/5e/spells/filters/spell_model_filters_state.dart';
-import 'package:spells_and_tools/features/5e/spells/utils/spell_utils.dart';
-import 'package:spells_and_tools/features/5e/tags.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/features/5e/spells/filters/spell_model_filters_state.dart';
+import 'package:spells_and_tools/features/5e/spells/models/spell_school.dart';
+import 'package:spells_and_tools/features/5e/spells/utils/spell_utils.dart';
+import 'package:spells_and_tools/features/5e/tags.dart';
 
 import '../../character/models/character_5e_class_model_v1.dart';
 import '../../character/models/character_5e_model_v1.dart';
 import '../../game_system_view_model.dart';
 import '../view_models/spell_view_model.dart';
 
-class SpellFilterDrawer extends HookConsumerWidget {
+class SpellFilterDrawerWidget extends HookConsumerWidget {
   final List<SpellViewModel> allSpellModels;
   final List<Character5eModelV1> characters;
   final SpellModelFiltersState filters;
-
   final Function(bool? requiresConcentration) onRequiresConcentrationChanged;
   final Function(bool? canBeCastAsRitual) onCanBeCastAsRitualChanged;
   final Function(bool? requiresVerbalComponent)
@@ -22,7 +22,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
       onRequiresSomaticComponentChanged;
   final Function(bool? requiresMaterialComponent)
       onRequiresMaterialComponentChanged;
-  final Function(Set<String> selectedSchools) onSelectedSchoolsChanged;
+  final Function(Set<SpellSchool> selectedSchools) onSelectedSchoolsChanged;
   final Function(Set<String> castingTimeIds) onCastingTimeChanged;
   final Function(Set<String> rangeIds) onRangeChanged;
   final Function(Set<String> durationIds) onDurationChanged;
@@ -31,8 +31,9 @@ class SpellFilterDrawer extends HookConsumerWidget {
   final Function(Set<ICharacter5eClassModelV1> characterClasses)
       onCharacterClassesChanged;
   final Function(Character5eModelV1? character) onCharacterChanged;
+  final Function(Set<String> collections) onCollectionsChanged;
 
-  const SpellFilterDrawer({
+  const SpellFilterDrawerWidget({
     super.key,
     required this.allSpellModels,
     required this.characters,
@@ -50,6 +51,7 @@ class SpellFilterDrawer extends HookConsumerWidget {
     required this.onSpellTypesChanged,
     required this.onCharacterClassesChanged,
     required this.onCharacterChanged,
+    required this.onCollectionsChanged,
   });
 
   @override
@@ -71,6 +73,10 @@ class SpellFilterDrawer extends HookConsumerWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
+              if (filters.collections.isNotEmpty || characters.isNotEmpty) ...[
+                Divider(),
+                _buildCollectionFilter(context),
+              ],
               if (characters.isNotEmpty) ...[
                 Divider(),
                 _buildCharacterFilter(context),
@@ -103,6 +109,50 @@ class SpellFilterDrawer extends HookConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCollectionFilter(
+    BuildContext context,
+  ) {
+    return ExpansionTile(
+      initiallyExpanded: filters.collections.isNotEmpty,
+      childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
+      title: Row(
+        children: [
+          Icon(GameSystemViewModel.collection.icon),
+          const SizedBox(width: 16),
+          Text(
+            GameSystemViewModel.collection.name,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ],
+      ),
+      children: [
+        Wrap(
+          spacing: 8,
+          alignment: WrapAlignment.start,
+          children: {"User", "SRD"}
+              .map(
+                (collection) => FilterChip(
+                  visualDensity: VisualDensity.compact,
+                  label: Text(collection),
+                  selected: filters.collections.contains(collection),
+                  onSelected: (selected) {
+                    final updatedCollections =
+                        Set<String>.from(filters.collections);
+                    if (selected) {
+                      updatedCollections.add(collection);
+                    } else {
+                      updatedCollections.remove(collection);
+                    }
+                    onCollectionsChanged(updatedCollections);
+                  },
+                ),
+              )
+              .toList(),
+        ),
+      ],
     );
   }
 
@@ -327,16 +377,16 @@ class SpellFilterDrawer extends HookConsumerWidget {
           alignment: WrapAlignment.start,
           children: allSpellModels
               .map((spell) => spell.school)
-              .where((school) => school != null)
+              .nonNulls
               .toSet()
               .map(
                 (school) => FilterChip(
                   visualDensity: VisualDensity.compact,
-                  label: Text(school!),
+                  label: Text(school.name),
                   selected: filters.selectedSchools.contains(school),
                   onSelected: (selected) {
                     final updatedSchools =
-                        Set<String>.from(filters.selectedSchools);
+                        Set<SpellSchool>.from(filters.selectedSchools);
                     if (selected) {
                       updatedSchools.add(school);
                     } else {

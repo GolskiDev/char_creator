@@ -354,6 +354,31 @@ class GameSystemViewModel {
     name: 'Sign In',
     icon: Symbols.login,
   );
+
+  static const name = GameSystemViewModelItem(
+    name: 'Name',
+    icon: Symbols.signature,
+  );
+
+  static const description = GameSystemViewModelItem(
+    name: 'Description',
+    icon: Symbols.description,
+  );
+
+  static const save = GameSystemViewModelItem(
+    name: 'Save',
+    icon: Symbols.save,
+  );
+
+  static const edit = GameSystemViewModelItem(
+    name: 'Edit',
+    icon: Symbols.edit,
+  );
+
+  static const collection = GameSystemViewModelItem(
+    name: 'Collection',
+    icon: Symbols.folder,
+  );
 }
 
 class GameSystemViewModelItem {
