@@ -46,7 +46,7 @@ class LuckyRollInteractor {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          duration: Duration(seconds: 2),
+          duration: Duration(seconds: 5),
           content: Text(
             messages.first,
             style: TextStyle(
@@ -83,7 +83,7 @@ class LuckyRollInteractor {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          duration: Duration(seconds: 2),
+          duration: Duration(seconds: 5),
           content: Text(
             messages.first,
           ),
