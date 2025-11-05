@@ -48,7 +48,7 @@ sealed class SpellDuration implements Identifiable {
     }
   }
 
-  bool compareTo(SpellDuration other) {
+  int compareTo(SpellDuration other) {
     final orderedByTime = [
       Instantaneous(),
       OneRound(),
@@ -71,8 +71,8 @@ sealed class SpellDuration implements Identifiable {
       UntilDispelledOrTriggered(),
       Special(),
     ];
-    return orderedByTime.indexWhere((element) => element == this) <
-        orderedByTime.indexWhere((element) => element == other);
+    return orderedByTime.indexWhere((d) => d == this) -
+        orderedByTime.indexWhere((d) => d == other);
   }
 
   static List<SpellDuration> get all => [

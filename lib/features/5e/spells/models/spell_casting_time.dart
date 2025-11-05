@@ -32,7 +32,7 @@ sealed class SpellCastingTime implements Identifiable {
     }
   }
 
-  bool compareTo(SpellCastingTime other) {
+  int compareTo(SpellCastingTime other) {
     final orderedCastingTimes = [
       OneBonusAction(),
       SpellCastingTimeCustom(),
@@ -46,8 +46,8 @@ sealed class SpellCastingTime implements Identifiable {
       TwelveHours(),
     ];
 
-    return orderedCastingTimes.indexWhere((ct) => ct == this) <
-        orderedCastingTimes.indexWhere((ct) => ct == other);
+    return orderedCastingTimes.indexWhere((d) => d == this) -
+        orderedCastingTimes.indexWhere((d) => d == other);
   }
 
   static List<SpellCastingTime> get all => [
