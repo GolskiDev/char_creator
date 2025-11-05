@@ -143,5 +143,53 @@
     "spellId": "true-strike",
     "subtitle": "Ah, the subtle art of pointing like you know what you’re doing.",
     "id": "aeb098f2-f3a6-4ace-a8d7-d8c62928273b"
+  },
+  {
+    "spellId": "vicious-mockery",
+    "subtitle": "Your mother was a kobold and your father smelled of wet goblin."
+  },
+  {
+    "spellId": "vicious-mockery",
+    "subtitle": "I’ve met mimics with more personality."
+  },
+  {
+    "spellId": "alarm",
+    "subtitle": "Trust issues with your party? There’s a spell for that."
+  },
+  {
+    "spellId": "animal-friendship",
+    "subtitle": "It’s less ‘Dr. Dolittle’ and more ‘Dr. Manipulate-a-Little’."
+  },
+  {
+    "spellId": "bane",
+    "subtitle": "I cast self-esteem reduction!",
+    "styleID": "casterBrag"
+  },
+  {
+    "spellId": "bless",
+    "subtitle": "As powerful as \"Bless you!\""
+  },
+  {
+    "spellId": "charm-person",
+    "subtitle": "It's not manipulation, it's aggressive networking.",
+    "styleID": "emotional-projection"
+  },
+  {
+    "spellId": "color-spray",
+    "subtitle": "You solved the encounter with… glitter?",
+    "styleID": "Anti-Magic NPC"
+  },
+  {
+    "spellId": "color-spray",
+    "subtitle": "If it doesn't shine it doesn't count",
+    "styleID": "ad_parody"
+  },
+  {
+    "spellId": "command",
+    "subtitle": "\"Sit\"!"
+  },
+  {
+    "spellId": "comprehend-languages",
+    "subtitle": "The scroll says 'Mind your own business.'"
   }
 ]
