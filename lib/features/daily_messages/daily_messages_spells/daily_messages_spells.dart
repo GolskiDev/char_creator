@@ -10,13 +10,21 @@ import '../../5e/spells/spell_images/spell_images_repository.dart';
 
 final dailyMessageSpellViewModelProvider = FutureProvider(
   (ref) async {
+    final dailyMessagesSpells =
+        await ref.watch(dailyMessageSpellsInteractorProvider.future);
+    return dailyMessagesSpells.getDailyMessageSpellViewModel();
+  },
+);
+
+final dailyMessageSpellsInteractorProvider = FutureProvider(
+  (ref) async {
     final spellImagesRepository = ref.watch(spellImagesRepositoryProvider);
     final sharedPreferences = await ref.watch(sharedPreferencesProvider.future);
 
-    return DailyMessagesSpells(
+    return DailyMessagesSpellsInteractor(
       spellImagesRepository: spellImagesRepository,
       sharedPreferences: sharedPreferences,
-    ).getDailyMessageSpellViewModel();
+    );
   },
 );
 
@@ -52,15 +60,16 @@ class DailyMessageSpellModel {
   }
 }
 
-class DailyMessagesSpells {
+class DailyMessagesSpellsInteractor {
   final SharedPreferencesWithCache sharedPreferences;
   final SpellImagesRepository spellImagesRepository;
 
   static String assetPath = 'assets/daily_messages_spells.json';
   static String readSpellIdsKey = 'read_daily_message_spells';
   static String lastResetKey = 'last_reset_daily_message_spells';
+  static Duration resetInterval = const Duration(hours: 12);
 
-  DailyMessagesSpells({
+  DailyMessagesSpellsInteractor({
     required this.spellImagesRepository,
     required this.sharedPreferences,
   });
@@ -110,6 +119,19 @@ class DailyMessagesSpells {
       subtitle: dailyMessagesShuffled.first.subtitle,
       imageUrl: '',
     );
+  }
+
+  static Future<void> forceLoadNewDailyMessage({
+    required WidgetRef ref,
+  }) async {
+    final interactor =
+        await ref.read(dailyMessageSpellsInteractorProvider.future);
+    await interactor.setTimeOfNewMessageFetched(
+      DateTime.now()
+          .subtract(resetInterval)
+          .subtract(const Duration(minutes: 1)),
+    );
+    ref.invalidate(dailyMessageSpellViewModelProvider);
   }
 
   Future<DailyMessageSpellViewModel?> getLastDailyMessage(
@@ -189,7 +211,7 @@ class DailyMessagesSpells {
       return true;
     }
 
-    return now.difference(lastReset).inHours >= 12;
+    return now.difference(lastReset).compareTo(resetInterval) >= 0;
   }
 
   Future<void> setTimeOfNewMessageFetched(DateTime dateTime) async {

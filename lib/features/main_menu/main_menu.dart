@@ -11,6 +11,7 @@ import 'package:spells_and_tools/features/main_menu/widgets/main_menu_default_ca
 
 import '../daily_messages/daily_messages_spells/daily_messages_spells.dart';
 import '../daily_messages/daily_messages_spells/daily_messages_spells_widget.dart';
+import '../lucky_roll/lucky_roll_widget.dart';
 
 class MainMenuPage extends HookConsumerWidget {
   const MainMenuPage({super.key});
@@ -20,6 +21,7 @@ class MainMenuPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final widgets = [
+      LuckyRollWidget(),
       MainMenuDefaultCardWidget(
         icon: GameSystemViewModel.spells.icon,
         title: "Disover Spells",
@@ -111,44 +113,29 @@ class MainMenuPage extends HookConsumerWidget {
           background(),
           CustomScrollView(
             slivers: [
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                  ),
-                  child: Column(
-                    spacing: 8,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        flex: 3,
-                        child: Center(
-                          child: mainWidget(),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Center(
-                          child: Column(
-                            spacing: 8,
-                            mainAxisSize: MainAxisSize.min,
-                            children: widgets.mapIndexed(
-                              (index, element) {
-                                if (index == widgets.length - 1) {
-                                  return SafeArea(
-                                    top: false,
-                                    child: element,
-                                  );
-                                }
-                                return element;
-                              },
-                            ).toList(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              SliverToBoxAdapter(
+                child: mainWidget(),
+              ),
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 24.0,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Column(
+                  spacing: 8,
+                  mainAxisSize: MainAxisSize.min,
+                  children: widgets.mapIndexed(
+                    (index, element) {
+                      if (index == widgets.length - 1) {
+                        return SafeArea(
+                          top: false,
+                          child: element,
+                        );
+                      }
+                      return element;
+                    },
+                  ).toList(),
                 ),
               ),
             ],

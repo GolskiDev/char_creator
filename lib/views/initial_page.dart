@@ -22,7 +22,7 @@ class InitialPage extends HookConsumerWidget {
     final randomTextForPlayers = [
       'Rolling for initiative',
       'Optimizing character builds',
-      'Consulting the DM'
+      'Consulting the GM'
     ];
 
     final randomLoadingTexts = [
