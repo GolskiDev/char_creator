@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spells_and_tools/features/5e/spells/edit_spells/edit_spell_page.dart'
     show EditSpellPage;
-import 'package:spells_and_tools/features/5e/spells/view_models/spell_view_model.dart';
 import 'package:spells_and_tools/features/authentication/auth_controller.dart';
 import 'package:spells_and_tools/views/initial_page.dart';
 import 'package:spells_and_tools/views/settings_page.dart';
@@ -16,6 +15,7 @@ import '../5e/character/edit_character_5e_page.dart';
 import '../5e/character/list_of_characters_page.dart';
 import '../5e/spells/pages/list_of_spells_page.dart';
 import '../5e/spells/pages/spell_card_page.dart';
+import '../5e/spells/view_models/spell_view_models_provider.dart';
 import '../authentication/pages/account_page.dart';
 import '../authentication/pages/sign_in_anonymously_page.dart';
 import '../authentication/pages/sign_in_page.dart';
@@ -100,7 +100,7 @@ class Navigation {
                     builder: (context, state) => Consumer(
                       builder: (context, ref, child) {
                         final spellsFuture =
-                            ref.read(srdSpellViewModelsProvider.future);
+                            ref.read(spellViewModelsProvider.future);
                         return SpellCardPage(
                           id: state.pathParameters['id']!,
                           spellsFuture: spellsFuture,

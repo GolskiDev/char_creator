@@ -8,6 +8,7 @@ import 'package:spells_and_tools/features/5e/character/widgets/notes/character_5
 
 import '../game_system_view_model.dart';
 import '../spells/view_models/spell_view_model.dart';
+import '../spells/view_models/spell_view_models_provider.dart';
 import 'models/character_5e_model_v1.dart';
 import 'models/character_5e_spell_slots.dart';
 import 'repository/character_repository.dart';
@@ -27,7 +28,7 @@ class Character5ePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final charactersAsync = ref.watch(charactersStreamProvider);
-    final spellsAsync = ref.watch(srdSpellViewModelsProvider);
+    final spellsAsync = ref.watch(spellViewModelsProvider);
 
     final List<SpellViewModel> spellViewModels;
     switch (spellsAsync) {

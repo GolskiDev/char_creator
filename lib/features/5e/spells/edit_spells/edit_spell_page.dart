@@ -1,17 +1,17 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
 import 'package:spells_and_tools/features/5e/spells/models/spell_casting_time.dart';
 import 'package:spells_and_tools/features/5e/spells/models/spell_duration.dart';
 import 'package:spells_and_tools/features/5e/spells/models/spell_range.dart';
-import 'package:spells_and_tools/features/5e/spells/user_spells_repository.dart/user_spell_model_v1.dart';
 import 'package:spells_and_tools/features/5e/tags.dart';
 
+import '../models/base_spell_model.dart';
 import '../user_spells_repository.dart/user_spells_repository.dart';
 import '../utils/spell_utils.dart';
-import 'new_spell_model.dart';
 
 class EditSpellPage extends HookConsumerWidget {
   const EditSpellPage({
@@ -21,9 +21,11 @@ class EditSpellPage extends HookConsumerWidget {
   final String? spellId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spells = ref.watch(userSpellsViewModelsProvider).asData?.value ?? [];
-    final spell = spells.firstWhereOrNull((spell) => spell.id == spellId);
-    final isEditing = spell != null;
+    final spells = ref.watch(userSpellsProvider).asData?.value ?? [];
+    final theSpell = spells.firstWhereOrNull((spell) => spell.id == spellId);
+    final isEditing = theSpell != null;
+
+    final spell = theSpell?.spell;
 
     final formState = useState(
       GlobalKey<FormState>(),
@@ -86,7 +88,7 @@ class EditSpellPage extends HookConsumerWidget {
       return ListTile(
         leading: Icon(icon),
         subtitle: TextFormField(
-          validator: NewSpellModel.validateName,
+          validator: BaseSpellModel.validateName,
           controller: nameController,
           decoration: InputDecoration(
             labelText: title,
@@ -103,7 +105,7 @@ class EditSpellPage extends HookConsumerWidget {
         leading: Icon(icon),
         subtitle: TextFormField(
           minLines: 1,
-          validator: NewSpellModel.validateDescription,
+          validator: BaseSpellModel.validateDescription,
           maxLines: 30,
           controller: descriptionController,
           decoration: InputDecoration(
@@ -126,7 +128,7 @@ class EditSpellPage extends HookConsumerWidget {
               labelText: title,
               prefixIcon: Icon(icon),
             ),
-            validator: NewSpellModel.validateSpellLevel,
+            validator: BaseSpellModel.validateSpellLevel,
             initialValue: null,
             items: availableSpellLevels
                 .map(
@@ -426,7 +428,7 @@ class EditSpellPage extends HookConsumerWidget {
           return;
         }
 
-        final spell = NewSpellModel(
+        final spell = BaseSpellModel(
           name: name,
           description: description,
           spellLevel: lvl,
@@ -445,13 +447,15 @@ class EditSpellPage extends HookConsumerWidget {
           spellTypes: spellTypeController.value,
         );
 
-        if (isEditing && spellId != null) {
-          final UserSpellModelV1 spell = UserSpellModelV1.newFromNewSpellModel(
-            repository.userId,
+        if (isEditing) {
+          final userSpell = theSpell.copyWith(
+            spell: spell,
           );
+          await repository.updateSpell(userSpell);
+          return;
         }
 
-        final spell = NewSpellModel(
+        final newSpell = BaseSpellModel(
           name: name,
           description: description,
           spellLevel: lvl,
@@ -469,7 +473,10 @@ class EditSpellPage extends HookConsumerWidget {
           atHigherLevels: atHigherLevelsController.text,
           spellTypes: spellTypeController.value,
         );
-        await repository.addSpell(spell);
+        await repository.addSpell(newSpell);
+        if (context.mounted) {
+          context.pop();
+        }
       }
     }
 
@@ -480,8 +487,8 @@ class EditSpellPage extends HookConsumerWidget {
           IconButton(
             icon: Icon(save.icon),
             tooltip: save.name,
-            onPressed: () {
-              saveSpell();
+            onPressed: () async {
+              await saveSpell();
             },
           ),
         ],

@@ -1,11 +1,10 @@
-import '../../character/models/character_5e_class_model_v1.dart';
 import '../../tags.dart';
-import '../models/spell_casting_time.dart';
-import '../models/spell_duration.dart';
-import '../models/spell_range.dart';
-import '../models/spell_school.dart';
+import 'spell_casting_time.dart';
+import 'spell_duration.dart';
+import 'spell_range.dart';
+import 'spell_school.dart';
 
-class NewSpellModel {
+class BaseSpellModel {
   final String name;
   final String description;
 
@@ -29,9 +28,8 @@ class NewSpellModel {
   final String? imageUrl;
 
   final Set<SpellType> spellTypes;
-  final Set<ICharacter5eClassModelV1> characterClasses;
 
-  NewSpellModel({
+  BaseSpellModel({
     required this.name,
     required this.description,
     required this.spellLevel,
@@ -48,10 +46,9 @@ class NewSpellModel {
     this.atHigherLevels,
     this.imageUrl,
     this.spellTypes = const {},
-    this.characterClasses = const {},
   });
 
-  NewSpellModel copyWith({
+  BaseSpellModel copyWith({
     String? name,
     String? description,
     int? spellLevel,
@@ -68,9 +65,8 @@ class NewSpellModel {
     String? atHigherLevels,
     String? imageUrl,
     Set<SpellType>? spellTypes,
-    Set<ICharacter5eClassModelV1>? classes,
   }) {
-    return NewSpellModel(
+    return BaseSpellModel(
       name: name ?? this.name,
       description: description ?? this.description,
       spellLevel: spellLevel ?? this.spellLevel,
@@ -91,8 +87,62 @@ class NewSpellModel {
       atHigherLevels: atHigherLevels ?? this.atHigherLevels,
       imageUrl: imageUrl ?? this.imageUrl,
       spellTypes: spellTypes ?? this.spellTypes,
-      characterClasses: classes ?? this.characterClasses,
     );
+  }
+
+  factory BaseSpellModel.fromMap(Map<String, dynamic> map) {
+    return BaseSpellModel(
+      name: map['name'] as String,
+      description: map['description'] as String,
+      spellLevel: map['spellLevel'] as int,
+      school: map['school'] != null
+          ? SpellSchool.fromString(map['school'] as String)
+          : null,
+      requiresConcentration: map['requiresConcentration'] as bool?,
+      canBeCastAsRitual: map['canBeCastAsRitual'] as bool?,
+      requiresVerbalComponent: map['requiresVerbalComponent'] as bool?,
+      requiresSomaticComponent: map['requiresSomaticComponent'] as bool?,
+      requiresMaterialComponent: map['requiresMaterialComponent'] as bool?,
+      material: map['material'] as String?,
+      duration: map['duration'] != null
+          ? SpellDuration.fromString(map['duration'] as String)
+          : null,
+      range: map['range'] != null
+          ? SpellRange.fromString(map['range'] as String)
+          : null,
+      castingTime: map['castingTime'] != null
+          ? SpellCastingTime.fromString(map['castingTime'] as String)
+          : null,
+      atHigherLevels: map['atHigherLevels'] as String?,
+      imageUrl: map['imageUrl'] as String?,
+      spellTypes: map['spellTypes'] != null
+          ? (map['spellTypes'] as List<dynamic>)
+              .map((e) => SpellType.fromString(e as String))
+              .nonNulls
+              .toSet()
+          : <SpellType>{},
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'description': description,
+      'spellLevel': spellLevel,
+      'school': school.toString(),
+      'requiresConcentration': requiresConcentration,
+      'canBeCastAsRitual': canBeCastAsRitual,
+      'requiresVerbalComponent': requiresVerbalComponent,
+      'requiresSomaticComponent': requiresSomaticComponent,
+      'requiresMaterialComponent': requiresMaterialComponent,
+      'material': material,
+      'duration': duration?.toString(),
+      'range': range?.toString(),
+      'castingTime': castingTime?.toString(),
+      'atHigherLevels': atHigherLevels,
+      'imageUrl': imageUrl,
+      'spellTypes': spellTypes.map((e) => e.toString()).toList(),
+    };
   }
 
   static int maxNameLength = 150;
@@ -115,7 +165,7 @@ class NewSpellModel {
     if (description.length > maxDescriptionLength) {
       return 'Description cannot be longer than $maxDescriptionLength characters';
     }
-    return '';
+    return null;
   }
 
   static String? validateSpellLevel(int? level) {

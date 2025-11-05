@@ -5,6 +5,7 @@ import 'package:markdown/markdown.dart' hide Text;
 import 'package:spells_and_tools/features/5e/spells/models/spell_school.dart';
 
 import '../../game_system_view_model.dart';
+import '../edit_spells/widgets/edit_spell_widget.dart';
 import '../view_models/spell_view_model.dart';
 import 'add_spell_to_character_widget.dart';
 
@@ -272,8 +273,18 @@ class SpellCardWidget extends ConsumerWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: AddSpellToCharacterWidget(
-                            spellViewModel: spell,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            spacing: 4,
+                            children: [
+                              if (spell.canEdit)
+                                EditSpellWidget(
+                                  spellId: spell.id,
+                                ),
+                              AddSpellToCharacterWidget(
+                                spellViewModel: spell,
+                              ),
+                            ],
                           ),
                         ),
                       ],

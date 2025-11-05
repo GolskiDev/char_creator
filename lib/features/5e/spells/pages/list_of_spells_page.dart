@@ -13,6 +13,7 @@ import '../../character/models/character_5e_class_model_v1.dart';
 import '../../character/models/character_5e_model_v1.dart';
 import '../utils/spell_utils.dart';
 import '../view_models/spell_view_model.dart';
+import '../view_models/spell_view_models_provider.dart';
 import '../widgets/add_spell_to_character_widget.dart';
 import '../widgets/add_to_character_menu.dart';
 import '../widgets/spell_filter_drawer.dart';
@@ -27,7 +28,7 @@ class ListOfSpellsPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allSpells = ref.watch(srdSpellViewModelsProvider);
+    final allSpells = ref.watch(spellViewModelsProvider);
     final allCharactersAsync = ref.watch(charactersStreamProvider);
 
     final selectedCharacterId = useState<String?>(targetCharacterId);

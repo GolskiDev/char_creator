@@ -61,6 +61,7 @@ class SRDSpellModelV1 {
 
   SpellViewModel toSpellViewModel() {
     return SpellViewModel(
+      ownerId: 'system',
       id: id,
       name: name,
       description: description,

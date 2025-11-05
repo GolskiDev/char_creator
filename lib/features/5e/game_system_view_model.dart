@@ -369,6 +369,11 @@ class GameSystemViewModel {
     name: 'Save',
     icon: Symbols.save,
   );
+
+  static const edit = GameSystemViewModelItem(
+    name: 'Edit',
+    icon: Symbols.edit,
+  );
 }
 
 class GameSystemViewModelItem {

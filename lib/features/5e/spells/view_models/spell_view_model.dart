@@ -56,6 +56,7 @@ final srdSpellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
 class SpellViewModel implements Identifiable {
   @override
   final String id;
+  final String ownerId;
   final String name;
   final String description;
 
@@ -83,6 +84,7 @@ class SpellViewModel implements Identifiable {
 
   SpellViewModel({
     required this.id,
+    required this.ownerId,
     required this.name,
     required this.description,
     required this.spellLevel,
@@ -124,6 +126,7 @@ class SpellViewModel implements Identifiable {
   }) {
     return SpellViewModel(
       id: id ?? this.id,
+      ownerId: ownerId,
       name: name ?? this.name,
       description: description ?? this.description,
       spellLevel: spellLevel ?? this.spellLevel,
@@ -152,5 +155,14 @@ class SpellViewModel implements Identifiable {
 extension SpellLevelString on SpellViewModel {
   String get spellLevelString {
     return SpellUtils.spellLevelString(spellLevel);
+  }
+}
+
+extension CanEditSpell on SpellViewModel {
+  bool get canEdit {
+    if (ownerId == 'system') {
+      return false;
+    }
+    return true;
   }
 }

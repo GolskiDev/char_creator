@@ -3,24 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spells_and_tools/features/authentication/auth_controller.dart';
 
 import '../../../../services/firestore.dart';
-import '../edit_spells/new_spell_model.dart';
+import '../models/base_spell_model.dart';
 import '../view_models/spell_view_model.dart';
 import 'user_spell_model_v1.dart';
 
-final userSpellsViewModelsProvider = StreamProvider<List<SpellViewModel>>(
-  (ref) {
-    final userSpellsRepository =
-        ref.watch(userSpellsRepositoryProvider).asData?.value;
-    if (userSpellsRepository == null) {
-      return Stream.value([]);
-    }
-    return userSpellsRepository.stream.map(
-      (userSpells) {
-        return userSpells
-            .map((userSpell) => userSpell.toSpellViewModel())
-            .toList();
-      },
-    );
+final userSpellViewModelsProvider = FutureProvider<List<SpellViewModel>>(
+  (ref) async {
+    final userSpells = await ref.watch(userSpellsProvider.future);
+    final spellViewModels = userSpells
+        .map(
+          (userSpell) => userSpell.toSpellViewModel(),
+        )
+        .toList();
+    return spellViewModels;
   },
 );
 
@@ -89,8 +84,8 @@ class UserSpellsRepository {
     );
   }
 
-  Future<void> addSpell(NewSpellModel spell) async {
-    final userSpell = UserSpellModelV1.newFromNewSpellModel(spell, userId);
+  Future<void> addSpell(BaseSpellModel spell) async {
+    final userSpell = UserSpellModelV1.newSpell(ownerId: userId, spell: spell);
     final docRef = _userSpellsCollection.doc(userSpell.id);
     await docRef.set(userSpell.toMap());
   }
