@@ -40,7 +40,7 @@ sealed class SpellRange implements Identifiable {
     }
   }
 
-  bool compareTo(SpellRange other) {
+  int compareTo(SpellRange other) {
     final orderedRanges = [
       RangeCustom(),
       Self(),
@@ -61,8 +61,8 @@ sealed class SpellRange implements Identifiable {
       Feet5(),
     ];
 
-    return orderedRanges.indexWhere((range) => range == this) <
-        orderedRanges.indexWhere((range) => range == other);
+    return orderedRanges.indexWhere((d) => d == this) -
+        orderedRanges.indexWhere((d) => d == other);
   }
 
   static List<SpellRange> get all => [

@@ -114,7 +114,10 @@ class MainMenuPage extends HookConsumerWidget {
           CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                child: mainWidget(),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: mainWidget(),
+                ),
               ),
               SliverToBoxAdapter(
                 child: SizedBox(
@@ -122,20 +125,23 @@ class MainMenuPage extends HookConsumerWidget {
                 ),
               ),
               SliverToBoxAdapter(
-                child: Column(
-                  spacing: 8,
-                  mainAxisSize: MainAxisSize.min,
-                  children: widgets.mapIndexed(
-                    (index, element) {
-                      if (index == widgets.length - 1) {
-                        return SafeArea(
-                          top: false,
-                          child: element,
-                        );
-                      }
-                      return element;
-                    },
-                  ).toList(),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    spacing: 8,
+                    mainAxisSize: MainAxisSize.min,
+                    children: widgets.mapIndexed(
+                      (index, element) {
+                        if (index == widgets.length - 1) {
+                          return SafeArea(
+                            top: false,
+                            child: element,
+                          );
+                        }
+                        return element;
+                      },
+                    ).toList(),
+                  ),
                 ),
               ),
             ],

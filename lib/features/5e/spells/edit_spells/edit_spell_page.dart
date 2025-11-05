@@ -87,7 +87,7 @@ class EditSpellPage extends HookConsumerWidget {
       final icon = viewModel.icon;
       return ListTile(
         leading: Icon(icon),
-        subtitle: TextFormField(
+        title: TextFormField(
           validator: BaseSpellModel.validateName,
           controller: nameController,
           decoration: InputDecoration(
@@ -103,7 +103,7 @@ class EditSpellPage extends HookConsumerWidget {
       final icon = viewModel.icon;
       return ListTile(
         leading: Icon(icon),
-        subtitle: TextFormField(
+        title: TextFormField(
           minLines: 1,
           validator: BaseSpellModel.validateDescription,
           maxLines: 50,
@@ -243,7 +243,8 @@ class EditSpellPage extends HookConsumerWidget {
 
     Widget spellDurationEditor() {
       final viewModel = GameSystemViewModel.duration;
-      final availableDurations = SpellDuration.all;
+      final availableDurations =
+          SpellDuration.all.sorted((a, b) => a.compareTo(b));
       return AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         padding:
@@ -273,7 +274,7 @@ class EditSpellPage extends HookConsumerWidget {
       final viewModel = GameSystemViewModel.range;
       final title = viewModel.name;
       final icon = viewModel.icon;
-      final availableRanges = SpellRange.all;
+      final availableRanges = SpellRange.all.sorted((a, b) => a.compareTo(b));
       return Padding(
         padding: padding,
         child: DropdownButtonFormField<SpellRange>(
@@ -301,7 +302,8 @@ class EditSpellPage extends HookConsumerWidget {
       final viewModel = GameSystemViewModel.castingTime;
       final title = viewModel.name;
       final icon = viewModel.icon;
-      final availableSpellingTimes = SpellCastingTime.all;
+      final availableSpellingTimes =
+          SpellCastingTime.all.sorted((a, b) => a.compareTo(b));
       return Padding(
         padding: padding,
         child: DropdownButtonFormField<SpellCastingTime>(
@@ -314,11 +316,9 @@ class EditSpellPage extends HookConsumerWidget {
               .map(
                 (castingTime) => DropdownMenuItem<SpellCastingTime>(
                   value: castingTime,
-                  child: Flexible(
-                    child: Text(
-                      castingTime.toString(),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  child: Text(
+                    castingTime.toString(),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               )
@@ -336,7 +336,7 @@ class EditSpellPage extends HookConsumerWidget {
       final icon = viewModel.icon;
       return ListTile(
         leading: Icon(icon),
-        subtitle: TextField(
+        title: TextField(
           controller: atHigherLevelsController,
           decoration: InputDecoration(
             labelText: title,
@@ -383,37 +383,38 @@ class EditSpellPage extends HookConsumerWidget {
     }
 
     Widget body() {
+      final children = [
+        nameEditor(),
+        descriptionEditor(),
+        spellLevelEditor(),
+        spellCastingTimeEditor(),
+        requiresConcentrationEditor(),
+        canBeCastAsRitualEditor(),
+        requiresVerbalComponentEditor(),
+        requiresSomaticComponentEditor(),
+        requiresMaterialComponentEditor(),
+        if (requiresMaterialComponent.value) materialComponentEditor(),
+        spellDurationEditor(),
+        spellRangeEditor(),
+        atHigherLevelsEditor(),
+        spellTypeEditor(),
+      ];
       return Form(
         key: formState.value,
-        child: Column(
-          children: [
-            nameEditor(),
-            Flexible(
-              child: descriptionEditor(),
-            ),
-            spellLevelEditor(),
-            spellCastingTimeEditor(),
-            requiresConcentrationEditor(),
-            canBeCastAsRitualEditor(),
-            requiresVerbalComponentEditor(),
-            requiresSomaticComponentEditor(),
-            requiresMaterialComponentEditor(),
-            if (requiresMaterialComponent.value) materialComponentEditor(),
-            spellDurationEditor(),
-            spellRangeEditor(),
-            atHigherLevelsEditor(),
-            spellTypeEditor(),
-          ]
-              .map(
-                (widget) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    clipBehavior: Clip.antiAlias,
-                    child: widget,
-                  ),
-                ),
-              )
-              .toList(),
+        child: ListView.separated(
+          padding: const EdgeInsets.all(8.0),
+          itemCount: children.length,
+          itemBuilder: (context, index) {
+            return Card(
+              clipBehavior: Clip.antiAlias,
+              child: children[index],
+            );
+          },
+          separatorBuilder: (context, index) {
+            return const SizedBox(
+              height: 4.0,
+            );
+          },
         ),
       );
     }
@@ -506,9 +507,7 @@ class EditSpellPage extends HookConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: body(),
-        ),
+        child: body(),
       ),
     );
   }
