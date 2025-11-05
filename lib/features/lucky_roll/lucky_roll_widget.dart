@@ -169,11 +169,9 @@ class LuckyRollWidget extends HookConsumerWidget {
     }
 
     roll() async {
-      final canRoll =
-          lastRolledNumberAsync.asData?.value?.nextAvailableRollDate.isBefore(
-                DateTime.now(),
-              ) ??
-              false;
+      final lastLuckyRoll = await ref.read(luckyRollProvider.future);
+      final canRoll = lastLuckyRoll == null ||
+          DateTime.now().isAfter(lastLuckyRoll.nextAvailableRollDate);
       if (!canRoll || rollingState.value != null) {
         return;
       }
