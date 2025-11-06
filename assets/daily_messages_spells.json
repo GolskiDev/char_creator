@@ -146,50 +146,61 @@
   },
   {
     "spellId": "vicious-mockery",
-    "subtitle": "Your mother was a kobold and your father smelled of wet goblin."
+    "subtitle": "Your mother was a kobold and your father smelled of wet goblin.",
+    "id": "ad0b56a1-6585-47ee-80ea-8aa5b6f96714"
   },
   {
     "spellId": "vicious-mockery",
-    "subtitle": "I’ve met mimics with more personality."
+    "subtitle": "I’ve met mimics with more personality.",
+    "id": "d8ab8cf9-4080-4c00-a98b-8a8d20a6bf61"
   },
   {
     "spellId": "alarm",
-    "subtitle": "Trust issues with your party? There’s a spell for that."
+    "subtitle": "Trust issues with your party? There’s a spell for that.",
+    "id": "2911a802-c1da-44b1-af59-72fc9c5158cb"
   },
   {
     "spellId": "animal-friendship",
-    "subtitle": "It’s less ‘Dr. Dolittle’ and more ‘Dr. Manipulate-a-Little’."
+    "subtitle": "It’s less ‘Dr. Dolittle’ and more ‘Dr. Manipulate-a-Little’.",
+    "id": "955bc7bc-2fd9-4a2c-b38a-488a23c9946c"
   },
   {
     "spellId": "bane",
     "subtitle": "I cast self-esteem reduction!",
-    "styleID": "casterBrag"
+    "styleID": "casterBrag",
+    "id": "a480590d-385d-42e6-98ce-726fa9a6e7a3"
   },
   {
     "spellId": "bless",
-    "subtitle": "As powerful as \"Bless you!\""
+    "subtitle": "As powerful as \"Bless you!\"",
+    "id": "221e237d-3830-45f6-afdc-97a56ff65183"
   },
   {
     "spellId": "charm-person",
     "subtitle": "It's not manipulation, it's aggressive networking.",
-    "styleID": "emotional-projection"
+    "styleID": "emotional-projection",
+    "id": "bdcd57fa-caa4-4606-bff7-4b5171cdd724"
   },
   {
     "spellId": "color-spray",
     "subtitle": "You solved the encounter with… glitter?",
-    "styleID": "Anti-Magic NPC"
+    "styleID": "Anti-Magic NPC",
+    "id": "e985e2db-f67b-4858-b515-1252a71daea8"
   },
   {
     "spellId": "color-spray",
     "subtitle": "If it doesn't shine it doesn't count",
-    "styleID": "ad_parody"
+    "styleID": "ad_parody",
+    "id": "75e90674-03dc-4c5a-8e24-924c40c0e4ae"
   },
   {
     "spellId": "command",
-    "subtitle": "\"Sit\"!"
+    "subtitle": "\"Sit\"!",
+    "id": "f3d494b5-5811-472d-a220-d2ba8121179e"
   },
   {
     "spellId": "comprehend-languages",
-    "subtitle": "The scroll says 'Mind your own business.'"
+    "subtitle": "The scroll says 'Mind your own business.'",
+    "id": "524ee0ed-3637-42c0-ac10-8292ab02b17d"
   }
 ]
