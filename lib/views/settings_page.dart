@@ -26,6 +26,13 @@ class SettingsPage extends HookConsumerWidget {
           ContactUs.sendMail(context, ref);
         },
       ),
+      ListTile(
+        leading: Icon(GameSystemViewModel.aboutApp.icon),
+        title: Text(GameSystemViewModel.aboutApp.name),
+        onTap: () {
+          context.push('/about');
+        },
+      ),
     ];
 
     return Scaffold(
