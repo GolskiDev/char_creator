@@ -379,6 +379,21 @@ class GameSystemViewModel {
     name: 'Collection',
     icon: Symbols.folder,
   );
+
+  static const lightTheme = GameSystemViewModelItem(
+    name: "Light Theme",
+    icon: Symbols.wb_sunny,
+  );
+
+  static const darkTheme = GameSystemViewModelItem(
+    name: "Dark Theme",
+    icon: Symbols.nights_stay,
+  );
+
+  static const systemTheme = GameSystemViewModelItem(
+    name: "System Theme",
+    icon: Symbols.settings_suggest,
+  );
 }
 
 class GameSystemViewModelItem {

@@ -9,6 +9,7 @@ import 'features/5e/spells/view_models/spell_view_model.dart';
 import 'features/navigation/navigation.dart';
 import 'features/terms/terms_of_service_interactor.dart';
 import 'features/terms/widgets/terms_and_conditions_widget.dart';
+import 'features/user_preferences/user_theme.dart';
 import 'firebase_options.dart';
 import 'theme.dart';
 
@@ -53,7 +54,7 @@ class App extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(goRouterProvider);
-    final isDarkModeEnabled = ref.watch(isDarkModeEnabledProvider);
+    final themeMode = ref.watch(userThemePreferenceProvider);
 
     /// just to initialize the spells
     ref.read(srdSpellViewModelsProvider.future);
@@ -88,7 +89,9 @@ class App extends HookConsumerWidget {
           },
         );
       },
-      theme: AppTheme().themeData(isDarkMode: isDarkModeEnabled),
+      themeMode: themeMode.theme,
+      theme: AppTheme().theme,
+      darkTheme: AppTheme().darkTheme,
       routerConfig: goRouter,
       debugShowCheckedModeBanner: false,
     );
