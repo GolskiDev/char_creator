@@ -4,23 +4,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
 import 'package:spells_and_tools/features/contact_us/contact_us.dart';
 
-import '../theme.dart';
+import '../features/user_preferences/user_theme.dart';
 
 class SettingsPage extends HookConsumerWidget {
   const SettingsPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkModeEnabled = ref.watch(isDarkModeEnabledProvider);
-
     final List<Widget> settings = [
-      SwitchListTile(
-        title: const Text("Dark Mode"),
-        value: isDarkModeEnabled,
-        onChanged: (value) {
-          ref.read(isDarkModeEnabledProvider.notifier).state =
-              !isDarkModeEnabled;
-        },
-      ),
+      const UserThemePreferenceWidget(),
       ListTile(
         leading: Icon(GameSystemViewModel.account.icon),
         title: Text(GameSystemViewModel.account.name),
