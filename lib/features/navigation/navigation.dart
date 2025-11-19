@@ -16,6 +16,7 @@ import '../5e/character/list_of_characters_page.dart';
 import '../5e/spells/pages/list_of_spells_page.dart';
 import '../5e/spells/pages/spell_card_page.dart';
 import '../5e/spells/view_models/spell_view_models_provider.dart';
+import '../about_app/about_widget.dart';
 import '../authentication/pages/account_page.dart';
 import '../authentication/pages/sign_in_anonymously_page.dart';
 import '../authentication/pages/sign_in_page.dart';
@@ -271,6 +272,16 @@ class Navigation {
                 context.go('/');
               },
             ),
+          ),
+          GoRoute(
+            path: '/about',
+            pageBuilder: (context, state) => AboutAppDialog.route(
+              context: context,
+            ),
+          ),
+          GoRoute(
+            path: '/licenses',
+            builder: (context, state) => const LicensePage(),
           ),
         ],
       );

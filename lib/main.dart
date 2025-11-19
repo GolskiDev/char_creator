@@ -4,6 +4,7 @@ import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/features/5e/srd_license.dart';
 
 import 'features/5e/spells/view_models/spell_view_model.dart';
 import 'features/navigation/navigation.dart';
@@ -16,6 +17,7 @@ import 'theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeFirebase();
+  otherTasks();
   runApp(
     const MainApp(),
   );
@@ -33,6 +35,10 @@ Future<void> initializeFirebase() async {
       ),
     ],
   );
+}
+
+Future<void> otherTasks() async {
+  SrdLicense.initSRD();
 }
 
 class MainApp extends ConsumerWidget {

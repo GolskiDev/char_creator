@@ -394,6 +394,16 @@ class GameSystemViewModel {
     name: "System Theme",
     icon: Symbols.settings_suggest,
   );
+
+  static const licenses = GameSystemViewModelItem(
+    name: "Licenses",
+    icon: Symbols.article,
+  );
+
+  static const aboutApp = GameSystemViewModelItem(
+    name: "About App",
+    icon: Symbols.info,
+  );
 }
 
 class GameSystemViewModelItem {
