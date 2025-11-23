@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "475193088114",
+    "project_id": "spell-and-tools-dev",
+    "storage_bucket": "spell-and-tools-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475193088114:android:f8fc1eb52ff55f535d4aeb",
+        "android_client_info": {
+          "package_name": "dev.golski.spellsandtools.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHdzujE9hoUyqkXktatxSmm-zQzUQIMMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "277623677619",
+    "project_id": "just-a-rock-dev",
+    "storage_bucket": "just-a-rock-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277623677619:android:f2acfa844a088c68f0c6c6",
+        "android_client_info": {
+          "package_name": "dev.golski.spellsandtools"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "277623677619-41i3eqk6i8ieh2bkng01cjr9drqc2ucl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.golski.spellsandtools",
+            "certificate_hash": "f49a97fa5d14214543661fd8584f12ba427f8538"
+          }
+        },
+        {
+          "client_id": "277623677619-qrvil3r4tn2ujerl6g6clgddfku9cv0d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.golski.spellsandtools",
+            "certificate_hash": "f744ec7c8a9f6a8bbc839525a240048aaef13b3d"
+          }
+        },
+        {
+          "client_id": "277623677619-qgfriili50bcq0v70j8gde13h9eleh1d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoVoDFEURzqpUsg_RsnzhWGejj2n3lC6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "277623677619-qgfriili50bcq0v70j8gde13h9eleh1d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "277623677619-6eask1e4qj1bqer713itg5ajibt430co.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.charCreator"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
