@@ -9,7 +9,6 @@ import 'package:spells_and_tools/features/5e/srd_license.dart';
 import 'features/5e/spells/view_models/spell_view_model.dart';
 import 'features/navigation/navigation.dart';
 import 'features/terms/terms_of_service_interactor.dart';
-import 'features/terms/widgets/terms_and_conditions_widget.dart';
 import 'features/user_preferences/user_theme.dart';
 import 'theme.dart';
 
@@ -74,14 +73,7 @@ class App extends HookConsumerWidget {
               (previous, next) {
                 next.whenData(
                   (agreements) {
-                    if (agreements.termsOfUse != null ||
-                        agreements.privacyPolicy != null) {
-                      AgreementsWidget.showTosUpdateDialog(
-                        goRouter: goRouter,
-                        termsOfUseDetails: agreements.termsOfUse,
-                        privacyPolicyDetails: agreements.privacyPolicy,
-                      );
-                    }
+                    goRouter.refresh();
                   },
                 );
               },

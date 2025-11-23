@@ -20,8 +20,11 @@ class RedirectManager {
 
     final requiredAgreements =
         await ref.read(requiredUpdatedAgreementsProvider.future);
-    if (requiredAgreements.termsOfUse != null ||
-        requiredAgreements.privacyPolicy != null) {
+    final agreementsAreCurrentlySubmitted =
+        ref.read(agreementSubmitterProvider.notifier).isSubmitting;
+    if (!agreementsAreCurrentlySubmitted &&
+        (requiredAgreements.termsOfUse != null ||
+            requiredAgreements.privacyPolicy != null)) {
       return '/updateAgreements';
     }
     return null;

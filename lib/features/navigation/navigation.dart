@@ -25,7 +25,6 @@ import '../onboarding/pages/consents_page.dart';
 import '../onboarding/pages/onboarding_explore_spells_page.dart';
 import '../onboarding/pages/onboarding_home_page.dart';
 import '../onboarding/pages/update_agreements_dialog.dart';
-import '../terms/data_sources/agreements_documents_data_source.dart';
 import 'redirect_manager.dart';
 
 final goRouterProvider = Provider(
@@ -61,16 +60,8 @@ class Navigation {
               GoRoute(
                 path: '/updateAgreements',
                 pageBuilder: (context, state) {
-                  final termsOfUseDetails = (state.extra
-                          as Map<String, dynamic>?)?['termsOfUseDetails']
-                      as AgreementDetails?;
-                  final privacyPolicyDetails = (state.extra
-                          as Map<String, dynamic>?)?['privacyPolicyDetails']
-                      as AgreementDetails?;
                   return UpdateAgreementsDialog.route(
                     context: context,
-                    termsOfUseDetails: termsOfUseDetails,
-                    privacyPolicyDetails: privacyPolicyDetails,
                   );
                 },
               ),

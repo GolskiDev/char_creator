@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:async/async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:spells_and_tools/features/terms/data_sources/user_accepted_agreements_data_source.dart';
 
 import '../../services/firestore.dart';
@@ -20,16 +20,16 @@ final requiredUpdatedAgreementsProvider = StreamProvider<
         interactor.requiredUpdatedAgreementToAccept(AgreementType.termsOfUse);
     final privacyPolicyStream = interactor
         .requiredUpdatedAgreementToAccept(AgreementType.privacyPolicy);
-    final zippedStream = StreamZip([
+
+    yield* Rx.combineLatest2<AgreementDetails?, AgreementDetails?,
+        ({AgreementDetails? termsOfUse, AgreementDetails? privacyPolicy})>(
       termsOfUseStream,
       privacyPolicyStream,
-    ]);
-    await for (final values in zippedStream) {
-      yield (
-        termsOfUse: values[0],
-        privacyPolicy: values[1],
-      );
-    }
+      (termsOfUse, privacyPolicy) => (
+        termsOfUse: termsOfUse,
+        privacyPolicy: privacyPolicy,
+      ),
+    );
   },
 );
 
@@ -86,7 +86,7 @@ class AgreementsSubmitter extends Notifier {
         if (interactor == null) {
           return;
         }
-        Future.wait(
+        await Future.wait(
           agreementsToAccept.map(
             (agreement) => interactor.acceptAgreement(
               agreementDetails: agreement,
@@ -208,33 +208,35 @@ class AgreementsInteractor {
     return;
   }
 
-  /// Returns the latest agreement (TOS or Privacy Policy) that must be accepted, or null if none required.
+  /// Emits whenever either stream emits, using the latest values from both (combineLatest).
   Stream<AgreementDetails?> requiredUpdatedAgreementToAccept(
     AgreementType type,
-  ) async* {
-    await for (final userAcceptedAgreement
-        in userAcceptedAgreementsDataSource.lastAcceptedAgreementStream(type)) {
-      final now = DateTime.now();
-      await for (final agreementList
-          in agreementsDocumentsDataSource.getAgreementDetailsStream(
-        type: type,
-      )) {
+  ) {
+    final userAcceptedStream =
+        userAcceptedAgreementsDataSource.lastAcceptedAgreementStream(type);
+    final agreementDetailsStream =
+        agreementsDocumentsDataSource.getAgreementDetailsStream(type: type);
+
+    return Rx.combineLatest2<UserAcceptedAgreement?, List<AgreementDetails>,
+        AgreementDetails?>(
+      userAcceptedStream,
+      agreementDetailsStream,
+      (userAcceptedAgreement, agreementList) {
+        final now = DateTime.now();
         final candidates = agreementList
             .where((agreement) => agreement.effectiveDate.isBefore(now))
             .toList()
           ..sort((a, b) => b.effectiveDate.compareTo(a.effectiveDate));
         final latest = candidates.firstOrNull;
         if (userAcceptedAgreement == null) {
-          yield latest;
-        }
-        if (userAcceptedAgreement != null &&
-            latest != null &&
+          return latest;
+        } else if (latest != null &&
             userAcceptedAgreement.version != latest.version) {
-          yield latest;
+          return latest;
         } else {
-          yield null;
+          return null;
         }
-      }
-    }
+      },
+    );
   }
 }
