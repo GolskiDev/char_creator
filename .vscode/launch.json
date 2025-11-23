@@ -7,25 +7,49 @@
         {
             "name": "char_creator",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "--flavor",
+                "dev",
+                "--target",
+                "lib/main_dev.dart"
+            ]
         },
         {
             "name": "char_creator (web)",
             "request": "launch",
             "type": "dart",
-            "args": ["--web-browser-flag=--disable-web-security"]
+            "args": [
+                "--web-browser-flag=--disable-web-security",
+                "--flavor",
+                "dev",
+                "--target",
+                "lib/main_dev.dart"
+            ]
         },
         {
             "name": "char_creator (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": [
+                "--flavor",
+                "dev",
+                "--target",
+                "lib/main_dev.dart"
+            ]
         },
         {
             "name": "char_creator (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "prod",
+                "--target",
+                "lib/main_prod.dart"
+            ]
         }
     ]
 }

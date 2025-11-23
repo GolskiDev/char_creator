@@ -50,6 +50,31 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
+    // START_REGION: Flavors
+    flavorDimensions += "default"
+    productFlavors {
+        create("dev") {
+            dimension = "default"
+            applicationIdSuffix = ".dev"
+            resValue(
+                type = "string",
+                name = "app_name",
+                value = "Spells & Tools Dev"
+            )
+        }
+        create("prod") {
+            dimension = "default"
+            resValue(
+                type = "string",
+                name = "app_name",
+                value = "Spells & Tools"
+            )
+        }
+    }
+    // END_REGION: Flavors
+
+
+
 }
 
 flutter {

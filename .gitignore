@@ -52,3 +52,6 @@ app.*.map.json
 
 # Android related
 /android/local.properties
+
+# FlutterFire
+/flutterfire-config.sh

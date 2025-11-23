@@ -11,22 +11,17 @@ import 'features/navigation/navigation.dart';
 import 'features/terms/terms_of_service_interactor.dart';
 import 'features/terms/widgets/terms_and_conditions_widget.dart';
 import 'features/user_preferences/user_theme.dart';
-import 'firebase_options.dart';
 import 'theme.dart';
 
-void main() async {
+void runMainApp(FirebaseOptions firebaseOptions) async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeFirebase();
+  await initializeFirebase(options: firebaseOptions);
   otherTasks();
-  runApp(
-    const MainApp(),
-  );
+  runApp(const MainApp());
 }
 
-Future<void> initializeFirebase() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+Future<void> initializeFirebase({required FirebaseOptions options}) async {
+  await Firebase.initializeApp(options: options);
   FirebaseUIAuth.configureProviders(
     [
       EmailAuthProvider(),
