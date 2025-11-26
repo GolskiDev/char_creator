@@ -1,12 +1,10 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../utils/shared_preferences.dart';
 import '../../5e/spells/spell_images/spell_images_repository.dart';
+import 'daily_messages_spells_firebase_repository.dart';
+import 'daily_messages_spells_local_repository.dart';
 
 final dailyMessageSpellViewModelProvider = FutureProvider(
   (ref) async {
@@ -20,10 +18,16 @@ final dailyMessageSpellsInteractorProvider = FutureProvider(
   (ref) async {
     final spellImagesRepository = ref.watch(spellImagesRepositoryProvider);
     final sharedPreferences = await ref.watch(sharedPreferencesProvider.future);
+    final remoteRepository =
+        ref.watch(dailyMessagesSpellsRemoteRepositoryProvider);
+    final localRepository =
+        ref.watch(dailyMessagesSpellsLocalRepositoryProvider);
 
     return DailyMessagesSpellsInteractor(
       spellImagesRepository: spellImagesRepository,
       sharedPreferences: sharedPreferences,
+      remoteRepository: remoteRepository,
+      localRepository: localRepository,
     );
   },
 );
@@ -61,6 +65,8 @@ class DailyMessageSpellModel {
 }
 
 class DailyMessagesSpellsInteractor {
+  final DailyMessagesSpellsRemoteRepository remoteRepository;
+  final DailyMessagesSpellsLocalRepository localRepository;
   final SharedPreferencesWithCache sharedPreferences;
   final SpellImagesRepository spellImagesRepository;
 
@@ -72,6 +78,8 @@ class DailyMessagesSpellsInteractor {
   DailyMessagesSpellsInteractor({
     required this.spellImagesRepository,
     required this.sharedPreferences,
+    required this.remoteRepository,
+    required this.localRepository,
   });
 
   Future<DailyMessageSpellViewModel> getDailyMessageSpellViewModel() async {
@@ -163,21 +171,9 @@ class DailyMessagesSpellsInteractor {
   }
 
   Future<List<DailyMessageSpellModel>> getDailyMessageSpells() async {
-    final jsonAsset = await rootBundle.loadString(assetPath);
-    final jsonData = await compute(jsonDecode, jsonAsset);
-    final dailyMessagesSpells = List.from(jsonData)
-        .map(
-          (e) {
-            try {
-              return DailyMessageSpellModel.fromJson(e);
-            } catch (e) {
-              return null;
-            }
-          },
-        )
-        .nonNulls
-        .toList();
-    return dailyMessagesSpells;
+    final localMessages = await localRepository.fetchLocalDailyMessages();
+    final remoteMessages = await remoteRepository.fetchRemoteDailyMessages();
+    return remoteMessages.isNotEmpty ? remoteMessages : localMessages;
   }
 
   Future<List<String>> getAllReadSpellIds() async {
