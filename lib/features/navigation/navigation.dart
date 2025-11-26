@@ -17,6 +17,8 @@ import '../5e/spells/pages/list_of_spells_page.dart';
 import '../5e/spells/pages/spell_card_page.dart';
 import '../5e/spells/view_models/spell_view_models_provider.dart';
 import '../about_app/about_widget.dart';
+import '../app_version/app_version_interactor.dart';
+import '../app_version/update_required_page.dart';
 import '../authentication/pages/account_page.dart';
 import '../authentication/pages/sign_in_anonymously_page.dart';
 import '../authentication/pages/sign_in_page.dart';
@@ -255,6 +257,18 @@ class Navigation {
                 ),
               ),
             ],
+          ),
+          GoRoute(
+            path: '/updateRequired',
+            redirect: (context, state) async {
+              final isUpdateRequired =
+                  await ref.read(isUpdateRequiredProvider.future);
+              if (!isUpdateRequired) {
+                return '/';
+              }
+              return null;
+            },
+            builder: (context, state) => const UpdateRequiredPage(),
           ),
           GoRoute(
             path: '/seeYouSoon',

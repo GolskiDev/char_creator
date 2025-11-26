@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../app_version/app_version_interactor.dart';
 import '../authentication/auth_controller.dart';
 import '../terms/terms_of_service_interactor.dart';
 
@@ -16,6 +17,11 @@ class RedirectManager {
     );
     if (!isUserSignedIn) {
       return '/onboarding';
+    }
+
+    final isUpdateRequired = await ref.read(isUpdateRequiredProvider.future);
+    if (isUpdateRequired) {
+      return '/updateRequired';
     }
 
     final requiredAgreements =

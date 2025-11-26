@@ -49,6 +49,7 @@ dependencies:
   flutter_svg: 
   flutter_cache_manager:
   package_info_plus: 
+  fast_immutable_collections: 
 
   # ui
   material_symbols_icons:

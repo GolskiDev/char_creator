@@ -10,8 +10,8 @@ import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
 import 'package:spells_and_tools/features/main_menu/widgets/main_menu_default_card_widget.dart';
 
 import '../daily_messages/daily_messages_spells/daily_messages_spells.dart';
-import '../daily_messages/daily_messages_spells/daily_messages_spells_widget.dart';
 import '../lucky_roll/lucky_roll_widget.dart';
+import 'widgets/main_menu_carusel.dart';
 
 class MainMenuPage extends HookConsumerWidget {
   const MainMenuPage({super.key});
@@ -21,7 +21,6 @@ class MainMenuPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final widgets = [
-      LuckyRollWidget(),
       MainMenuDefaultCardWidget(
         icon: GameSystemViewModel.spells.icon,
         title: "Disover Spells",
@@ -32,6 +31,7 @@ class MainMenuPage extends HookConsumerWidget {
         title: "Create Characters",
         path: "/characters",
       ),
+      LuckyRollWidget(),
       if (kDebugMode)
         MainMenuDefaultCardWidget(
           icon: Icons.extension,
@@ -48,23 +48,15 @@ class MainMenuPage extends HookConsumerWidget {
       orElse: () => null,
     );
 
-    mainWidget() => SafeArea(
-          bottom: false,
-          child: AspectRatio(
-            aspectRatio: 3 / 4,
-            child: dailyMessageSpellViewModelAsync.when(
-              data: (viewModel) => DailyMessagesSpellsWidget(
-                viewModel: viewModel,
-              ),
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
-              error: (error, stackTrace) => Center(
-                child: Text('Error: $error'),
-              ),
-            ),
-          ),
-        );
+    mainWidget() {
+      return SafeArea(
+        bottom: false,
+        child: AspectRatio(
+          aspectRatio: 4 / 5,
+          child: MainMenuCarusel(),
+        ),
+      );
+    }
 
     final settingsButton = IconButton(
       icon: const Icon(Icons.settings),
