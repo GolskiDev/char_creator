@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:spells_and_tools/features/5e/character/repository/character_classes_repository.dart';
-import 'package:spells_and_tools/features/terms/data_sources/agreements_documents_data_source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/features/5e/character/repository/character_classes_repository.dart';
+import 'package:spells_and_tools/features/terms/data_sources/agreements_documents_data_source.dart';
 
+import '../features/daily_messages/daily_messages_spells/daily_messages_spells.dart';
 import '../features/terms/data_sources/user_accepted_agreements_data_source.dart';
 import '../features/terms/widgets/terms_and_conditions_widget.dart';
 
@@ -42,6 +43,12 @@ class UtilsPage extends HookConsumerWidget {
             title: const Text('go to'),
             onTap: () {
               goTo(context, ref);
+            },
+          ),
+          ListTile(
+            title: const Text('Refresh Daily Message'),
+            onTap: () {
+              DailyMessagesSpellsInteractor.forceLoadNewDailyMessage(ref: ref);
             },
           ),
           ListTile(
