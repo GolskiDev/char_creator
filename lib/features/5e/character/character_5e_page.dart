@@ -249,18 +249,20 @@ class Character5ePage extends HookConsumerWidget {
                 ),
               ),
             ),
-            Card(
-              clipBehavior: Clip.antiAlias,
-              child: Character5eCreateNoteWidget(
-                notes: character.notes,
-                onUpdate: (updatedNotes) async {
-                  final updatedCharacter = character.copyWith(
-                    notes: updatedNotes,
-                  );
-                  final repository =
-                      await ref.read(characterRepositoryProvider.future);
-                  await repository?.updateCharacter(updatedCharacter);
-                },
+            SafeArea(
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                child: Character5eCreateNoteWidget(
+                  notes: character.notes,
+                  onUpdate: (updatedNotes) async {
+                    final updatedCharacter = character.copyWith(
+                      notes: updatedNotes,
+                    );
+                    final repository =
+                        await ref.read(characterRepositoryProvider.future);
+                    await repository?.updateCharacter(updatedCharacter);
+                  },
+                ),
               ),
             ),
           ],
