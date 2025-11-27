@@ -1,11 +1,24 @@
-import 'package:async/async.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:spells_and_tools/features/app_version/models/app_version_representation.dart';
 
 import 'app_version_state.dart';
 import 'sources/current_app_version_source.dart';
 import 'sources/remote_app_version_source.dart';
-import 'sources/update_link_source.dart';
+
+final isUpdateAvailableProvider = FutureProvider<bool>(
+  (ref) async {
+    final appVersionState = await ref.watch(appVersionStateProvider.future);
+    return appVersionState.isUpdateAvailable;
+  },
+);
+
+final isUpdateRequiredProvider = FutureProvider<bool>(
+  (ref) async {
+    final appVersionState = await ref.watch(appVersionStateProvider.future);
+    return appVersionState.isForceUpdateRequired;
+  },
+);
 
 final appVersionStateProvider = StreamProvider<UpdateVersionState>(
   (ref) {
@@ -27,15 +40,11 @@ final currentAppVersionSourceProvider = Provider(
 
 final appVersionInteractorProvider = Provider(
   (ref) {
-    final updateLinkSource = ref.watch(updateLinkSourceProvider);
     final currentAppVersionSource = ref.watch(currentAppVersionSourceProvider);
+    final remoteSource = ref.watch(remoteAppVersionSourceProvider);
     return AppUpdateInteractor(
       currentAppVersionSource,
-      RemoteAppVersionSource(
-        remoteLatestVersionStream: Stream.empty(),
-        remoteRequiredVersionStream: Stream.empty(),
-      ),
-      updateLinkSource,
+      remoteSource,
     );
   },
 );
@@ -43,12 +52,10 @@ final appVersionInteractorProvider = Provider(
 class AppUpdateInteractor {
   final CurrentAppVersionSource currentSource;
   final RemoteAppVersionSource remoteSource;
-  final UpdateLinkSource updateLinkSource;
 
   AppUpdateInteractor(
     this.currentSource,
     this.remoteSource,
-    this.updateLinkSource,
   );
 
   Future<AppVersionRepresentation> get currentAppVersion {
@@ -58,24 +65,14 @@ class AppUpdateInteractor {
   Stream<UpdateVersionState> getAppVersionStateStream() async* {
     final currentVersion = await currentSource.getCurrentVersion();
 
-    final zippedStream = StreamZip([
-      remoteSource.getLatestVersionStream(),
-      remoteSource.getLatestRequiredVersionStream(),
-    ]);
-
-    await for (final versions in zippedStream) {
-      final latestVersion = versions[0];
-      final latestRequiredVersion = versions[1];
-
-      yield UpdateVersionState(
+    yield* Rx.combineLatest2(
+      remoteSource.remoteLatestVersionStream,
+      remoteSource.remoteRequiredVersionStream,
+      (latestVersion, latestRequiredVersion) => UpdateVersionState(
         currentVersion: currentVersion,
         latestVersion: latestVersion,
         latestRequiredVersion: latestRequiredVersion,
-      );
-    }
-  }
-
-  Future<String?> getUpdateLink() {
-    return updateLinkSource.getUpdateLink();
+      ),
+    );
   }
 }

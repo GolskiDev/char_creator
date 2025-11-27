@@ -5,6 +5,7 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:spells_and_tools/features/5e/srd_license.dart';
+import 'package:spells_and_tools/features/app_version/app_version_interactor.dart';
 
 import 'features/5e/spells/view_models/spell_view_model.dart';
 import 'features/navigation/navigation.dart';
@@ -72,7 +73,17 @@ class App extends HookConsumerWidget {
               requiredUpdatedAgreementsProvider,
               (previous, next) {
                 next.whenData(
-                  (agreements) {
+                  (_) {
+                    goRouter.refresh();
+                  },
+                );
+              },
+            );
+            ref.listen(
+              isUpdateRequiredProvider,
+              (previous, next) {
+                next.whenData(
+                  (_) {
                     goRouter.refresh();
                   },
                 );
