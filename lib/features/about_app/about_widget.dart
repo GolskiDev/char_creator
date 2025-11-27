@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:spells_and_tools/features/5e/game_system_view_model.dart';
 import 'package:spells_and_tools/features/app_version/app_version_interactor.dart';
 import 'package:spells_and_tools/features/navigation/dialog_route.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutAppDialog {
   static DialogPage route({
@@ -34,6 +35,26 @@ class AboutAppDialog {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: () {
+                        launchUrl(
+                          Uri.parse(
+                            "https://golski.dev/spellsandtools/terms-of-use",
+                          ),
+                        );
+                      },
+                      child: const Text('Terms of Service'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        launchUrl(
+                          Uri.parse(
+                            "https://golski.dev/spellsandtools/privacy-policy.pdf",
+                          ),
+                        );
+                      },
+                      child: const Text('Privacy Policy'),
+                    ),
                     TextButton(
                       onPressed: () {
                         context.push('/licenses');
