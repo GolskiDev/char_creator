@@ -49,10 +49,6 @@ class SignInPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final oAuthButtonVariant = OAuthButtonVariant.icon_and_text;
-    final List<AuthProvider> providers = [
-      EmailAuthProvider(),
-      GoogleProvider(clientId: 'YOUR_CLIENT ID'),
-    ];
     final actions = [
       AuthStateChangeAction<SignedIn>(
         (context, state) {
@@ -92,13 +88,13 @@ class SignInPage extends HookConsumerWidget {
     final body = showSignIn
         ? SignInScreen(
             oauthButtonVariant: oAuthButtonVariant,
-            providers: providers,
+            providers: null,
             actions: actions,
             footerBuilder: footerBuilder,
           )
         : RegisterScreen(
             oauthButtonVariant: oAuthButtonVariant,
-            providers: providers,
+            providers: null,
             actions: actions,
             footerBuilder: footerBuilder,
           );

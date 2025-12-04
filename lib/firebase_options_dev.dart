@@ -63,6 +63,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '475193088114',
     projectId: 'spell-and-tools-dev',
     storageBucket: 'spell-and-tools-dev.firebasestorage.app',
+    androidClientId: '475193088114-btp421nq65s13r7sit3ih3d8p2qks8dm.apps.googleusercontent.com',
+    iosClientId: '475193088114-tv33s3jpgbtqc1u90os0lbdkbv4d0jd1.apps.googleusercontent.com',
     iosBundleId: 'dev.golski.spellsandtools.dev',
   );
+
 }

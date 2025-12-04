@@ -67,4 +67,5 @@ class DefaultFirebaseOptions {
     iosClientId: '277623677619-a2r32o8pgtrldfdhchp4sb4sft2b5kd5.apps.googleusercontent.com',
     iosBundleId: 'dev.golski.spellsandtools',
   );
+
 }

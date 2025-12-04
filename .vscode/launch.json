@@ -48,7 +48,8 @@
                 "--flavor",
                 "prod",
                 "--target",
-                "lib/main_prod.dart"
+                "lib/main_prod.dart",
+                "--release"
             ]
         }
     ]

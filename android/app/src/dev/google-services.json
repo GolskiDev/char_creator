@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:475193088114:android:f8fc1eb52ff55f535d4aeb",
+        "mobilesdk_app_id": "1:475193088114:android:3b8d9306e7efaa795d4aeb",
         "android_client_info": {
-          "package_name": "dev.golski.spellsandtools.dev"
+          "package_name": "dev.golski.spellsandtools"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "475193088114-vhnthdgb7vd6m0urhe201q0od24oj2q9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDHdzujE9hoUyqkXktatxSmm-zQzUQIMMs"
@@ -20,7 +25,63 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "475193088114-vhnthdgb7vd6m0urhe201q0od24oj2q9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "475193088114-h9l6hndmkf1papcq7v0d9uf7ajsa8d96.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.golski.spellsAndTools.dev"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475193088114:android:f8fc1eb52ff55f535d4aeb",
+        "android_client_info": {
+          "package_name": "dev.golski.spellsandtools.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "475193088114-btp421nq65s13r7sit3ih3d8p2qks8dm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.golski.spellsandtools.dev",
+            "certificate_hash": "f49a97fa5d14214543661fd8584f12ba427f8538"
+          }
+        },
+        {
+          "client_id": "475193088114-vhnthdgb7vd6m0urhe201q0od24oj2q9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHdzujE9hoUyqkXktatxSmm-zQzUQIMMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "475193088114-vhnthdgb7vd6m0urhe201q0od24oj2q9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "475193088114-h9l6hndmkf1papcq7v0d9uf7ajsa8d96.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.golski.spellsAndTools.dev"
+              }
+            }
+          ]
         }
       }
     }

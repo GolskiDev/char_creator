@@ -27,6 +27,7 @@ Future<void> initializeFirebase({required FirebaseOptions options}) async {
       EmailAuthProvider(),
       GoogleProvider(
         clientId: 'YOUR_CLIENT_ID',
+        iOSPreferPlist: true,
       ),
     ],
   );
