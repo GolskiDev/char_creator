@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
+import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -29,6 +30,7 @@ Future<void> initializeFirebase({required FirebaseOptions options}) async {
         clientId: 'YOUR_CLIENT_ID',
         iOSPreferPlist: true,
       ),
+      AppleProvider(),
     ],
   );
 }
