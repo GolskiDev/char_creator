@@ -54,7 +54,6 @@ dependencies:
 
   # ui
   material_symbols_icons:
-  google_fonts: 
   
 
   # publishing
@@ -66,10 +65,36 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: 
   test: 
+  google_fonts: 
 
 flutter:
+  fonts:
+    - family: SocialIcons
+      fonts:
+        - asset: fonts/FontAwesome-SocialIcons.otf
+    - family: CrimsonText
+      fonts:
+        - asset: fonts/CrimsonText-Regular.ttf
+          style: normal
+          weight: 400
+        - asset: fonts/CrimsonText-Italic.ttf
+          style: italic
+          weight: 400
+        - asset: fonts/CrimsonText-SemiBold.ttf
+          style: normal
+          weight: 600
+        - asset: fonts/CrimsonText-SemiBoldItalic.ttf
+          style: italic
+          weight: 600
+        - asset: fonts/CrimsonText-Bold.ttf
+          style: normal
+          weight: 700
+        - asset: fonts/CrimsonText-BoldItalic.ttf
+          style: italic
+          weight: 700
   uses-material-design: true
   assets:
     - assets/
     - assets/images/spells/
     - assets/images/ui/
+

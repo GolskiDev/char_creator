@@ -29,6 +29,7 @@ class DarkColorScheme {
 
 class AppTheme {
   TextStyle get font => GoogleFonts.crimsonText();
+  String get fontFamily => 'CrimsonText';
 
   static double get borderRadius => 8;
 
@@ -45,7 +46,7 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       brightness: isDarkMode ? Brightness.dark : Brightness.light,
-      fontFamily: font.fontFamily,
+      fontFamily: fontFamily,
       // visualDensity: VisualDensity(
       //   horizontal: VisualDensity.minimumDensity,
       //   vertical: VisualDensity.minimumDensity,
