@@ -202,5 +202,99 @@
     "spellId": "comprehend-languages",
     "subtitle": "The scroll says 'Mind your own business.'",
     "id": "524ee0ed-3637-42c0-ac10-8292ab02b17d"
+  },
+  {
+    "spellId": "create-or-destroy-water",
+    "subtitle": "Goodbye, fog. You won’t be mist.",
+    "styleID": "wordplay",
+    "temp": 1.39,
+    "id": "8b19575d-4e9f-48b1-9618-9d2ed40aca3b"
+  },
+  {
+    "spellId": "create-or-destroy-water",
+    "subtitle": "Turn dry places wet, wet places dry. Ultimate moist control.",
+    "styleID": "sarcastic",
+    "temp": 1.74,
+    "id": "08cbac8e-b09f-4bfb-a02e-61114163fa0f"
+  },
+  {
+    "spellId": "cure-wounds",
+    "subtitle": "You're patched up. Go ruin yourself again, hero.",
+    "styleID": "sarcastic",
+    "temp": 1.8,
+    "id": "66de5c39-1375-41a0-8e77-261353d56294"
+  },
+  {
+    "spellId": "cure-wounds",
+    "subtitle": "You're better now. You won't do it again right? Right?",
+    "styleID": "own",
+    "id": "b2008ddc-a8ba-406f-a164-9bc700095daf"
+  },
+  {
+    "spellId": "detect-evil-and-good",
+    "subtitle": "Good news: you sense the undead. Bad news: they sense lunch.",
+    "styleID": "black-humor",
+    "temp": 1.7,
+    "id": "a877028e-e9dc-4914-8e3f-2c9e9b1b5796"
+  },
+  {
+    "spellId": "detect-magic",
+    "subtitle": "Wait! Magical doesn't mean safe! I warned you! ...",
+    "styleID": "own",
+    "id": "df9caa37-8645-4512-bb9f-0843c42b692a"
+  },
+  {
+    "spellId": "detect-poison-and-disease",
+    "subtitle": "Usefull skill! Unless your friend is too quick and too curious...",
+    "styleID": "own",
+    "id": "c8e4c9f5-1cfe-4264-aed3-d042d39f5c26"
+  },
+  {
+    "spellId": "detect-poison-and-disease",
+    "subtitle": "This would've helped with that unidentified potion...",
+    "styleID": "own",
+    "id": "9b2e3006-0b48-4551-bd15-66cbaaf690e5"
+  },
+  {
+    "spellId": "disguise-self",
+    "subtitle": "You appear slimmer. Reality, however, refuses to cooperate.",
+    "styleID": "black-humor",
+    "temp": 1.5,
+    "id": "495a731d-6b43-4615-a0c5-b7e510cc7a39"
+  },
+  {
+    "spellId": "divine-favor",
+    "subtitle": "Radiant damage: because sometimes the gods need you to stop missing.",
+    "styleID": "sarcastic",
+    "temp": 1.6,
+    "id": "1c8d71da-aeac-4bfa-bde4-c2cac3a054fd"
+  },
+  {
+    "spellId": "divine-favor",
+    "subtitle": "You prayed for strength. They gave you glow. Close enough.",
+    "styleID": "sarcastic",
+    "temp": 1.9,
+    "id": "3c5731d8-7881-49d4-a2ae-cbeacee04b59"
+  },
+  {
+    "spellId": "divine-favor",
+    "subtitle": "Now your blade shines like your overconfidence.",
+    "styleID": "sarcastic",
+    "temp": 1.6,
+    "id": "59a21a5a-3b4a-43ef-a209-ed1f8e1cbfb7"
+  },
+  {
+    "spellId": "entangle",
+    "subtitle": "Stop moving! You have to relax guys!",
+    "styleID": "own",
+    "temp": 1.6,
+    "id": "840561f8-0c17-4e37-a57c-4cc20d2a1ec9"
+  },
+  {
+    "spellId": "expeditious-retreat",
+    "subtitle": "Running fast is a skill. Also an excellent life choice right now.",
+    "styleID": "sarcastic",
+    "temp": 1.8,
+    "id": "8e04f0de-95c4-42ba-aab9-7235323b1064"
   }
 ]
