@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:spells_and_tools/features/5e/character/models/character_5e_spell_slots.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -19,6 +20,7 @@ class CharacterCurrentSpellSlotsWidget extends HookConsumerWidget {
       spacing: 4,
       children: spellSlots.spellSlots.entries
           .where((spellSlotEntry) => spellSlotEntry.value.maxSlots > 0)
+          .sorted((a, b) => a.key.level.compareTo(b.key.level))
           .map(
         (spellSlot) {
           return Flexible(
