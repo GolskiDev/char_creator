@@ -37,6 +37,12 @@ class Navigation {
   static GoRouter goRouter(Ref ref) => GoRouter(
         debugLogDiagnostics: kDebugMode,
         initialLocation: '/',
+        redirect: (context, state) {
+          if(state.uri.toString().contains('google/link?')){
+            return '/';
+          }
+          return null;
+        },
         routes: [
           GoRoute(
             path: '/initialPage',
