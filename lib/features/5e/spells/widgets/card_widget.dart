@@ -55,8 +55,7 @@ class SpellCardWidget extends ConsumerWidget {
                       children: [
                         Icon(GameSystemViewModel.verbalComponent.icon),
                         Text(
-                          GameSystemViewModel.verbalComponent.name,
-                          style: Theme.of(context).textTheme.labelSmall,
+                          GameSystemViewModel.verbalComponentShort.name,
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -68,8 +67,7 @@ class SpellCardWidget extends ConsumerWidget {
                       children: [
                         Icon(GameSystemViewModel.somaticComponent.icon),
                         Text(
-                          GameSystemViewModel.somaticComponent.name,
-                          style: Theme.of(context).textTheme.labelSmall,
+                          GameSystemViewModel.somaticComponentShort.name,
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -81,8 +79,7 @@ class SpellCardWidget extends ConsumerWidget {
                       children: [
                         Icon(GameSystemViewModel.materialComponent.icon),
                         Text(
-                          GameSystemViewModel.materialComponent.name,
-                          style: Theme.of(context).textTheme.labelSmall,
+                          GameSystemViewModel.materialComponentShort.name,
                           textAlign: TextAlign.center,
                         ),
                       ],

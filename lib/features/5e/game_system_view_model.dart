@@ -63,6 +63,19 @@ class GameSystemViewModel {
     name: 'Material Component',
     icon: Icons.category,
   );
+  static const verbalComponentShort = GameSystemViewModelItem(
+    name: 'Verbal',
+    icon: Icons.record_voice_over,
+  );
+  static const somaticComponentShort = GameSystemViewModelItem(
+    name: 'Somatic',
+    icon: Icons.waving_hand,
+  );
+  static const materialComponentShort = GameSystemViewModelItem(
+    name: 'Material',
+    icon: Icons.category,
+  );
+
   static const school = GameSystemViewModelItem(
     name: 'School',
     icon: Icons.book,
