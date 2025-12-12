@@ -28,6 +28,39 @@ class SpellCardWidget extends ConsumerWidget {
           !spell.requiresVerbalComponent!) {
         return null;
       }
+      final verbal = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(GameSystemViewModel.verbalComponent.icon),
+          Text(
+            GameSystemViewModel.verbalComponentShort.name,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      );
+      final somatic = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(GameSystemViewModel.somaticComponent.icon),
+          Text(
+            GameSystemViewModel.somaticComponentShort.name,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      );
+      final material = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(GameSystemViewModel.materialComponent.icon),
+          Text(
+            GameSystemViewModel.materialComponentShort.name,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      );
       return Center(
         child: ListTile(
           titleAlignment: ListTileTitleAlignment.center,
@@ -39,61 +72,14 @@ class SpellCardWidget extends ConsumerWidget {
             padding: const EdgeInsets.only(
               top: 8.0,
             ),
-            child: Table(
-              columnWidths: const {
-                0: FlexColumnWidth(),
-                1: FlexColumnWidth(),
-                2: FlexColumnWidth(),
-              },
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 16,
+              runSpacing: 8,
               children: [
-                TableRow(
-                    children: [
-                  if (spell.requiresVerbalComponent == true)
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(GameSystemViewModel.verbalComponent.icon),
-                        Text(
-                          GameSystemViewModel.verbalComponentShort.name,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  if (spell.requiresSomaticComponent == true)
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(GameSystemViewModel.somaticComponent.icon),
-                        Text(
-                          GameSystemViewModel.somaticComponentShort.name,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  if (spell.requiresMaterialComponent == true)
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(GameSystemViewModel.materialComponent.icon),
-                        Text(
-                          GameSystemViewModel.materialComponentShort.name,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                ]
-                        .map(
-                          (e) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 2,
-                            ),
-                            child: e,
-                          ),
-                        )
-                        .toList()),
+                if (spell.requiresVerbalComponent!) verbal,
+                if (spell.requiresSomaticComponent!) somatic,
+                if (spell.requiresMaterialComponent!) material,
               ],
             ),
           ),

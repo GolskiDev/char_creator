@@ -1,6 +1,6 @@
-import 'package:spells_and_tools/features/terms/terms_of_service_interactor.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/features/terms/terms_of_service_interactor.dart';
 
 import '../../../views/default_page_wrapper.dart';
 import '../../terms/data_sources/user_accepted_agreements_data_source.dart';
@@ -43,11 +43,14 @@ class ConsentsPage extends HookConsumerWidget {
             child: Column(
               children: [
                 Flexible(
-                  child: Center(
-                    child: Card(
-                      clipBehavior: Clip.hardEdge,
-                      child: Image.asset(
-                        'assets/images/ui/contract.webp',
+                  child: SafeArea(
+                    bottom: false,
+                    child: Center(
+                      child: Card(
+                        clipBehavior: Clip.hardEdge,
+                        child: Image.asset(
+                          'assets/images/ui/contract.webp',
+                        ),
                       ),
                     ),
                   ),
