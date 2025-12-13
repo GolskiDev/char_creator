@@ -22,6 +22,16 @@ class SpellCardWidget extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
+    final listTileTheme = Theme.of(context).copyWith(
+      listTileTheme: ListTileThemeData(
+        titleAlignment: ListTileTitleAlignment.titleHeight,
+        titleTextStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+        subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
+      ),
+    );
+
     components() {
       if (!spell.requiresMaterialComponent! &&
           !spell.requiresSomaticComponent! &&
@@ -91,42 +101,36 @@ class SpellCardWidget extends ConsumerWidget {
       final spellSchool = spell.school;
       return [
         ListTile(
-          visualDensity: VisualDensity.compact,
           leading: Icon(GameSystemViewModel.spellLevel.icon),
           title: Text(spell.spellLevelString),
           subtitle: Text(GameSystemViewModel.spellLevel.name),
         ),
         if (spell.castingTime != null)
           ListTile(
-            visualDensity: VisualDensity.compact,
             leading: Icon(GameSystemViewModel.castingTime.icon),
             title: Text(spell.castingTime.toString()),
             subtitle: Text(GameSystemViewModel.castingTime.name),
           ),
         if (spell.range != null)
           ListTile(
-            visualDensity: VisualDensity.compact,
             leading: Icon(GameSystemViewModel.range.icon),
             title: Text(spell.range.toString()),
             subtitle: Text(GameSystemViewModel.range.name),
           ),
         if (spell.duration != null)
           ListTile(
-            visualDensity: VisualDensity.compact,
             leading: Icon(GameSystemViewModel.duration.icon),
             title: Text(spell.duration.toString()),
             subtitle: Text(GameSystemViewModel.duration.name),
           ),
         if (spell.requiresConcentration != null)
           ListTile(
-            visualDensity: VisualDensity.compact,
             leading: Icon(GameSystemViewModel.concentration.icon),
             title: Text(spell.requiresConcentration! ? 'Yes' : 'No'),
             subtitle: Text(GameSystemViewModel.concentration.name),
           ),
         if (spell.canBeCastAsRitual != null)
           ListTile(
-            visualDensity: VisualDensity.compact,
             leading: Icon(GameSystemViewModel.ritual.icon),
             title: Text(spell.canBeCastAsRitual! ? 'Yes' : 'No'),
             subtitle: Text(GameSystemViewModel.ritual.name),
@@ -134,8 +138,7 @@ class SpellCardWidget extends ConsumerWidget {
         if (components() != null) components()!,
         if (spell.material != null)
           ListTile(
-            visualDensity: VisualDensity.compact,
-            titleAlignment: ListTileTitleAlignment.center,
+            leading: Icon(GameSystemViewModel.materialComponent.icon),
             title: Text(
               GameSystemViewModel.materialComponent.name,
               textAlign: TextAlign.center,
@@ -147,7 +150,6 @@ class SpellCardWidget extends ConsumerWidget {
           ),
         if (spellSchool != null)
           ListTile(
-            visualDensity: VisualDensity.compact,
             leading: Icon(GameSystemViewModel.school.icon),
             title: Text(spellSchool.name),
             subtitle: Text(GameSystemViewModel.school.name),
@@ -276,33 +278,36 @@ class SpellCardWidget extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(
                         horizontal: 4,
                       ),
-                      child: Table(
-                        columnWidths: const {
-                          0: FlexColumnWidth(),
-                          1: FlexColumnWidth(),
-                        },
-                        defaultVerticalAlignment:
-                            TableCellVerticalAlignment.intrinsicHeight,
-                        children: List<TableRow>.generate(
-                          (spellTraits.length / 2).ceil(),
-                          (index) => TableRow(
-                            children: [
-                              spellTraits[index * 2],
-                              if (index * 2 + 1 < spellTraits.length)
-                                spellTraits[index * 2 + 1]
-                              else
-                                SizedBox.shrink(),
-                            ]
-                                .map(
-                                  (e) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
+                      child: Theme(
+                        data: listTileTheme,
+                        child: Table(
+                          columnWidths: const {
+                            0: FlexColumnWidth(),
+                            1: FlexColumnWidth(),
+                          },
+                          defaultVerticalAlignment:
+                              TableCellVerticalAlignment.intrinsicHeight,
+                          children: List<TableRow>.generate(
+                            (spellTraits.length / 2).ceil(),
+                            (index) => TableRow(
+                              children: [
+                                spellTraits[index * 2],
+                                if (index * 2 + 1 < spellTraits.length)
+                                  spellTraits[index * 2 + 1]
+                                else
+                                  SizedBox.shrink(),
+                              ]
+                                  .map(
+                                    (e) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 2,
+                                        vertical: 2,
+                                      ),
+                                      child: e,
                                     ),
-                                    child: e,
-                                  ),
-                                )
-                                .toList(),
+                                  )
+                                  .toList(),
+                            ),
                           ),
                         ),
                       ),
