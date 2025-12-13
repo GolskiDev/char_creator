@@ -74,6 +74,23 @@ class Character5ePage extends HookConsumerWidget {
       initialPage: page.value,
     );
 
+    useEffect(
+      () {
+        void pageListener() {
+          if (pageController.page != null) {
+            final newPage = pageController.page!.round();
+            if (newPage != page.value) {
+              page.value = newPage;
+            }
+          }
+        }
+
+        pageController.addListener(pageListener);
+        return () => pageController.removeListener(pageListener);
+      },
+      [pageController],
+    );
+
     final characterSpells = spellViewModels
         .where((spell) => character.knownSpells.contains(spell.id))
         .toList();
@@ -286,26 +303,6 @@ class Character5ePage extends HookConsumerWidget {
               );
             },
           ),
-          IconButton(
-            onPressed: () async {
-              if (page.value == 0) {
-                await pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-                page.value = 1;
-              } else {
-                await pageController.previousPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-                page.value = 0;
-              }
-            },
-            icon: page.value == 0
-                ? Icon(GameSystemViewModel.abilityScores.icon)
-                : Icon(GameSystemViewModel.spells.icon),
-          ),
         ],
       ),
       body: PageView(
@@ -313,6 +310,27 @@ class Character5ePage extends HookConsumerWidget {
         children: [
           spellPage,
           statsPage,
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (value) => {
+          pageController.animateToPage(
+            value,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          ),
+          page.value = value,
+        },
+        selectedIndex: page.value,
+        destinations: [
+          NavigationDestination(
+            icon: Icon(GameSystemViewModel.spells.icon),
+            label: GameSystemViewModel.spells.name,
+          ),
+          NavigationDestination(
+            icon: Icon(GameSystemViewModel.abilityScores.icon),
+            label: GameSystemViewModel.abilityScores.name,
+          ),
         ],
       ),
     );
