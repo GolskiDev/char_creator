@@ -141,11 +141,9 @@ class SpellCardWidget extends ConsumerWidget {
             leading: Icon(GameSystemViewModel.materialComponent.icon),
             title: Text(
               GameSystemViewModel.materialComponent.name,
-              textAlign: TextAlign.center,
             ),
             subtitle: Text(
               spell.material!,
-              textAlign: TextAlign.center,
             ),
           ),
         if (spellSchool != null)
