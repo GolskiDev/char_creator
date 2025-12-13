@@ -113,9 +113,12 @@ class LuckyRollWidget extends HookConsumerWidget {
             null,
           ) =>
             [
-              Text(
-                dailyRollReadyText,
-                style: textStyle,
+              Flexible(
+                child: Text(
+                  textAlign: TextAlign.right,
+                  dailyRollReadyText,
+                  style: textStyle,
+                ),
               ),
               Visibility(
                 visible: false,
