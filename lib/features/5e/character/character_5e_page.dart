@@ -312,22 +312,21 @@ class Character5ePage extends HookConsumerWidget {
           statsPage,
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (value) => {
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: page.value,
+        onTap: (value) {
           pageController.animateToPage(
             value,
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-          ),
-          page.value = value,
+          );
         },
-        selectedIndex: page.value,
-        destinations: [
-          NavigationDestination(
+        items: [
+          BottomNavigationBarItem(
             icon: Icon(GameSystemViewModel.spells.icon),
             label: GameSystemViewModel.spells.name,
           ),
-          NavigationDestination(
+          BottomNavigationBarItem(
             icon: Icon(GameSystemViewModel.abilityScores.icon),
             label: GameSystemViewModel.abilityScores.name,
           ),

@@ -94,6 +94,12 @@ class AppTheme {
         ),
         expandedAlignment: Alignment.topLeft,
       ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        // landscapeLayout: BottomNavigationBarLandscapeLayout.linear,
+        type: BottomNavigationBarType.shifting,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+      ),
     );
   }
 }
