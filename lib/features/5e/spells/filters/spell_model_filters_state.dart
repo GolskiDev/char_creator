@@ -234,6 +234,19 @@ class SpellModelFiltersState {
     List<SpellViewModel> spells,
   ) {
     final isCharacterFilterUsed = character != null;
+    List<SpellViewModel> result = List.from(spells);
+
+    if (isCharacterFilterUsed) {
+      result = result.where((spell) => spellIsForCharacter(spell)).toList();
+
+      /// First we check if there are any spells for the character.
+      /// If there are none we return all the spells to avoid an empty list.
+      if (result.isEmpty) {
+        return spells;
+      }
+    }
+
+    ///If there are spells for the character we continue filtering.
     return spells.where(
       (spell) {
         return (spellNameContainsSearchText(spell.name) ||
