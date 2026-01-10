@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spells_and_tools/features/5e/character/character_provider.dart';
 import 'package:spells_and_tools/features/5e/spells/edit_spells/edit_spell_page.dart'
     show EditSpellPage;
 import 'package:spells_and_tools/features/authentication/auth_controller.dart';
@@ -38,7 +39,7 @@ class Navigation {
         debugLogDiagnostics: kDebugMode,
         initialLocation: '/',
         redirect: (context, state) {
-          if(state.uri.toString().contains('google/link?')){
+          if (state.uri.toString().contains('google/link?')) {
             return '/';
           }
           return null;
@@ -140,18 +141,22 @@ class Navigation {
                     builder: (context, state) => EditCharacter5ePage(),
                   ),
                   GoRoute(
-                    path: '/:id',
+                    path: '/:characterId',
                     builder: (context, state) {
-                      final characterId = state.pathParameters['id']!;
-                      return Character5ePage(
-                        characterId: characterId,
+                      final characterId = state.pathParameters['characterId']!;
+                      return SelectedCharacterIdProvider(
+                        selectedCharacterId: characterId,
+                        child: Character5ePage(
+                          characterId: characterId,
+                        ),
                       );
                     },
                     routes: [
                       GoRoute(
                         path: '/edit',
                         builder: (context, state) {
-                          final characterId = state.pathParameters['id']!;
+                          final characterId =
+                              state.pathParameters['characterId']!;
                           return EditCharacter5ePage(
                             characterId: characterId,
                           );
@@ -160,11 +165,44 @@ class Navigation {
                       GoRoute(
                         path: '/addSpells',
                         builder: (context, state) {
-                          final characterId = state.pathParameters['id']!;
+                          final characterId =
+                              state.pathParameters['characterId']!;
                           return ListOfSpellsPage(
                             targetCharacterId: characterId,
                           );
                         },
+                      ),
+                      GoRoute(
+                        path: '/spells',
+                        builder: (context, state) {
+                          /// TODO: add scroll to spells functionality
+                          final characterId =
+                              state.pathParameters['characterId']!;
+                          return SelectedCharacterIdProvider(
+                            selectedCharacterId: characterId,
+                            child: Character5ePage(
+                              characterId: characterId,
+                            ),
+                          );
+                        },
+                        routes: [
+                          GoRoute(
+                            path: '/:spellId',
+                            builder: (context, state) {
+                              final spellId = state.pathParameters['spellId']!;
+                              final characterId =
+                                  state.pathParameters['characterId'];
+                              return SelectedCharacterIdProvider(
+                                selectedCharacterId: characterId,
+                                child: SpellCardPage(
+                                  id: spellId,
+                                  spellsFuture:
+                                      ref.read(spellViewModelsProvider.future),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
