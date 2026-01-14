@@ -462,11 +462,14 @@ class EditSpellPage extends HookConsumerWidget {
             spell: spell,
           );
           await repository.updateSpell(userSpell);
+          if (context.mounted) {
+            context.pop();
+          }
         } else {
-          await repository.addSpell(newSpell);
-        }
-        if (context.mounted) {
-          context.pop();
+          final id = await repository.addSpell(newSpell);
+          if (context.mounted) {
+            context.go('/spells/$id');
+          }
         }
       }
     }

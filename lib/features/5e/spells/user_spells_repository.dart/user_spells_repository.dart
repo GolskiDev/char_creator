@@ -84,10 +84,11 @@ class UserSpellsRepository {
     );
   }
 
-  Future<void> addSpell(BaseSpellModel spell) async {
+  Future<String> addSpell(BaseSpellModel spell) async {
     final userSpell = UserSpellModelV1.newSpell(ownerId: userId, spell: spell);
     final docRef = _userSpellsCollection.doc(userSpell.id);
     await docRef.set(userSpell.toMap());
+    return userSpell.id;
   }
 
   Future<void> deleteSpell(String spellId) async {
