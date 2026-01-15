@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:spells_and_tools/features/5e/character/widgets/character_stats_widget.dart';
 import 'package:spells_and_tools/features/5e/character/widgets/notes/character_5e_note_widget.dart';
 
+import '../../show_under/show_under.dart';
 import '../game_system_view_model.dart';
 import '../spells/view_models/spell_view_model.dart';
 import '../spells/view_models/spell_view_models_provider.dart';
@@ -266,6 +267,7 @@ class Character5ePage extends HookConsumerWidget {
                 ),
               ),
             ),
+            ShowUnderExample(),
             SafeArea(
               child: Card(
                 clipBehavior: Clip.antiAlias,
