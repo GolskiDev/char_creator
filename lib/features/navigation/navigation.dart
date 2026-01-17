@@ -86,7 +86,7 @@ class Navigation {
                 builder: (context, state) => const UtilsPage(),
               ),
               GoRoute(
-                path: '/',
+                path: '/exampleCharacterPage',
                 builder: (context, state) => const ExampleCharacterPage(),
               ),
               GoRoute(

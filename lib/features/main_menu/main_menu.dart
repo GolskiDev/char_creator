@@ -32,12 +32,12 @@ class MainMenuPage extends HookConsumerWidget {
         path: "/characters",
       ),
       LuckyRollWidget(),
-      // if (kDebugMode)
-      //   MainMenuDefaultCardWidget(
-      //     icon: Icons.extension,
-      //     title: "Utils",
-      //     path: "/utils",
-      //   ),
+      if (kDebugMode)
+        MainMenuDefaultCardWidget(
+          icon: Icons.extension,
+          title: "Utils",
+          path: "/utils",
+        ),
     ];
 
     final dailyMessageSpellViewModelAsync =

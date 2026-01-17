@@ -39,13 +39,13 @@ class ExampleItem {
 
   final String title;
   final String description;
-  final String showUnder;
+  final List<String> showUnder;
 
   factory ExampleItem.fromMap(Map<String, dynamic> map) {
     return ExampleItem(
       title: map['title'] as String,
       description: map['description'] as String,
-      showUnder: map['showUnder'] as String,
+      showUnder: map['showUnder'] as List<String>,
     );
   }
 }
@@ -60,6 +60,10 @@ class ShowUnderDataProvider extends InheritedWidget {
 
   final String targetName;
   final List<ExampleItem> data;
+
+  get dataForTarget {
+    return data.where((item) => item.showUnder.contains(targetName)).toList();
+  }
 
   static ShowUnderDataProvider? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<ShowUnderDataProvider>();
@@ -76,14 +80,14 @@ class CharacterDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showUnder = ShowUnderDataProvider.maybeOf(context);
+    final showUnder = ShowUnderDataProvider.maybeOf(context)?.dataForTarget;
 
     return Card(
       child: Column(
         children: [
           const Text("Character Details"),
           if (showUnder != null)
-            ...showUnder.data.map(
+            ...showUnder.map(
               (item) => ListTile(
                 title: Text(item.title),
                 subtitle: Text(item.description),
@@ -129,27 +133,22 @@ class ShowUnderExample extends StatelessWidget {
           (e) => ExampleItem(
             title: e['title'] as String,
             description: e['description'] as String,
-            showUnder: e['showUnder'] as String,
+            showUnder:
+                (e['showUnder'] as List).map((e) => e as String).toList(),
           ),
         )
-        .toList();
-
-    final detailsItems =
-        items.where((item) => item.showUnder == 'character.details').toList();
-    final someOtherPlaceItems = items
-        .where((item) => item.showUnder == 'character.someOtherPlace')
         .toList();
 
     return Column(
       children: [
         ShowUnderDataProvider(
           targetName: 'character.details',
-          data: detailsItems,
+          data: items,
           child: const CharacterDetails(),
         ),
         ShowUnderDataProvider(
           targetName: 'character.someOtherPlace',
-          data: someOtherPlaceItems,
+          data: items,
           child: const CharacterSomeOtherPlace(),
         ),
       ],

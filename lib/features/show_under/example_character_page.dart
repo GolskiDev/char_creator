@@ -44,26 +44,31 @@ class ExampleCharacterPage extends HookConsumerWidget {
                 title: Text(entry.key),
                 trailing: Text(entry.value.toString()),
               ),
-              ShowUnderDataProvider(
-                targetName:
-                    'character.abilityScores.${entry.key.toLowerCase()}',
-                data: exampleItems,
-                child: Builder(
-                  builder: (context) {
-                    final showUnderItems =
-                        ShowUnderDataProvider.maybeOf(context)?.data ?? [];
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: showUnderItems
-                          .map(
-                            (item) => ListTile(
-                              title: Text(item.title),
-                              subtitle: Text(item.description),
-                            ),
-                          )
-                          .toList(),
-                    );
-                  },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ShowUnderDataProvider(
+                  targetName:
+                      'character.abilityScores.${entry.key.toLowerCase()}',
+                  data: exampleItems,
+                  child: Builder(
+                    builder: (context) {
+                      final showUnderItems =
+                          ShowUnderDataProvider.maybeOf(context)
+                                  ?.dataForTarget ??
+                              [];
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: showUnderItems
+                            .map<Widget>(
+                              (item) => ListTile(
+                                title: Text(item.title),
+                                subtitle: Text(item.description),
+                              ),
+                            )
+                            .toList(),
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
@@ -72,17 +77,68 @@ class ExampleCharacterPage extends HookConsumerWidget {
       ],
     );
 
+    // AgeBuilder: editable age field and trait display
+    final ageController = useTextEditingController(text: '50');
+
+    final ageBuilder = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.cake),
+          title: const Text('Age'),
+          subtitle: TextField(
+            controller: ageController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Enter Age',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: ShowUnderDataProvider(
+            targetName: 'character.age',
+            data: exampleItems,
+            child: Builder(
+              builder: (context) {
+                final showUnderItems =
+                    ShowUnderDataProvider.maybeOf(context)?.dataForTarget ?? [];
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: showUnderItems
+                      .map<Widget>((item) => ListTile(
+                            title: Text(item.title),
+                            subtitle: Text(item.description),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+
     final items = [
       abilityScoresBuilder,
+      ageBuilder,
     ];
 
     return Scaffold(
-      body: ListView.separated(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return items[index];
-        },
-        separatorBuilder: (context, index) => Divider(),
+      body: SafeArea(
+        child: ListView.separated(
+          itemCount: items.length,
+          padding: const EdgeInsets.all(4.0),
+          itemBuilder: (context, index) {
+            return Card(
+              child: items[index],
+            );
+          },
+          separatorBuilder: (context, index) => SizedBox(
+            height: 4.0,
+          ),
+        ),
       ),
     );
   }
