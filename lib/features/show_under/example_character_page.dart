@@ -120,9 +120,52 @@ class ExampleCharacterPage extends HookConsumerWidget {
       ],
     );
 
+    // AlignmentBuilder: editable alignment field and trait display
+    final alignmentController = useTextEditingController(text: 'Lawful Good');
+
+    final alignmentBuilder = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.balance),
+          title: const Text('Alignment'),
+          subtitle: TextField(
+            controller: alignmentController,
+            decoration: const InputDecoration(
+              labelText: 'Enter Alignment',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: ShowUnderDataProvider(
+            targetName: 'character.alignment',
+            data: exampleItems,
+            child: Builder(
+              builder: (context) {
+                final showUnderItems =
+                    ShowUnderDataProvider.maybeOf(context)?.dataForTarget ?? [];
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: showUnderItems
+                      .map<Widget>((item) => ListTile(
+                            title: Text(item.title),
+                            subtitle: Text(item.description),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+
     final items = [
       abilityScoresBuilder,
       ageBuilder,
+      alignmentBuilder,
     ];
 
     return Scaffold(
