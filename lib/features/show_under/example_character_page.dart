@@ -289,6 +289,175 @@ class ExampleCharacterPage extends HookConsumerWidget {
       ],
     );
 
+    // ResistancesBuilder: editable resistances field and trait display
+    final resistancesController = useTextEditingController(text: 'Poison');
+
+    final resistancesBuilder = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.shield),
+          title: const Text('Resistances'),
+          subtitle: TextField(
+            controller: resistancesController,
+            decoration: const InputDecoration(
+              labelText: 'Enter Resistances',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: ShowUnderDataProvider(
+            targetName: 'character.resistances',
+            data: exampleItems,
+            child: Builder(
+              builder: (context) {
+                final showUnderItems =
+                    ShowUnderDataProvider.maybeOf(context)?.dataForTarget ?? [];
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: showUnderItems
+                      .map<Widget>((item) => ListTile(
+                            title: Text(item.title),
+                            subtitle: Text(item.description),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+
+    // SavingThrowsBuilder: editable saving throws field and trait display
+    final savingThrowsController = useTextEditingController(text: 'Poison');
+
+    final savingThrowsBuilder = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.security),
+          title: const Text('Saving Throws'),
+          subtitle: TextField(
+            controller: savingThrowsController,
+            decoration: const InputDecoration(
+              labelText: 'Enter Saving Throws',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: ShowUnderDataProvider(
+            targetName: 'character.savingThrows',
+            data: exampleItems,
+            child: Builder(
+              builder: (context) {
+                final showUnderItems =
+                    ShowUnderDataProvider.maybeOf(context)?.dataForTarget ?? [];
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: showUnderItems
+                      .map<Widget>((item) => ListTile(
+                            title: Text(item.title),
+                            subtitle: Text(item.description),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+
+    // SkillsBuilder: editable skills field and trait display
+    final skillsController = useTextEditingController(text: 'History');
+
+    final skillsBuilder = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.psychology),
+          title: const Text('Skills'),
+          subtitle: TextField(
+            controller: skillsController,
+            decoration: const InputDecoration(
+              labelText: 'Enter Skills',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: ShowUnderDataProvider(
+            targetName: 'character.skills.history',
+            data: exampleItems,
+            child: Builder(
+              builder: (context) {
+                final showUnderItems =
+                    ShowUnderDataProvider.maybeOf(context)?.dataForTarget ?? [];
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: showUnderItems
+                      .map<Widget>((item) => ListTile(
+                            title: Text(item.title),
+                            subtitle: Text(item.description),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+
+    // LanguagesBuilder: editable languages field and trait display
+    final languagesController =
+        useTextEditingController(text: 'Common, Dwarvish');
+
+    final languagesBuilder = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.language),
+          title: const Text('Languages'),
+          subtitle: TextField(
+            controller: languagesController,
+            decoration: const InputDecoration(
+              labelText: 'Enter Languages',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: ShowUnderDataProvider(
+            targetName: 'character.languages',
+            data: exampleItems,
+            child: Builder(
+              builder: (context) {
+                final showUnderItems =
+                    ShowUnderDataProvider.maybeOf(context)?.dataForTarget ?? [];
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: showUnderItems
+                      .map<Widget>((item) => ListTile(
+                            title: Text(item.title),
+                            subtitle: Text(item.description),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+
     final items = [
       abilityScoresBuilder,
       ageBuilder,
@@ -296,6 +465,10 @@ class ExampleCharacterPage extends HookConsumerWidget {
       sizeBuilder,
       speedBuilder,
       visionBuilder,
+      resistancesBuilder,
+      savingThrowsBuilder,
+      skillsBuilder,
+      languagesBuilder,
     ];
 
     return Scaffold(

@@ -271,7 +271,7 @@ final dwarf = {
       "title": "Stonecunning",
       "description":
           "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus.",
-      "showUnder": ["character.skills", "character.history"],
+      "showUnder": ["character.skills.history"],
     },
     {
       "id": "languages_dwarf_011",
