@@ -162,10 +162,140 @@ class ExampleCharacterPage extends HookConsumerWidget {
       ],
     );
 
+    // SizeBuilder: editable size field and trait display
+    final sizeController = useTextEditingController(text: 'Medium');
+
+    final sizeBuilder = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.height),
+          title: const Text('Size'),
+          subtitle: TextField(
+            controller: sizeController,
+            decoration: const InputDecoration(
+              labelText: 'Enter Size',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: ShowUnderDataProvider(
+            targetName: 'character.size',
+            data: exampleItems,
+            child: Builder(
+              builder: (context) {
+                final showUnderItems =
+                    ShowUnderDataProvider.maybeOf(context)?.dataForTarget ?? [];
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: showUnderItems
+                      .map<Widget>((item) => ListTile(
+                            title: Text(item.title),
+                            subtitle: Text(item.description),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+
+    // SpeedBuilder: editable speed field and trait display
+    final speedController = useTextEditingController(text: '25');
+
+    final speedBuilder = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.directions_run),
+          title: const Text('Speed'),
+          subtitle: TextField(
+            controller: speedController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Enter Speed',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: ShowUnderDataProvider(
+            targetName: 'character.speed',
+            data: exampleItems,
+            child: Builder(
+              builder: (context) {
+                final showUnderItems =
+                    ShowUnderDataProvider.maybeOf(context)?.dataForTarget ?? [];
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: showUnderItems
+                      .map<Widget>((item) => ListTile(
+                            title: Text(item.title),
+                            subtitle: Text(item.description),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+
+    // VisionBuilder: editable vision field and trait display
+    final visionController = useTextEditingController(text: 'Darkvision 60 ft');
+
+    final visionBuilder = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.visibility),
+          title: const Text('Vision'),
+          subtitle: TextField(
+            controller: visionController,
+            decoration: const InputDecoration(
+              labelText: 'Enter Vision',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: ShowUnderDataProvider(
+            targetName: 'character.vision',
+            data: exampleItems,
+            child: Builder(
+              builder: (context) {
+                final showUnderItems =
+                    ShowUnderDataProvider.maybeOf(context)?.dataForTarget ?? [];
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: showUnderItems
+                      .map<Widget>((item) => ListTile(
+                            title: Text(item.title),
+                            subtitle: Text(item.description),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+
     final items = [
       abilityScoresBuilder,
       ageBuilder,
       alignmentBuilder,
+      sizeBuilder,
+      speedBuilder,
+      visionBuilder,
     ];
 
     return Scaffold(
