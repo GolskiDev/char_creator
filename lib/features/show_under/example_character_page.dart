@@ -9,19 +9,174 @@ class ExampleCharacterPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTraits = useState<List<String>>([]);
 
-    final abilityScores = useState<Map<String, int>>({
-      'Strength': 16,
-      'Dexterity': 12,
-      'Constitution': 14,
-      'Intelligence': 10,
-      'Wisdom': 13,
-      'Charisma': 8,
-    });
+    final abilityScores = useState<Map<String, int>>(
+      {
+        'Strength': 16,
+        'Dexterity': 12,
+        'Constitution': 14,
+        'Intelligence': 10,
+        'Wisdom': 13,
+        'Charisma': 8,
+      },
+    );
 
     final data = dwarf;
     final traits = data['traits'] as List<Map<String, dynamic>>;
     final exampleItems =
         traits.map((trait) => ExampleItem.fromMap(trait)).toList();
+
+    // Padding(
+    //             padding: const EdgeInsets.symmetric(horizontal: 8.0),
+    //             child: ShowUnderDataProvider(
+    //               targetName:
+    //                   'character.abilityScores.${entry.key.toLowerCase()}',
+    //               data: exampleItems,
+    //               child: Builder(
+    //                 builder: (context) {
+    //                   final showUnderItems =
+    //                       ShowUnderDataProvider.maybeOf(context)
+    //                               ?.dataForTarget ??
+    //                           [];
+    //                   return Column(
+    //                     mainAxisSize: MainAxisSize.min,
+    //                     children: showUnderItems
+    //                         .map<Widget>(
+    //                           (item) => ListTile(
+    //                             title: Text(item.title),
+    //                             subtitle: Text(item.description),
+    //                           ),
+    //                         )
+    //                         .toList(),
+    //                   );
+    //                 },
+    //               ),
+    //             ),
+    //           ),
+
+    abilityPageBuilder(
+      BuildContext context,
+      WidgetRef ref,
+      MapEntry<String, int> abilityEntry,
+    ) {
+      return HookBuilder(
+        builder: (context) {
+          final textFieldController = useTextEditingController(
+            text: abilityEntry.value.toString(),
+          );
+          final abilityScoreWidget = ListTile(
+            onTap: () {},
+            title: Hero(
+              tag: 'ability_${abilityEntry.key}',
+              child: Material(
+                color: Colors.transparent,
+                child: Text(abilityEntry.key),
+              ),
+            ),
+            trailing: SizedBox(
+              width: 60,
+              child: TextField(
+                controller: textFieldController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+          );
+
+          showUnderAbilityScoreBuilder() {
+            return ShowUnderDataProvider(
+              targetName:
+                  'character.abilityScores.${abilityEntry.key.toLowerCase()}',
+              data: exampleItems,
+              child: Builder(builder: (context) {
+                final showUnderItems =
+                    ShowUnderDataProvider.maybeOf(context)?.dataForTarget ?? [];
+                if (showUnderItems.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                return Column(
+                  children: [
+                    if (showUnderItems.isNotEmpty)
+                      ListTile(
+                        title: Text(
+                          'Related Traits',
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Builder(
+                        builder: (context) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: showUnderItems
+                                .map<Widget>((item) => ListTile(
+                                      title: Text(item.title),
+                                      subtitle: Text(item.description),
+                                    ))
+                                .toList(),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            );
+          }
+
+          final itmes = [
+            abilityScoreWidget,
+            showUnderAbilityScoreBuilder(),
+          ];
+
+          return ShowUnderDataProvider(
+            targetName:
+                'character.abilityScores.${abilityEntry.key.toLowerCase()}',
+            data: exampleItems,
+            child: Scaffold(
+              appBar: AppBar(),
+              body: ListView.separated(
+                itemBuilder: (context, index) => itmes[index],
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 4.0),
+                itemCount: itmes.length,
+              ),
+            ),
+          );
+        },
+      );
+    }
+
+    abilityScoreBuilder(MapEntry<String, int> entry) {
+      return ListTile(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => abilityPageBuilder(context, ref, entry),
+            ),
+          );
+        },
+        title: Hero(
+          tag: 'ability_${entry.key}',
+          child: Material(
+            color: Colors.transparent,
+            child: Text(
+              entry.key.substring(0, 3),
+            ),
+          ),
+        ),
+        subtitle: Hero(
+          tag: 'ability_value_${entry.key}',
+          child: Material(
+            color: Colors.transparent,
+            child: Text(
+              entry.value.toString(),
+            ),
+          ),
+        ),
+      );
+    }
 
     final abilityScoresBuilder = Column(
       mainAxisSize: MainAxisSize.min,
@@ -36,44 +191,24 @@ class ExampleCharacterPage extends HookConsumerWidget {
             },
           ),
         ),
-        ...abilityScores.value.entries.map(
-          (entry) => Column(
-            mainAxisSize: MainAxisSize.min,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GridView.count(
+            crossAxisCount: 3,
+            mainAxisSpacing: 4.0,
+            crossAxisSpacing: 4.0,
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
             children: [
-              ListTile(
-                title: Text(entry.key),
-                trailing: Text(entry.value.toString()),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ShowUnderDataProvider(
-                  targetName:
-                      'character.abilityScores.${entry.key.toLowerCase()}',
-                  data: exampleItems,
-                  child: Builder(
-                    builder: (context) {
-                      final showUnderItems =
-                          ShowUnderDataProvider.maybeOf(context)
-                                  ?.dataForTarget ??
-                              [];
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: showUnderItems
-                            .map<Widget>(
-                              (item) => ListTile(
-                                title: Text(item.title),
-                                subtitle: Text(item.description),
-                              ),
-                            )
-                            .toList(),
-                      );
-                    },
-                  ),
+              ...abilityScores.value.entries.map(
+                (entry) => Card.outlined(
+                  clipBehavior: Clip.hardEdge,
+                  child: abilityScoreBuilder(entry),
                 ),
               ),
             ],
           ),
-        ),
+        )
       ],
     );
 
