@@ -32,17 +32,20 @@ final data = {
 
 class ExampleItem {
   ExampleItem({
+    required this.id,
     required this.title,
     required this.description,
     required this.showUnder,
   });
 
+  final String id;
   final String title;
   final String description;
   final List<String> showUnder;
 
   factory ExampleItem.fromMap(Map<String, dynamic> map) {
     return ExampleItem(
+      id: map['id'] as String,
       title: map['title'] as String,
       description: map['description'] as String,
       showUnder: map['showUnder'] as List<String>,
@@ -131,6 +134,7 @@ class ShowUnderExample extends StatelessWidget {
     final items = (data['items'] as List)
         .map(
           (e) => ExampleItem(
+            id: e['id'] as String,
             title: e['title'] as String,
             description: e['description'] as String,
             showUnder:

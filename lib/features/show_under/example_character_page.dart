@@ -7,6 +7,8 @@ class ExampleCharacterPage extends HookConsumerWidget {
   const ExampleCharacterPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final data = dwarf;
+    final traits = data['traits'] as List<Map<String, dynamic>>;
     final selectedTraits = useState<List<String>>([]);
 
     final abilityScores = useState<Map<String, int>>(
@@ -20,38 +22,79 @@ class ExampleCharacterPage extends HookConsumerWidget {
       },
     );
 
-    final data = dwarf;
-    final traits = data['traits'] as List<Map<String, dynamic>>;
-    final exampleItems =
-        traits.map((trait) => ExampleItem.fromMap(trait)).toList();
+    final exampleItems = traits
+        .map((trait) => ExampleItem.fromMap(trait))
+        .where(
+          (item) => selectedTraits.value.contains(item.id),
+        )
+        .toList();
 
-    // Padding(
-    //             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-    //             child: ShowUnderDataProvider(
-    //               targetName:
-    //                   'character.abilityScores.${entry.key.toLowerCase()}',
-    //               data: exampleItems,
-    //               child: Builder(
-    //                 builder: (context) {
-    //                   final showUnderItems =
-    //                       ShowUnderDataProvider.maybeOf(context)
-    //                               ?.dataForTarget ??
-    //                           [];
-    //                   return Column(
-    //                     mainAxisSize: MainAxisSize.min,
-    //                     children: showUnderItems
-    //                         .map<Widget>(
-    //                           (item) => ListTile(
-    //                             title: Text(item.title),
-    //                             subtitle: Text(item.description),
-    //                           ),
-    //                         )
-    //                         .toList(),
-    //                   );
-    //                 },
-    //               ),
-    //             ),
-    //           ),
+    openTraitSelector() async {
+      final selectedTraitIds = await Navigator.of(context).push<List<String>>(
+        MaterialPageRoute(
+          builder: (context) {
+            return HookBuilder(builder: (context) {
+              final previouslySelectedTraits = useState<List<String>>(
+                List<String>.from(selectedTraits.value),
+              );
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Select Traits'),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.check),
+                      onPressed: () {
+                        final selectedIds = previouslySelectedTraits.value;
+                        Navigator.of(context).pop(selectedIds);
+                      },
+                    ),
+                  ],
+                ),
+                body: ListView(
+                  children: traits.map((trait) {
+                    final traitId = trait['id'] as String;
+                    final isSelected =
+                        previouslySelectedTraits.value.contains(traitId);
+                    return CheckboxListTile(
+                      title: Text(trait['title'] as String),
+                      subtitle: Text(trait['description'] as String),
+                      value: isSelected,
+                      onChanged: (value) {
+                        if (value == true) {
+                          previouslySelectedTraits.value = [
+                            ...previouslySelectedTraits.value,
+                            traitId
+                          ];
+                        } else {
+                          previouslySelectedTraits.value =
+                              previouslySelectedTraits.value
+                                  .where((id) => id != traitId)
+                                  .toList();
+                        }
+                      },
+                    );
+                  }).toList(),
+                ),
+              );
+            });
+          },
+        ),
+      );
+      if (selectedTraitIds != null) {
+        selectedTraits.value = selectedTraitIds;
+      }
+    }
+
+    final selectTraitsListTile = ListTile(
+      onTap: openTraitSelector,
+      title: const Text('Select Traits'),
+      subtitle: Text(
+        selectedTraits.value.isEmpty
+            ? 'No traits selected'
+            : '${selectedTraits.value.length} traits selected',
+      ),
+      trailing: const Icon(Icons.edit),
+    );
 
     abilityPageBuilder(
       BuildContext context,
@@ -594,6 +637,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
     );
 
     final items = [
+      selectTraitsListTile,
       abilityScoresBuilder,
       ageBuilder,
       alignmentBuilder,
