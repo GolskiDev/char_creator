@@ -42,11 +42,10 @@ class ExampleCharacterPage extends HookConsumerWidget {
         Theme(
           data: Theme.of(context).copyWith(
             listTileTheme: ListTileThemeData(
-              titleTextStyle:
-                  Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-              subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+              titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+              subtitleTextStyle: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
           child: child,
@@ -119,7 +118,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
       trailing: const Icon(Icons.edit),
     );
 
-    abilityScoreBuilder({
+    traitBuider({
       required String tag,
       required IconData icon,
       required String title,
@@ -144,15 +143,18 @@ class ExampleCharacterPage extends HookConsumerWidget {
       );
     }
 
-    tileBuilder() => Column(
+    groupBuilder({
+      IconData? grupIcon,
+      required String groupTitle,
+      required List<Widget> children,
+    }) =>
+        Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.fitness_center),
+              leading: grupIcon == null ? null : Icon(grupIcon),
               titleAlignment: ListTileTitleAlignment.center,
-              title: const Text(
-                'Ability Scores',
-              ),
+              title: Text(groupTitle),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -189,56 +191,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
                       crossAxisSpacing: 8,
                       childAspectRatio: 16 / 9,
                       physics: const NeverScrollableScrollPhysics(),
-                      children: abilityScores.value.entries
-                          .map(
-                            (entry) => Center(
-                              child: Card(
-                                clipBehavior: Clip.antiAlias,
-                                child: abilityScoreBuilder(
-                                  tag: 'ability_${entry.key}',
-                                  icon: Icons.fitness_center,
-                                  title: entry.value.toString(),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return ShowUnderDataProvider(
-                                            data: selectedTraits.value
-                                                .map(
-                                                  (traitId) => exampleItems
-                                                      .firstWhereOrNull(
-                                                    (item) =>
-                                                        item.id == traitId,
-                                                  ),
-                                                )
-                                                .nonNulls
-                                                .toList(),
-                                            child: EditPropertyPage(
-                                              propertyIcon:
-                                                  Icons.fitness_center,
-                                              propertyId:
-                                                  'character.abilityScores.${entry.key.toLowerCase()}',
-                                              propertyName: entry.key,
-                                              propertyDescription: null,
-                                              initialValue: entry.value,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  subtitle: entry.key
-                                      .substring(
-                                        0,
-                                        min(3, entry.key.length),
-                                      )
-                                      .toUpperCase(),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
+                      children: children,
                     ),
                   );
                 },
@@ -247,9 +200,160 @@ class ExampleCharacterPage extends HookConsumerWidget {
           ],
         );
 
+    abilityScoresBuilder() => groupBuilder(
+          groupTitle: 'Ability Scores',
+          grupIcon: Icons.fitness_center,
+          children: abilityScores.value.entries
+              .map(
+                (entry) => Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: traitBuider(
+                    tag: 'ability_${entry.key}',
+                    icon: Icons.fitness_center,
+                    title: entry.value.toString(),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return ShowUnderDataProvider(
+                              data: selectedTraits.value
+                                  .map(
+                                    (traitId) => exampleItems.firstWhereOrNull(
+                                      (item) => item.id == traitId,
+                                    ),
+                                  )
+                                  .nonNulls
+                                  .toList(),
+                              child: EditPropertyPage(
+                                propertyIcon: Icons.fitness_center,
+                                propertyId:
+                                    'character.abilityScores.${entry.key.toLowerCase()}',
+                                propertyName: entry.key,
+                                propertyDescription: null,
+                                initialValue: entry.value,
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    subtitle: entry.key
+                        .substring(
+                          0,
+                          min(3, entry.key.length),
+                        )
+                        .toUpperCase(),
+                  ),
+                ),
+              )
+              .toList(),
+        );
+
+    ageBuilder() => traitBuider(
+          tag: 'character.age',
+          icon: Icons.cake,
+          title: '34',
+          subtitle: 'Age',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return ShowUnderDataProvider(
+                  data: exampleItems,
+                  child: EditPropertyPage(
+                    propertyIcon: Icons.cake,
+                    propertyId: 'character.age',
+                    propertyName: 'Age',
+                    propertyDescription: null,
+                    initialValue: 34,
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+
+    alignmentBuilder() => traitBuider(
+          tag: 'character.alignment',
+          icon: Icons.balance,
+          title: 'Neutral Good',
+          subtitle: 'Alignment',
+        );
+
+    sizeBuilder() => traitBuider(
+          tag: 'character.size',
+          icon: Icons.height,
+          title: 'Medium',
+          subtitle: 'Size',
+        );
+
+    speedBuilder() => traitBuider(
+          tag: 'character.speed',
+          icon: Icons.directions_walk,
+          title: '25 ft.',
+          subtitle: 'Speed',
+        );
+
+    visionBuilder() => traitBuider(
+          tag: 'character.vision',
+          icon: Icons.remove_red_eye,
+          title: 'Darkvision 60 ft.',
+          subtitle: 'Vision',
+        );
+
+    proficienciesBuilder() => traitBuider(
+          tag: 'character.proficiencies',
+          icon: Icons.build,
+          title: 'Proficiencies',
+          subtitle: 'Various Proficiencies',
+        );
+
+    languagesBuilder() => traitBuider(
+          tag: 'character.languages',
+          icon: Icons.language,
+          title: 'Languages',
+          subtitle: 'Known Languages',
+        );
+
+    othersBuilder() => Column(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.list),
+              title: Text('Other Properties'),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: listTileThemeWrapper(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
+                  children: [
+                    ageBuilder(),
+                    alignmentBuilder(),
+                    sizeBuilder(),
+                    speedBuilder(),
+                    visionBuilder(),
+                    proficienciesBuilder(),
+                    languagesBuilder(),
+                  ]
+                      .map(
+                        (e) => Card(
+                          clipBehavior: Clip.antiAlias,
+                          child: e,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
+          ],
+        );
+
     final items = [
       selectTraitsListTile,
-      tileBuilder(),
+      abilityScoresBuilder(),
+      othersBuilder(),
     ];
 
     return Scaffold(
