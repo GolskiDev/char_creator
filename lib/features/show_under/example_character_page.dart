@@ -216,6 +216,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
       required IconData icon,
       required String title,
       required String subtitle,
+      Function()? onTap,
     }) {
       return Hero(
         tag: tag,
@@ -223,20 +224,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
           color: Colors.transparent,
           child: ListTile(
             leading: Icon(icon),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => abilityPageBuilder(
-                    context,
-                    ref,
-                    MapEntry(
-                      title,
-                      int.parse(subtitle),
-                    ),
-                  ),
-                ),
-              );
-            },
+            onTap: onTap,
             subtitle: Text(
               subtitle,
             ),
@@ -256,12 +244,6 @@ class ExampleCharacterPage extends HookConsumerWidget {
               titleAlignment: ListTileTitleAlignment.center,
               title: const Text(
                 'Ability Scores',
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () {
-                  // Logic to edit ability scores
-                },
               ),
             ),
             Padding(
@@ -308,6 +290,18 @@ class ExampleCharacterPage extends HookConsumerWidget {
                                   tag: 'ability_${entry.key}',
                                   icon: Icons.fitness_center,
                                   title: entry.value.toString(),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            abilityPageBuilder(
+                                          context,
+                                          ref,
+                                          entry,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                   subtitle: entry.key
                                       .substring(
                                         0,
@@ -324,44 +318,6 @@ class ExampleCharacterPage extends HookConsumerWidget {
                 },
               ),
             ),
-            // child: LayoutBuilder(
-            //   builder: (context, constraints) {
-            //     final entries = abilityScores.value.entries.map(
-            //       (entry) => AspectRatio(
-            //         aspectRatio: 1,
-            //         child: Center(
-            //           child: Card.outlined(
-            //             clipBehavior: Clip.hardEdge,
-            //             child: abilityScoreBuilder(entry),
-            //           ),
-            //         ),
-            //       ),
-            //     );
-            //     final minItemWidth = 120.0;
-            //     //make the same amount of items fit in each row
-            //     final crossAxisCount =
-            //         (constraints.maxWidth / minItemWidth).floor().clamp(1, 6);
-            //     final tableRows = List.generate(
-            //       entries.length ~/ crossAxisCount + 1,
-            //       (index) => TableRow(
-            //         children: List.generate(crossAxisCount, (colIndex) {
-            //           final itemIndex = index * crossAxisCount + colIndex;
-            //           if (itemIndex < entries.length) {
-            //             return Padding(
-            //               padding: const EdgeInsets.all(4.0),
-            //               child: entries.elementAt(itemIndex),
-            //             );
-            //           } else {
-            //             return const SizedBox.shrink();
-            //           }
-            //         }),
-            //       ),
-            //     );
-            //     return Table(
-            //       children: tableRows,
-            //     );
-            //   },
-            // ),
           ],
         );
 
@@ -451,7 +407,6 @@ class ExampleCharacterPage extends HookConsumerWidget {
     );
 
     // SizeBuilder: editable size field and trait display
-    final sizeController = useTextEditingController(text: 'Medium');
 
     final sizeBuilder = Column(
       mainAxisSize: MainAxisSize.min,
@@ -697,7 +652,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
       ],
     );
 
-    // LanguagesBuilder: editable languages field and trait display
+    // LangusBuilder: editable languages field and trait display
     final languagesController =
         useTextEditingController(text: 'Common, Dwarvish');
 
