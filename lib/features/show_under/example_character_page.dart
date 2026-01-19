@@ -211,32 +211,44 @@ class ExampleCharacterPage extends HookConsumerWidget {
       );
     }
 
-    abilityScoreBuilder(MapEntry<String, int> entry) {
+    abilityScoreBuilder({
+      required String tag,
+      required IconData icon,
+      required String title,
+      required String subtitle,
+    }) {
       return Hero(
-        tag: 'ability_${entry.key}',
+        tag: tag,
         child: Material(
           color: Colors.transparent,
           child: ListTile(
-            leading: const Icon(Icons.fitness_center),
+            leading: Icon(icon),
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => abilityPageBuilder(context, ref, entry),
+                  builder: (context) => abilityPageBuilder(
+                    context,
+                    ref,
+                    MapEntry(
+                      title,
+                      int.parse(subtitle),
+                    ),
+                  ),
                 ),
               );
             },
             subtitle: Text(
-              entry.key.substring(0, min(3, entry.key.length)).toUpperCase(),
+              subtitle,
             ),
             title: Text(
-              entry.value.toString(),
+              title,
             ),
           ),
         ),
       );
     }
 
-    abilityScoresBuilder() => Column(
+    tileBuilder() => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
@@ -292,7 +304,17 @@ class ExampleCharacterPage extends HookConsumerWidget {
                             (entry) => Center(
                               child: Card(
                                 clipBehavior: Clip.antiAlias,
-                                child: abilityScoreBuilder(entry),
+                                child: abilityScoreBuilder(
+                                  tag: 'ability_${entry.key}',
+                                  icon: Icons.fitness_center,
+                                  title: entry.value.toString(),
+                                  subtitle: entry.key
+                                      .substring(
+                                        0,
+                                        min(3, entry.key.length),
+                                      )
+                                      .toUpperCase(),
+                                ),
                               ),
                             ),
                           )
@@ -720,7 +742,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
 
     final items = [
       selectTraitsListTile,
-      abilityScoresBuilder(),
+      tileBuilder(),
       ageBuilder,
       alignmentBuilder,
       sizeBuilder,
