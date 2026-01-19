@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -31,6 +33,22 @@ class ExampleCharacterPage extends HookConsumerWidget {
           (item) => selectedTraits.value.contains(item.id),
         )
         .toList();
+
+    Widget listTileThemeWrapper({
+      required Widget child,
+    }) =>
+        Theme(
+          data: Theme.of(context).copyWith(
+            listTileTheme: ListTileThemeData(
+              titleTextStyle:
+                  Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+              subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+            ),
+          ),
+          child: child,
+        );
 
     openTraitSelector() async {
       final selectedTraitIds = await Navigator.of(context).push<List<String>>(
@@ -196,17 +214,24 @@ class ExampleCharacterPage extends HookConsumerWidget {
     abilityScoreBuilder(MapEntry<String, int> entry) {
       return Hero(
         tag: 'ability_${entry.key}',
-        child: SmallSquareWidget(
-          icon: Icons.fitness_center,
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => abilityPageBuilder(context, ref, entry),
-              ),
-            );
-          },
-          shortLabel: entry.key.substring(0, 3),
-          content: entry.value.toString(),
+        child: Material(
+          color: Colors.transparent,
+          child: ListTile(
+            leading: const Icon(Icons.fitness_center),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => abilityPageBuilder(context, ref, entry),
+                ),
+              );
+            },
+            subtitle: Text(
+              entry.key.substring(0, min(3, entry.key.length)).toUpperCase(),
+            ),
+            title: Text(
+              entry.value.toString(),
+            ),
+          ),
         ),
       );
     }
@@ -216,7 +241,10 @@ class ExampleCharacterPage extends HookConsumerWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.fitness_center),
-              title: const Text('Ability Scores'),
+              titleAlignment: ListTileTitleAlignment.center,
+              title: const Text(
+                'Ability Scores',
+              ),
               trailing: IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () {
@@ -251,23 +279,25 @@ class ExampleCharacterPage extends HookConsumerWidget {
                     }
                   }();
 
-                  return GridView.count(
-                    shrinkWrap: true,
-                    crossAxisCount: crossAxisCount,
-                    mainAxisSpacing: 4,
-                    crossAxisSpacing: 4,
-                    childAspectRatio: 1,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: abilityScores.value.entries
-                        .map(
-                          (entry) => Center(
-                            child: Card.outlined(
-                              clipBehavior: Clip.antiAlias,
-                              child: abilityScoreBuilder(entry),
+                  return listTileThemeWrapper(
+                    child: GridView.count(
+                      shrinkWrap: true,
+                      crossAxisCount: crossAxisCount,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: 16 / 9,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: abilityScores.value.entries
+                          .map(
+                            (entry) => Center(
+                              child: Card(
+                                clipBehavior: Clip.antiAlias,
+                                child: abilityScoreBuilder(entry),
+                              ),
                             ),
-                          ),
-                        )
-                        .toList(),
+                          )
+                          .toList(),
+                    ),
                   );
                 },
               ),
@@ -708,13 +738,9 @@ class ExampleCharacterPage extends HookConsumerWidget {
           itemCount: items.length,
           padding: const EdgeInsets.all(4.0),
           itemBuilder: (context, index) {
-            return Card(
-              child: items[index],
-            );
+            return items[index];
           },
-          separatorBuilder: (context, index) => SizedBox(
-            height: 4.0,
-          ),
+          separatorBuilder: (context, index) => Divider(),
         ),
       ),
     );
