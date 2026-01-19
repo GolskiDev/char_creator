@@ -34,16 +34,14 @@ final data = {
 
 class ShowUnderDataProvider extends InheritedWidget {
   const ShowUnderDataProvider({
-    required this.targetName,
     required this.data,
     required super.child,
     super.key,
   });
 
-  final String targetName;
   final List<TraitModel> data;
 
-  get dataForTarget {
+  List<TraitModel> dataForTarget(String targetName) {
     return data.where((item) => item.showUnder.contains(targetName)).toList();
   }
 
@@ -53,92 +51,7 @@ class ShowUnderDataProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant ShowUnderDataProvider oldWidget) {
-    return oldWidget.data != data || oldWidget.targetName != targetName;
-  }
-}
-
-class CharacterDetails extends StatelessWidget {
-  const CharacterDetails({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final showUnder = ShowUnderDataProvider.maybeOf(context)?.dataForTarget;
-
-    return Card(
-      child: Column(
-        children: [
-          const Text("Character Details"),
-          if (showUnder != null)
-            ...showUnder.map(
-              (item) => ListTile(
-                title: Text(item.title),
-                subtitle: Text(item.description),
-              ),
-            )
-        ],
-      ),
-    );
-  }
-}
-
-class CharacterSomeOtherPlace extends StatelessWidget {
-  const CharacterSomeOtherPlace({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final showUnder = ShowUnderDataProvider.maybeOf(context);
-
-    return Card(
-      child: Column(
-        children: [
-          const Text("Character Some Other Place"),
-          if (showUnder != null)
-            ...showUnder.data.map(
-              (item) {
-                final description = item.description;
-                return ListTile(
-                  title: Text(item.title),
-                  subtitle: description == null ? null : Text(description),
-                );
-              },
-            )
-        ],
-      ),
-    );
-  }
-}
-
-class ShowUnderExample extends StatelessWidget {
-  const ShowUnderExample({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final items = (data['items'] as List)
-        .map(
-          (e) => TraitModel(
-            id: e['id'] as String,
-            title: e['title'] as String,
-            description: e['description'] as String,
-            showUnder:
-                (e['showUnder'] as List).map((e) => e as String).toList(),
-          ),
-        )
-        .toList();
-
-    return Column(
-      children: [
-        ShowUnderDataProvider(
-          targetName: 'character.details',
-          data: items,
-          child: const CharacterDetails(),
-        ),
-        ShowUnderDataProvider(
-          targetName: 'character.someOtherPlace',
-          data: items,
-          child: const CharacterSomeOtherPlace(),
-        ),
-      ],
-    );
+    return oldWidget.data != data;
   }
 }
 
