@@ -1,9 +1,10 @@
+import 'package:collection/collection.dart';
 import 'package:spells_and_tools/common/interfaces/identifiable.dart';
 import 'package:spells_and_tools/features/5e/character/models/character_5e_ability_scores.dart';
 import 'package:spells_and_tools/features/5e/character/models/character_5e_note.dart';
 import 'package:spells_and_tools/features/5e/character/models/character_5e_skills.dart';
-import 'package:collection/collection.dart';
 
+import '../../../show_under/character_traits.dart';
 import 'character_5e_class_state_model_v1.dart';
 import 'character_5e_others.dart';
 import 'character_5e_spell_slots.dart';
@@ -28,6 +29,8 @@ class Character5eModelV1 implements Identifiable {
   final Character5eOtherProps? others;
   final Character5eSpellSlots? spellSlots;
   final Character5eNotes notes;
+
+  final CharacterTraits characterTraits;
 
   /// Custom spells for character not saved in class
   final Set<String> customSpellIds;
@@ -62,6 +65,7 @@ class Character5eModelV1 implements Identifiable {
     this.others,
     this.spellSlots,
     required this.notes,
+    required this.characterTraits,
   })  : _level = level,
         _name = name,
         _classesStates = classesStates ?? const {};
@@ -78,6 +82,7 @@ class Character5eModelV1 implements Identifiable {
     Character5eOtherProps? others,
     Character5eSpellSlots? spellSlots,
     Character5eNotes? notes,
+    CharacterTraits? characterTraits,
   }) : this._(
           id: IdGenerator.generateId(Character5eModelV1),
           name: name,
@@ -91,6 +96,10 @@ class Character5eModelV1 implements Identifiable {
           spellSlots: spellSlots,
           notes: notes ?? Character5eNotes.empty(),
           others: others ?? Character5eOtherProps.empty(),
+          characterTraits: characterTraits ??
+              CharacterTraits(
+                traitIds: {},
+              ),
         );
 
   Character5eModelV1 copyWith({
@@ -105,6 +114,7 @@ class Character5eModelV1 implements Identifiable {
     Character5eOtherProps? others,
     Character5eSpellSlots? spellSlots,
     Character5eNotes? notes,
+    CharacterTraits? characterTraits,
   }) {
     return Character5eModelV1._(
       id: id,
@@ -120,6 +130,7 @@ class Character5eModelV1 implements Identifiable {
       spellSlots: spellSlots ?? this.spellSlots,
       notes: notes ?? this.notes,
       others: others ?? this.others,
+      characterTraits: characterTraits ?? this.characterTraits,
     );
   }
 
@@ -279,6 +290,7 @@ class Character5eModelV1 implements Identifiable {
       'spellSlots': spellSlots?.toMap(),
       'notes': notes.toMap(),
       'others': others?.toMap(),
+      ...characterTraits.toMap(),
     };
   }
 
@@ -315,6 +327,7 @@ class Character5eModelV1 implements Identifiable {
           ? Character5eOtherProps.fromMap(
               json['others'] as Map<String, dynamic>)
           : null,
+      characterTraits: CharacterTraits.fromMap(json),
     );
   }
 

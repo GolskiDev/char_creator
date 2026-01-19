@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'trait_model.dart';
+
 /// ShowUnder is a system, where you have some Data and would like to present it under another target widget.
 /// The target widget has it's name.
 
@@ -30,29 +32,6 @@ final data = {
   ],
 };
 
-class ExampleItem {
-  ExampleItem({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.showUnder,
-  });
-
-  final String id;
-  final String title;
-  final String description;
-  final List<String> showUnder;
-
-  factory ExampleItem.fromMap(Map<String, dynamic> map) {
-    return ExampleItem(
-      id: map['id'] as String,
-      title: map['title'] as String,
-      description: map['description'] as String,
-      showUnder: map['showUnder'] as List<String>,
-    );
-  }
-}
-
 class ShowUnderDataProvider extends InheritedWidget {
   const ShowUnderDataProvider({
     required this.targetName,
@@ -62,7 +41,7 @@ class ShowUnderDataProvider extends InheritedWidget {
   });
 
   final String targetName;
-  final List<ExampleItem> data;
+  final List<TraitModel> data;
 
   get dataForTarget {
     return data.where((item) => item.showUnder.contains(targetName)).toList();
@@ -115,10 +94,13 @@ class CharacterSomeOtherPlace extends StatelessWidget {
           const Text("Character Some Other Place"),
           if (showUnder != null)
             ...showUnder.data.map(
-              (item) => ListTile(
-                title: Text(item.title),
-                subtitle: Text(item.description),
-              ),
+              (item) {
+                final description = item.description;
+                return ListTile(
+                  title: Text(item.title),
+                  subtitle: description == null ? null : Text(description),
+                );
+              },
             )
         ],
       ),
@@ -133,7 +115,7 @@ class ShowUnderExample extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = (data['items'] as List)
         .map(
-          (e) => ExampleItem(
+          (e) => TraitModel(
             id: e['id'] as String,
             title: e['title'] as String,
             description: e['description'] as String,

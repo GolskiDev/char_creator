@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:spells_and_tools/common/widgets/small_square_widget.dart';
 import 'package:spells_and_tools/features/show_under/show_under.dart';
+
+import 'trait_model.dart';
 
 class ExampleCharacterPage extends HookConsumerWidget {
   const ExampleCharacterPage({super.key});
@@ -14,7 +17,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
     final abilityScores = useState<Map<String, int>>(
       {
         'Strength': 16,
-        'Dexterity': 12,
+        'Dexterity': 122,
         'Constitution': 14,
         'Intelligence': 10,
         'Wisdom': 13,
@@ -23,7 +26,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
     );
 
     final exampleItems = traits
-        .map((trait) => ExampleItem.fromMap(trait))
+        .map((trait) => TraitModel.fromMap(trait))
         .where(
           (item) => selectedTraits.value.contains(item.id),
         )
@@ -106,26 +109,25 @@ class ExampleCharacterPage extends HookConsumerWidget {
           final textFieldController = useTextEditingController(
             text: abilityEntry.value.toString(),
           );
-          final abilityScoreWidget = ListTile(
-            onTap: () {},
-            title: Hero(
-              tag: 'ability_${abilityEntry.key}',
-              child: Material(
-                color: Colors.transparent,
-                child: Text(abilityEntry.key),
-              ),
-            ),
-            trailing: SizedBox(
-              width: 60,
-              child: TextField(
-                controller: textFieldController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+          abilityScoreWidget() => Hero(
+                tag: 'ability_${abilityEntry.key}',
+                child: Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    title: Text(abilityEntry.key),
+                    trailing: SizedBox(
+                      width: 60,
+                      child: TextField(
+                        controller: textFieldController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          );
+              );
 
           showUnderAbilityScoreBuilder() {
             return ShowUnderDataProvider(
@@ -169,7 +171,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
           }
 
           final itmes = [
-            abilityScoreWidget,
+            abilityScoreWidget(),
             showUnderAbilityScoreBuilder(),
           ];
 
@@ -192,68 +194,124 @@ class ExampleCharacterPage extends HookConsumerWidget {
     }
 
     abilityScoreBuilder(MapEntry<String, int> entry) {
-      return ListTile(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => abilityPageBuilder(context, ref, entry),
-            ),
-          );
-        },
-        title: Hero(
-          tag: 'ability_${entry.key}',
-          child: Material(
-            color: Colors.transparent,
-            child: Text(
-              entry.key.substring(0, 3),
-            ),
-          ),
-        ),
-        subtitle: Hero(
-          tag: 'ability_value_${entry.key}',
-          child: Material(
-            color: Colors.transparent,
-            child: Text(
-              entry.value.toString(),
-            ),
-          ),
+      return Hero(
+        tag: 'ability_${entry.key}',
+        child: SmallSquareWidget(
+          icon: Icons.fitness_center,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => abilityPageBuilder(context, ref, entry),
+              ),
+            );
+          },
+          shortLabel: entry.key.substring(0, 3),
+          content: entry.value.toString(),
         ),
       );
     }
 
-    final abilityScoresBuilder = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ListTile(
-          leading: const Icon(Icons.fitness_center),
-          title: const Text('Ability Scores'),
-          trailing: IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              // Logic to edit ability scores
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GridView.count(
-            crossAxisCount: 3,
-            mainAxisSpacing: 4.0,
-            crossAxisSpacing: 4.0,
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            children: [
-              ...abilityScores.value.entries.map(
-                (entry) => Card.outlined(
-                  clipBehavior: Clip.hardEdge,
-                  child: abilityScoreBuilder(entry),
-                ),
+    abilityScoresBuilder() => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.fitness_center),
+              title: const Text('Ability Scores'),
+              trailing: IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  // Logic to edit ability scores
+                },
               ),
-            ],
-          ),
-        )
-      ],
-    );
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final prefferedSize =
+                      SmallSquareWidget.preferredSize(context);
+                  var maxItemsInRow = 6;
+                  // make the same amount of items fit in each row if possible
+                  final crossAxisCount = () {
+                    if (abilityScores.value.length % 2 != 0) {
+                      return (constraints.maxWidth / prefferedSize.width)
+                          .floor()
+                          .clamp(1, maxItemsInRow);
+                    } else {
+                      maxItemsInRow =
+                          (constraints.maxWidth / prefferedSize.width)
+                              .floor()
+                              .clamp(1, maxItemsInRow);
+                      for (var i = maxItemsInRow; i >= 1; i--) {
+                        if (abilityScores.value.length % i == 0) {
+                          return i;
+                        }
+                      }
+                      return 1;
+                    }
+                  }();
+
+                  return GridView.count(
+                    shrinkWrap: true,
+                    crossAxisCount: crossAxisCount,
+                    mainAxisSpacing: 4,
+                    crossAxisSpacing: 4,
+                    childAspectRatio: 1,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: abilityScores.value.entries
+                        .map(
+                          (entry) => Center(
+                            child: Card.outlined(
+                              clipBehavior: Clip.antiAlias,
+                              child: abilityScoreBuilder(entry),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  );
+                },
+              ),
+            ),
+            // child: LayoutBuilder(
+            //   builder: (context, constraints) {
+            //     final entries = abilityScores.value.entries.map(
+            //       (entry) => AspectRatio(
+            //         aspectRatio: 1,
+            //         child: Center(
+            //           child: Card.outlined(
+            //             clipBehavior: Clip.hardEdge,
+            //             child: abilityScoreBuilder(entry),
+            //           ),
+            //         ),
+            //       ),
+            //     );
+            //     final minItemWidth = 120.0;
+            //     //make the same amount of items fit in each row
+            //     final crossAxisCount =
+            //         (constraints.maxWidth / minItemWidth).floor().clamp(1, 6);
+            //     final tableRows = List.generate(
+            //       entries.length ~/ crossAxisCount + 1,
+            //       (index) => TableRow(
+            //         children: List.generate(crossAxisCount, (colIndex) {
+            //           final itemIndex = index * crossAxisCount + colIndex;
+            //           if (itemIndex < entries.length) {
+            //             return Padding(
+            //               padding: const EdgeInsets.all(4.0),
+            //               child: entries.elementAt(itemIndex),
+            //             );
+            //           } else {
+            //             return const SizedBox.shrink();
+            //           }
+            //         }),
+            //       ),
+            //     );
+            //     return Table(
+            //       children: tableRows,
+            //     );
+            //   },
+            // ),
+          ],
+        );
 
     // AgeBuilder: editable age field and trait display
     final ageController = useTextEditingController(text: '50');
@@ -346,16 +404,10 @@ class ExampleCharacterPage extends HookConsumerWidget {
     final sizeBuilder = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ListTile(
-          leading: const Icon(Icons.height),
-          title: const Text('Size'),
-          subtitle: TextField(
-            controller: sizeController,
-            decoration: const InputDecoration(
-              labelText: 'Enter Size',
-              border: OutlineInputBorder(),
-            ),
-          ),
+        SmallSquareWidget(
+          icon: Icons.height,
+          shortLabel: 'Size',
+          content: 'Medium',
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -638,7 +690,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
 
     final items = [
       selectTraitsListTile,
-      abilityScoresBuilder,
+      abilityScoresBuilder(),
       ageBuilder,
       alignmentBuilder,
       sizeBuilder,
