@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -5,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:spells_and_tools/common/widgets/small_square_widget.dart';
-import 'package:spells_and_tools/features/show_under/edit_property_page.dart';
+import 'package:spells_and_tools/features/show_under/edit_property_page_int.dart';
 import 'package:spells_and_tools/features/show_under/show_under.dart';
 
+import 'edit_property_page_builder.dart';
 import 'trait_model.dart';
 
 class ExampleCharacterPage extends HookConsumerWidget {
@@ -225,7 +227,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
                                   )
                                   .nonNulls
                                   .toList(),
-                              child: EditPropertyPage(
+                              child: EditPropertyPageInt(
                                 propertyIcon: Icons.fitness_center,
                                 propertyId:
                                     'character.abilityScores.${entry.key.toLowerCase()}',
@@ -261,7 +263,7 @@ class ExampleCharacterPage extends HookConsumerWidget {
               builder: (context) {
                 return ShowUnderDataProvider(
                   data: exampleItems,
-                  child: EditPropertyPage(
+                  child: EditPropertyPageInt(
                     propertyIcon: Icons.cake,
                     propertyId: 'character.age',
                     propertyName: 'Age',
@@ -279,6 +281,78 @@ class ExampleCharacterPage extends HookConsumerWidget {
           icon: Icons.balance,
           title: 'Neutral Good',
           subtitle: 'Alignment',
+          onTap: () async {
+            final selectedValue = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return HookBuilder(
+                    builder: (context) {
+                      final selectedOption = useState<String>('Neutral Good');
+
+                      return ShowUnderDataProvider(
+                        data: selectedTraits.value
+                            .map(
+                              (traitId) => exampleItems.firstWhereOrNull(
+                                (item) => item.id == traitId,
+                              ),
+                            )
+                            .nonNulls
+                            .toList(),
+                        child: EditPropertyPageBuilder(
+                          propertyId: 'character.alignment',
+                          editorWidgetBuilder: (context) {
+                            return HookBuilder(
+                              builder: (context) {
+                                final options = [
+                                  'Lawful Good',
+                                  'Neutral Good',
+                                  'Chaotic Good',
+                                  'Lawful Neutral',
+                                  'True Neutral',
+                                  'Chaotic Neutral',
+                                  'Lawful Evil',
+                                  'Neutral Evil',
+                                  'Chaotic Evil',
+                                ];
+
+                                return ListTile(
+                                  leading: const Icon(Icons.balance),
+                                  title: const Text('Alignment'),
+                                  trailing: DropdownButton<String?>(
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        selectedOption.value = value;
+                                      }
+                                    },
+                                    items: options
+                                        .map(
+                                          (option) => DropdownMenuItem<String>(
+                                            value: option,
+                                            child: Text(option),
+                                          ),
+                                        )
+                                        .toList(),
+                                    value: selectedOption.value,
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          onSaved: () {
+                            Navigator.of(context).pop(
+                              selectedOption.value,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            );
+            developer.log('selectedValue: $selectedValue');
+          },
         );
 
     sizeBuilder() => traitBuider(

@@ -3,56 +3,26 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'show_under.dart';
 
-class EditPropertyPage extends HookConsumerWidget {
-  const EditPropertyPage({
+class EditPropertyPageBuilder<T> extends HookConsumerWidget {
+  const EditPropertyPageBuilder({
     super.key,
-    required this.propertyIcon,
     required this.propertyId,
-    required this.propertyName,
-    required this.propertyDescription,
-    required this.initialValue,
+    required this.editorWidgetBuilder,
+    this.onSaved,
   });
 
-  final IconData? propertyIcon;
   final String? propertyId;
-  final String propertyName;
-  final String? propertyDescription;
-  final int? initialValue;
+  final Function? onSaved;
+  final Widget Function(BuildContext context) editorWidgetBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final valueController = TextEditingController(
-      text: initialValue?.toString() ?? '',
-    );
-
-    listTile() => ListTile(
-          leading: propertyIcon != null ? Icon(propertyIcon) : null,
-          title: Text(propertyName),
-          subtitle:
-              propertyDescription != null ? Text(propertyDescription!) : null,
-          trailing: SizedBox(
-            width: 100,
-            child: TextField(
-              controller: valueController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 8,
-                ),
-              ),
-            ),
-          ),
-        );
-
     property() => Card(
           child: Hero(
             tag: propertyId ?? 'property_hero',
             child: Material(
               color: Colors.transparent,
-              child: listTile(),
+              child: editorWidgetBuilder(context),
             ),
           ),
         );
@@ -109,9 +79,10 @@ class EditPropertyPage extends HookConsumerWidget {
           IconButton(
             icon: Icon(Icons.check),
             onPressed: () {
-              Navigator.of(context).pop(
-                int.tryParse(valueController.text),
-              );
+              if (onSaved != null) {
+                onSaved!();
+              }
+              Navigator.of(context).pop();
             },
           ),
         ],
