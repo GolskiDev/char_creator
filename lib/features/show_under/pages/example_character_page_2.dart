@@ -221,11 +221,52 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
         children: (abilityScores?.abilityScores.entries ?? const {})
             .map((entry) => Card(
                   clipBehavior: Clip.antiAlias,
-                  child: traitBuilder(
-                    tag: 'ability_${entry.key.name}',
+                  child: TraitBuilder(
+                    tag: 'character.abilityScores.${entry.key.name}',
                     icon: Icons.fitness_center,
                     title: (entry.value.value ?? '-').toString(),
                     subtitle: entry.key.name.substring(0, 3).toUpperCase(),
+                    onTap: () async {
+                      final currentValue = entry.value.value;
+                      final result = await Navigator.push<int?>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return HookBuilder(builder: (context) {
+                              final tempValue = useState<int?>(currentValue);
+                              return EditPropertyPageBuilder(
+                                propertyId:
+                                    'character.abilityScores.${entry.key.name}',
+                                editorWidgetBuilder: (context) {
+                                  return IntEditor(
+                                    value: tempValue.value,
+                                    label: entry.key.name,
+                                    icon: Icons.fitness_center,
+                                    onChanged: (val) {
+                                      tempValue.value = val;
+                                    },
+                                  );
+                                },
+                                onSaved: () {
+                                  Navigator.of(context).pop(tempValue.value);
+                                },
+                              );
+                            });
+                          },
+                        ),
+                      );
+                      if (result != null) {
+                        // Update the ability score in the character state
+                        final updatedScores =
+                            Map.of(abilityScores!.abilityScores);
+                        updatedScores[entry.key] =
+                            entry.value.copyWith(value: () => result);
+                        characterState.value = character.copyWith(
+                          abilityScores: abilityScores.copyWith(
+                              abilityScores: updatedScores),
+                        );
+                      }
+                    },
                   ),
                 ))
             .toList(),

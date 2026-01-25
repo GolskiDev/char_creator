@@ -30,12 +30,15 @@ class IntEditor extends StatelessWidget {
       leading: iconData != null ? Icon(iconData) : null,
       title: Text(labelText),
       subtitle: descriptionText != null ? Text(descriptionText) : null,
-      trailing: TextField(
-        controller: controller,
-        keyboardType: TextInputType.number,
-        onChanged: (text) {
-          onChanged(int.tryParse(text));
-        },
+      trailing: SizedBox(
+        width: 100,
+        child: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          onChanged: (text) {
+            onChanged(int.tryParse(text));
+          },
+        ),
       ),
     );
   }
