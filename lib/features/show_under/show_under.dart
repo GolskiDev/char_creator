@@ -156,14 +156,14 @@ final dwarf = {
       "title": "Dwarven Combat Training",
       "description":
           "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.",
-      "showUnder": ["character.proficiencies", "character.weapons"],
+      "showUnder": ["character.proficiencies.weapons"],
     },
     {
       "id": "tool_proficiency_dwarf_009",
       "title": "Tool Proficiency",
       "description":
           "You gain proficiency with the artisan’s tools of your choice: smith’s tools, brewer’s supplies, or mason’s tools.",
-      "showUnder": ["character.proficiencies", "character.tools"],
+      "showUnder": ["character.proficiencies.tools"],
     },
     {
       "id": "stonecunning_dwarf_010",
