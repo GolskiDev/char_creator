@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../widgets/character_widgets.dart';
 import 'example_character_data.dart';
-import 'widgets/character_widgets.dart';
 
 class ExampleCharacterPage2 extends HookConsumerWidget {
   const ExampleCharacterPage2({super.key});

@@ -9,8 +9,8 @@ import 'package:spells_and_tools/common/widgets/small_square_widget.dart';
 import 'package:spells_and_tools/features/show_under/edit_property_page_int.dart';
 import 'package:spells_and_tools/features/show_under/show_under.dart';
 
-import 'edit_property_page_builder.dart';
-import 'trait_model.dart';
+import '../edit_property_page_builder.dart';
+import '../trait_model.dart';
 
 class ExampleCharacterPage extends HookConsumerWidget {
   const ExampleCharacterPage({super.key});
