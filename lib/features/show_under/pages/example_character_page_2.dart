@@ -52,200 +52,508 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
           listTileThemeWrapper: listTileThemeWrapper,
           preferredWidth: preferredWidth,
         );
+    Widget othersBuilder() {
+      return Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.list),
+            title: const Text('Other Properties'),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: listTileThemeWrapper(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // All the property trait builders
+                  // Age
+                  (() {
+                    final age = character.others?.age;
+                    return TraitBuilder(
+                      tag: 'character.age',
+                      icon: Icons.cake,
+                      title: age?.toString() ?? '-',
+                      subtitle: 'Age',
+                      onTap: () async {
+                        final result = await Navigator.push<int>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HookBuilder(
+                                builder: (context) {
+                                  final age =
+                                      useState<int?>(character.others?.age);
+                                  return EditPropertyPageBuilder(
+                                    propertyId: 'character.age',
+                                    editorWidgetBuilder: (context) {
+                                      return IntEditor(
+                                        value: age.value,
+                                        label: 'Age',
+                                        icon: Icons.cake,
+                                        onChanged: (val) {
+                                          age.value = val;
+                                        },
+                                      );
+                                    },
+                                    onSaved: () {
+                                      Navigator.of(context).pop(age.value);
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                        if (result != null) {
+                          characterState.value = character.copyWith(
+                            others:
+                                character.others?.copyWith(age: () => result) ??
+                                    character.others,
+                          );
+                        }
+                      },
+                    );
+                  })(),
+                  // Max HP
+                  (() {
+                    final maxHP = character.others?.maxHP;
+                    return TraitBuilder(
+                      tag: 'character.maxHP',
+                      icon: Icons.favorite,
+                      title: maxHP?.toString() ?? '-',
+                      subtitle: 'Max HP',
+                      onTap: () async {
+                        final result = await Navigator.push<int>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HookBuilder(
+                                builder: (context) {
+                                  final value = useState<int?>(maxHP);
+                                  return EditPropertyPageBuilder(
+                                    propertyId: 'character.maxHP',
+                                    editorWidgetBuilder: (context) {
+                                      return IntEditor(
+                                        value: value.value,
+                                        label: 'Max HP',
+                                        icon: Icons.favorite,
+                                        onChanged: (val) {
+                                          value.value = val;
+                                        },
+                                      );
+                                    },
+                                    onSaved: () {
+                                      Navigator.of(context).pop(value.value);
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                        if (result != null) {
+                          characterState.value = character.copyWith(
+                            others: character.others
+                                    ?.copyWith(maxHP: () => result) ??
+                                character.others,
+                          );
+                        }
+                      },
+                    );
+                  })(),
+                  // Temporary HP
+                  (() {
+                    final temporaryHP = character.others?.temporaryHP;
+                    return TraitBuilder(
+                      tag: 'character.temporaryHP',
+                      icon: Icons.healing,
+                      title: temporaryHP?.toString() ?? '-',
+                      subtitle: 'Temporary HP',
+                      onTap: () async {
+                        final result = await Navigator.push<int>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HookBuilder(
+                                builder: (context) {
+                                  final value = useState<int?>(temporaryHP);
+                                  return EditPropertyPageBuilder(
+                                    propertyId: 'character.temporaryHP',
+                                    editorWidgetBuilder: (context) {
+                                      return IntEditor(
+                                        value: value.value,
+                                        label: 'Temporary HP',
+                                        icon: Icons.healing,
+                                        onChanged: (val) {
+                                          value.value = val;
+                                        },
+                                      );
+                                    },
+                                    onSaved: () {
+                                      Navigator.of(context).pop(value.value);
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                        if (result != null) {
+                          characterState.value = character.copyWith(
+                            others: character.others
+                                    ?.copyWith(temporaryHP: () => result) ??
+                                character.others,
+                          );
+                        }
+                      },
+                    );
+                  })(),
+                  // Current HP
+                  (() {
+                    final currentHP = character.others?.currentHP;
+                    return TraitBuilder(
+                      tag: 'character.currentHP',
+                      icon: Icons.bloodtype,
+                      title: currentHP?.toString() ?? '-',
+                      subtitle: 'Current HP',
+                      onTap: () async {
+                        final result = await Navigator.push<int>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HookBuilder(
+                                builder: (context) {
+                                  final value = useState<int?>(currentHP);
+                                  return EditPropertyPageBuilder(
+                                    propertyId: 'character.currentHP',
+                                    editorWidgetBuilder: (context) {
+                                      return IntEditor(
+                                        value: value.value,
+                                        label: 'Current HP',
+                                        icon: Icons.bloodtype,
+                                        onChanged: (val) {
+                                          value.value = val;
+                                        },
+                                      );
+                                    },
+                                    onSaved: () {
+                                      Navigator.of(context).pop(value.value);
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                        if (result != null) {
+                          characterState.value = character.copyWith(
+                            others: character.others
+                                    ?.copyWith(currentHP: () => result) ??
+                                character.others,
+                          );
+                        }
+                      },
+                    );
+                  })(),
+                  // AC
+                  (() {
+                    final ac = character.others?.ac;
+                    return TraitBuilder(
+                      tag: 'character.ac',
+                      icon: Icons.shield,
+                      title: ac?.toString() ?? '-',
+                      subtitle: 'Armor Class (AC)',
+                      onTap: () async {
+                        final result = await Navigator.push<int>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HookBuilder(
+                                builder: (context) {
+                                  final value = useState<int?>(ac);
+                                  return EditPropertyPageBuilder(
+                                    propertyId: 'character.ac',
+                                    editorWidgetBuilder: (context) {
+                                      return IntEditor(
+                                        value: value.value,
+                                        label: 'Armor Class (AC)',
+                                        icon: Icons.shield,
+                                        onChanged: (val) {
+                                          value.value = val;
+                                        },
+                                      );
+                                    },
+                                    onSaved: () {
+                                      Navigator.of(context).pop(value.value);
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                        if (result != null) {
+                          characterState.value = character.copyWith(
+                            others:
+                                character.others?.copyWith(ac: () => result) ??
+                                    character.others,
+                          );
+                        }
+                      },
+                    );
+                  })(),
+                  // Current Speed
+                  (() {
+                    final currentSpeed = character.others?.currentSpeed;
+                    return TraitBuilder(
+                      tag: 'character.currentSpeed',
+                      icon: Icons.directions_run,
+                      title: currentSpeed?.toString() ?? '-',
+                      subtitle: 'Current Speed',
+                      onTap: () async {
+                        final result = await Navigator.push<int>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HookBuilder(
+                                builder: (context) {
+                                  final value = useState<int?>(currentSpeed);
+                                  return EditPropertyPageBuilder(
+                                    propertyId: 'character.currentSpeed',
+                                    editorWidgetBuilder: (context) {
+                                      return IntEditor(
+                                        value: value.value,
+                                        label: 'Current Speed',
+                                        icon: Icons.directions_run,
+                                        onChanged: (val) {
+                                          value.value = val;
+                                        },
+                                      );
+                                    },
+                                    onSaved: () {
+                                      Navigator.of(context).pop(value.value);
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                        if (result != null) {
+                          characterState.value = character.copyWith(
+                            others: character.others
+                                    ?.copyWith(currentSpeed: () => result) ??
+                                character.others,
+                          );
+                        }
+                      },
+                    );
+                  })(),
+                  // Initiative
+                  (() {
+                    final initiative = character.others?.initiative;
+                    return TraitBuilder(
+                      tag: 'character.initiative',
+                      icon: Icons.flash_on,
+                      title: initiative?.toString() ?? '-',
+                      subtitle: 'Initiative',
+                      onTap: () async {
+                        final result = await Navigator.push<int>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HookBuilder(
+                                builder: (context) {
+                                  final value = useState<int?>(initiative);
+                                  return EditPropertyPageBuilder(
+                                    propertyId: 'character.initiative',
+                                    editorWidgetBuilder: (context) {
+                                      return IntEditor(
+                                        value: value.value,
+                                        label: 'Initiative',
+                                        icon: Icons.flash_on,
+                                        onChanged: (val) {
+                                          value.value = val;
+                                        },
+                                      );
+                                    },
+                                    onSaved: () {
+                                      Navigator.of(context).pop(value.value);
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                        if (result != null) {
+                          characterState.value = character.copyWith(
+                            others: character.others
+                                    ?.copyWith(initiative: () => result) ??
+                                character.others,
+                          );
+                        }
+                      },
+                    );
+                  })(),
+                  // Alignment, Size, Speed, Vision, Proficiencies, Languages
+                  (() {
+                    final selectedAlignment =
+                        character.characterEnums.singleChoiceFields
+                            .firstWhere(
+                              (field) => field.options.id == 'alignment',
+                              orElse: () => EnumFieldSingleChoice(
+                                  options: alignmentTypes, selectedValue: null),
+                            )
+                            .selectedValue;
+                    return TraitBuilder(
+                      tag: 'character.alignment',
+                      icon: Icons.balance,
+                      title: selectedAlignment?.text ?? '-',
+                      subtitle: 'Alignment',
+                      onTap: () async {
+                        final result = await Navigator.push<JsonEnumValue?>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HookBuilder(
+                                builder: (context) {
+                                  final tempValue = useState<JsonEnumValue?>(
+                                      selectedAlignment);
+                                  return EditPropertyPageBuilder(
+                                    propertyId: 'character.alignment',
+                                    editorWidgetBuilder: (context) {
+                                      return EnumSingleChoiceEditor(
+                                        enumData: alignmentTypes,
+                                        initialValue: tempValue.value,
+                                        label: 'Alignment',
+                                        icon: Icons.balance,
+                                        onChanged: (val) {
+                                          tempValue.value = val;
+                                        },
+                                      );
+                                    },
+                                    onSaved: () {
+                                      Navigator.of(context)
+                                          .pop(tempValue.value);
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                        if (result != null) {
+                          final newField = EnumFieldSingleChoice(
+                              options: alignmentTypes, selectedValue: result);
+                          final newFields = {
+                            ...character.characterEnums.singleChoiceFields
+                                .where((f) => f.options.id != 'alignment'),
+                            newField,
+                          };
+                          characterState.value = character.copyWith(
+                            characterEnums: character.characterEnums
+                                .copyWith(singleChoiceFields: newFields),
+                          );
+                        }
+                      },
+                    );
+                  })(),
+                  (() {
+                    final selectedSize =
+                        character.characterEnums.singleChoiceFields
+                            .firstWhere(
+                              (field) => field.options.id == 'size',
+                              orElse: () => EnumFieldSingleChoice(
+                                  options: characterSizes, selectedValue: null),
+                            )
+                            .selectedValue;
+                    return TraitBuilder(
+                      tag: 'character.size',
+                      icon: Icons.height,
+                      title: selectedSize?.text ?? '-',
+                      subtitle: 'Size',
+                      onTap: () async {
+                        final result = await Navigator.push<JsonEnumValue?>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HookBuilder(
+                                builder: (context) {
+                                  final tempValue =
+                                      useState<JsonEnumValue?>(selectedSize);
+                                  return EditPropertyPageBuilder(
+                                    propertyId: 'character.size',
+                                    editorWidgetBuilder: (context) {
+                                      return EnumSingleChoiceEditor(
+                                        enumData: characterSizes,
+                                        initialValue: tempValue.value,
+                                        label: 'Size',
+                                        icon: Icons.height,
+                                        onChanged: (val) {
+                                          tempValue.value = val;
+                                        },
+                                      );
+                                    },
+                                    onSaved: () {
+                                      Navigator.of(context)
+                                          .pop(tempValue.value);
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                        if (result != null) {
+                          final newField = EnumFieldSingleChoice(
+                              options: characterSizes, selectedValue: result);
+                          final newFields = {
+                            ...character.characterEnums.singleChoiceFields
+                                .where((f) => f.options.id != 'size'),
+                            newField,
+                          };
+                          characterState.value = character.copyWith(
+                            characterEnums: character.characterEnums
+                                .copyWith(singleChoiceFields: newFields),
+                          );
+                        }
+                      },
+                    );
+                  })(),
 
-    Widget othersBuilder() => OthersBuilder(
-          ageBuilder: () {
-            final age = character.others?.age;
-            return TraitBuilder(
-              tag: 'character.age',
-              icon: Icons.cake,
-              title: age?.toString() ?? '-',
-              subtitle: 'Age',
-              onTap: () async {
-                final result = await Navigator.push<int>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return HookBuilder(
-                        builder: (context) {
-                          final age = useState<int?>(character.others?.age);
-                          return EditPropertyPageBuilder(
-                            propertyId: 'character.age',
-                            editorWidgetBuilder: (context) {
-                              return IntEditor(
-                                value: age.value,
-                                label: 'Age',
-                                icon: Icons.cake,
-                                onChanged: (val) {
-                                  age.value = val;
-                                },
-                              );
-                            },
-                            onSaved: () {
-                              Navigator.of(context).pop(age.value);
-                            },
-                          );
-                        },
-                      );
-                    },
+                  traitBuilder(
+                    tag: 'character.vision',
+                    icon: Icons.remove_red_eye,
+                    title: 'Darkvision 60 ft.',
+                    subtitle: 'Vision',
                   ),
-                );
-                if (result != null) {
-                  characterState.value = character.copyWith(
-                    others: character.others?.copyWith(age: () => result) ??
-                        character.others,
-                  );
-                }
-              },
-            );
-          },
-          alignmentBuilder: () {
-            final selectedAlignment =
-                character.characterEnums.singleChoiceFields
-                    .firstWhere(
-                      (field) => field.options.id == 'alignment',
-                      orElse: () => EnumFieldSingleChoice(
-                          options: alignmentTypes, selectedValue: null),
+                  traitBuilder(
+                    tag: 'character.proficiencies',
+                    icon: Icons.build,
+                    title: 'Proficiencies',
+                    subtitle: 'Various Proficiencies',
+                  ),
+                  traitBuilder(
+                    tag: 'character.languages',
+                    icon: Icons.language,
+                    title: 'Languages',
+                    subtitle: 'Known Languages',
+                  ),
+                ]
+                    .map(
+                      (e) => Card(
+                        clipBehavior: Clip.antiAlias,
+                        child: e,
+                      ),
                     )
-                    .selectedValue;
-            return TraitBuilder(
-              tag: 'character.alignment',
-              icon: Icons.balance,
-              title: selectedAlignment?.text ?? '-',
-              subtitle: 'Alignment',
-              onTap: () async {
-                final result = await Navigator.push<JsonEnumValue?>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return HookBuilder(
-                        builder: (context) {
-                          final tempValue =
-                              useState<JsonEnumValue?>(selectedAlignment);
-                          return EditPropertyPageBuilder(
-                            propertyId: 'character.alignment',
-                            editorWidgetBuilder: (context) {
-                              return EnumSingleChoiceEditor(
-                                enumData: alignmentTypes,
-                                initialValue: tempValue.value,
-                                label: 'Alignment',
-                                icon: Icons.balance,
-                                onChanged: (val) {
-                                  tempValue.value = val;
-                                },
-                              );
-                            },
-                            onSaved: () {
-                              Navigator.of(context).pop(tempValue.value);
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-                );
-                if (result != null) {
-                  final newField = EnumFieldSingleChoice(
-                      options: alignmentTypes, selectedValue: result);
-                  final newFields = {
-                    ...character.characterEnums.singleChoiceFields
-                        .where((f) => f.options.id != 'alignment'),
-                    newField,
-                  };
-                  characterState.value = character.copyWith(
-                    characterEnums: character.characterEnums
-                        .copyWith(singleChoiceFields: newFields),
-                  );
-                }
-              },
-            );
-          },
-          sizeBuilder: () {
-            final selectedSize = character.characterEnums.singleChoiceFields
-                .firstWhere(
-                  (field) => field.options.id == 'size',
-                  orElse: () => EnumFieldSingleChoice(
-                      options: characterSizes, selectedValue: null),
-                )
-                .selectedValue;
-            return TraitBuilder(
-              tag: 'character.size',
-              icon: Icons.height,
-              title: selectedSize?.text ?? '-',
-              subtitle: 'Size',
-              onTap: () async {
-                final result = await Navigator.push<JsonEnumValue?>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return HookBuilder(
-                        builder: (context) {
-                          final tempValue =
-                              useState<JsonEnumValue?>(selectedSize);
-                          return EditPropertyPageBuilder(
-                            propertyId: 'character.size',
-                            editorWidgetBuilder: (context) {
-                              return EnumSingleChoiceEditor(
-                                enumData: characterSizes,
-                                initialValue: tempValue.value,
-                                label: 'Size',
-                                icon: Icons.height,
-                                onChanged: (val) {
-                                  tempValue.value = val;
-                                },
-                              );
-                            },
-                            onSaved: () {
-                              Navigator.of(context).pop(tempValue.value);
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-                );
-                if (result != null) {
-                  final newField = EnumFieldSingleChoice(
-                      options: characterSizes, selectedValue: result);
-                  final newFields = {
-                    ...character.characterEnums.singleChoiceFields
-                        .where((f) => f.options.id != 'size'),
-                    newField,
-                  };
-                  characterState.value = character.copyWith(
-                    characterEnums: character.characterEnums
-                        .copyWith(singleChoiceFields: newFields),
-                  );
-                }
-              },
-            );
-          },
-          speedBuilder: () => traitBuilder(
-            tag: 'character.speed',
-            icon: Icons.directions_walk,
-            title: '30 ft.',
-            subtitle: 'Speed',
+                    .toList(),
+              ),
+            ),
           ),
-          visionBuilder: () => traitBuilder(
-            tag: 'character.vision',
-            icon: Icons.remove_red_eye,
-            title: 'Darkvision 60 ft.',
-            subtitle: 'Vision',
-          ),
-          proficienciesBuilder: () => traitBuilder(
-            tag: 'character.proficiencies',
-            icon: Icons.build,
-            title: 'Proficiencies',
-            subtitle: 'Various Proficiencies',
-          ),
-          languagesBuilder: () => traitBuilder(
-            tag: 'character.languages',
-            icon: Icons.language,
-            title: 'Languages',
-            subtitle: 'Known Languages',
-          ),
-          listTileThemeWrapper: listTileThemeWrapper,
-        );
+        ],
+      );
+    }
 
     Widget raceBuilder() {
       // Example: get available races as a JsonEnum (replace with your real data source)
