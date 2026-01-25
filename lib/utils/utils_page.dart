@@ -46,6 +46,12 @@ class UtilsPage extends HookConsumerWidget {
             },
           ),
           ListTile(
+            title: const Text('ExampleCharacterPage2'),
+            onTap: () {
+              context.go('/exampleCharacterPage2');
+            },
+          ),
+          ListTile(
             title: const Text('go to'),
             onTap: () {
               goTo(context, ref);

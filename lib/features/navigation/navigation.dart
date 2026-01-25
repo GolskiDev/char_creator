@@ -7,6 +7,7 @@ import 'package:spells_and_tools/features/5e/spells/edit_spells/edit_spell_page.
     show EditSpellPage;
 import 'package:spells_and_tools/features/authentication/auth_controller.dart';
 import 'package:spells_and_tools/features/show_under/example_character_page.dart';
+import 'package:spells_and_tools/features/show_under/example_character_page_2.dart';
 import 'package:spells_and_tools/views/initial_page.dart';
 import 'package:spells_and_tools/views/settings_page.dart';
 
@@ -88,6 +89,10 @@ class Navigation {
               GoRoute(
                 path: '/exampleCharacterPage',
                 builder: (context, state) => const ExampleCharacterPage(),
+              ),
+              GoRoute(
+                path: '/exampleCharacterPage2',
+                builder: (context, state) => const ExampleCharacterPage2(),
               ),
               GoRoute(
                 path: '/spells',
