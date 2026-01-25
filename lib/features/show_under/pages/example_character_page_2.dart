@@ -4,7 +4,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../edit_property_page_builder.dart';
 import '../example_character_data.dart';
+import '../json_enums/enum_field_single_choice.dart';
+import '../json_enums/json_enums.dart';
 import '../widgets/character_widgets.dart';
+import '../widgets/enum_single_choice_editor.dart';
 import '../widgets/int_editor.dart';
 
 class ExampleCharacterPage2 extends HookConsumerWidget {
@@ -134,17 +137,81 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
           listTileThemeWrapper: listTileThemeWrapper,
         );
 
-    Widget raceBuilder() => ListTile(
-          leading: const Icon(Icons.groups),
-          title: const Text('Click here to add the race'),
-          subtitle: const Text('No race selected'),
-          onTap: () {
-            // TODO: Implement navigation to race selection page
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Race selection coming soon!')),
+    Widget raceBuilder() {
+      // Example: get available races as a JsonEnum (replace with your real data source)
+      final availableRaces = JsonEnum(
+        id: 'race',
+        title: 'Race',
+        values: {
+          JsonEnumValue(value: 'human', text: 'Human'),
+          JsonEnumValue(value: 'elf', text: 'Elf'),
+          JsonEnumValue(value: 'dwarf', text: 'Dwarf'),
+        },
+      );
+
+      // Find the selected race from character.characterEnums.singleChoiceFields
+      final selectedRaceField =
+          character.characterEnums.singleChoiceFields.firstWhere(
+        (field) => field.options.id == 'race',
+        orElse: () =>
+            EnumFieldSingleChoice(options: availableRaces, selectedValue: null),
+      );
+      final selectedRace = selectedRaceField.selectedValue;
+
+      return ListTile(
+        leading: const Icon(Icons.groups),
+        title: Text(selectedRace?.text ?? 'Click here to add the race'),
+        subtitle: Text(selectedRace == null
+            ? 'No race selected'
+            : 'Selected: ${selectedRace.text}'),
+        onTap: () async {
+          final result = await Navigator.push<JsonEnumValue?>(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return HookBuilder(
+                  builder: (context) {
+                    final tempValue = useState<JsonEnumValue?>(selectedRace);
+                    return EditPropertyPageBuilder(
+                      propertyId: 'character.race',
+                      editorWidgetBuilder: (context) {
+                        return EnumSingleChoiceEditor(
+                          enumData: availableRaces,
+                          initialValue: tempValue.value,
+                          label: 'Race',
+                          icon: Icons.groups,
+                          description: 'Race defines some character traits.',
+                          onChanged: (val) {
+                            tempValue.value = val;
+                          },
+                        );
+                      },
+                      onSaved: () {
+                        Navigator.of(context).pop(tempValue.value);
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          );
+          if (result != null) {
+            // Remove any previous race field and add the new one
+            final newField = EnumFieldSingleChoice(
+                options: availableRaces, selectedValue: result);
+            final newFields = {
+              ...character.characterEnums.singleChoiceFields
+                  .where((f) => f.options.id != 'race'),
+              newField,
+            };
+            characterState.value = character.copyWith(
+              characterEnums: character.characterEnums
+                  .copyWith(singleChoiceFields: newFields),
             );
-          },
-        );
+          }
+        },
+      );
+    }
 
     final items = [
       raceBuilder(),
