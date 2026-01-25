@@ -3,6 +3,7 @@ import 'package:spells_and_tools/common/interfaces/identifiable.dart';
 import 'package:spells_and_tools/features/5e/character/models/character_5e_ability_scores.dart';
 import 'package:spells_and_tools/features/5e/character/models/character_5e_note.dart';
 import 'package:spells_and_tools/features/5e/character/models/character_5e_skills.dart';
+import 'package:spells_and_tools/features/show_under/json_enums/character_enums.dart';
 
 import '../../../show_under/character_traits.dart';
 import 'character_5e_class_state_model_v1.dart';
@@ -29,6 +30,7 @@ class Character5eModelV1 implements Identifiable {
   final Character5eOtherProps? others;
   final Character5eSpellSlots? spellSlots;
   final Character5eNotes notes;
+  final CharacterEnums characterEnums;
 
   final CharacterTraits characterTraits;
 
@@ -66,6 +68,7 @@ class Character5eModelV1 implements Identifiable {
     this.spellSlots,
     required this.notes,
     required this.characterTraits,
+    required this.characterEnums,
   })  : _level = level,
         _name = name,
         _classesStates = classesStates ?? const {};
@@ -83,6 +86,7 @@ class Character5eModelV1 implements Identifiable {
     Character5eSpellSlots? spellSlots,
     Character5eNotes? notes,
     CharacterTraits? characterTraits,
+    CharacterEnums? characterEnums,
   }) : this._(
           id: IdGenerator.generateId(Character5eModelV1),
           name: name,
@@ -100,6 +104,7 @@ class Character5eModelV1 implements Identifiable {
               CharacterTraits(
                 traitIds: {},
               ),
+          characterEnums: characterEnums ?? CharacterEnums(),
         );
 
   Character5eModelV1 copyWith({
@@ -115,6 +120,7 @@ class Character5eModelV1 implements Identifiable {
     Character5eSpellSlots? spellSlots,
     Character5eNotes? notes,
     CharacterTraits? characterTraits,
+    CharacterEnums? characterEnums,
   }) {
     return Character5eModelV1._(
       id: id,
@@ -131,6 +137,7 @@ class Character5eModelV1 implements Identifiable {
       notes: notes ?? this.notes,
       others: others ?? this.others,
       characterTraits: characterTraits ?? this.characterTraits,
+      characterEnums: characterEnums ?? this.characterEnums,
     );
   }
 
@@ -328,6 +335,10 @@ class Character5eModelV1 implements Identifiable {
               json['others'] as Map<String, dynamic>)
           : null,
       characterTraits: CharacterTraits.fromMap(json),
+      characterEnums: json['characterEnums'] != null
+          ? CharacterEnums.fromMap(
+              json['characterEnums'] as Map<String, dynamic>)
+          : CharacterEnums(),
     );
   }
 
@@ -346,7 +357,8 @@ class Character5eModelV1 implements Identifiable {
         other.conditions == conditions &&
         other.spellSlots == spellSlots &&
         other.notes == notes &&
-        other.others == others;
+        other.others == others &&
+        other.characterEnums == characterEnums;
   }
 
   @override
@@ -362,6 +374,7 @@ class Character5eModelV1 implements Identifiable {
         conditions.hashCode ^
         spellSlots.hashCode ^
         notes.hashCode ^
-        others.hashCode;
+        others.hashCode ^
+        characterEnums.hashCode;
   }
 }

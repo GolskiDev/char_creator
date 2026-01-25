@@ -1,29 +1,25 @@
 import 'json_enums.dart';
 
-class CharacterEnumFieldMultipleChoice {
-  final String fieldName;
+class EnumFieldMultipleChoice {
   final JsonEnum options;
   final Set<JsonEnumValue> selectedValues;
 
-  const CharacterEnumFieldMultipleChoice({
-    required this.fieldName,
+  const EnumFieldMultipleChoice({
     required this.options,
     Set<JsonEnumValue>? selectedValues,
   }) : selectedValues = selectedValues ?? const {};
 
-  CharacterEnumFieldMultipleChoice copyWith({
+  EnumFieldMultipleChoice copyWith({
     Set<JsonEnumValue>? selectedValues,
   }) {
-    return CharacterEnumFieldMultipleChoice(
-      fieldName: fieldName,
+    return EnumFieldMultipleChoice(
       options: options,
       selectedValues: selectedValues ?? this.selectedValues,
     );
   }
 
-  factory CharacterEnumFieldMultipleChoice.fromMap(Map<String, dynamic> map) {
-    return CharacterEnumFieldMultipleChoice(
-      fieldName: map['fieldName'] as String,
+  factory EnumFieldMultipleChoice.fromMap(Map<String, dynamic> map) {
+    return EnumFieldMultipleChoice(
       options: JsonEnum.fromJson(map['options'] as Map<String, dynamic>),
       selectedValues: map['selectedValues'] != null
           ? (map['selectedValues'] as List<dynamic>)
@@ -33,16 +29,21 @@ class CharacterEnumFieldMultipleChoice {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'options': options.toJson(),
+      'selectedValues': selectedValues.map((e) => e.toJson()).toList(),
+    };
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CharacterEnumFieldMultipleChoice &&
+      other is EnumFieldMultipleChoice &&
           runtimeType == other.runtimeType &&
-          fieldName == other.fieldName &&
           options == other.options &&
           selectedValues == other.selectedValues;
 
   @override
-  int get hashCode =>
-      fieldName.hashCode ^ options.hashCode ^ selectedValues.hashCode;
+  int get hashCode => options.hashCode ^ selectedValues.hashCode;
 }
