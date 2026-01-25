@@ -5,11 +5,11 @@ class CharacterEnumFieldMultipleChoice {
   final JsonEnum options;
   final Set<JsonEnumValue> selectedValues;
 
-  CharacterEnumFieldMultipleChoice({
+  const CharacterEnumFieldMultipleChoice({
     required this.fieldName,
     required this.options,
     Set<JsonEnumValue>? selectedValues,
-  }) : selectedValues = selectedValues ?? {};
+  }) : selectedValues = selectedValues ?? const {};
 
   CharacterEnumFieldMultipleChoice copyWith({
     Set<JsonEnumValue>? selectedValues,
