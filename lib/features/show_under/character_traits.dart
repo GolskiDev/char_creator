@@ -39,3 +39,21 @@ class CharacterTraits {
     return const DeepCollectionEquality().hash(traitIds);
   }
 }
+
+final listOfCharacterTraits = [
+  "character.abilityScores.constitution", //and others
+  "character.age",
+  "character.alignment",
+  "character.size",
+  "character.speed",
+  "character.languages",
+  "character.proficiencies",
+  "character.proficiencies.tools",
+  "character.proficiencies.weapons",
+  "character.proficiencies.armor",
+  "character.resistances",
+  "character.savingThrows",
+  "character.skills",
+  "character.hitPoints",
+  "character.hitDice",
+];

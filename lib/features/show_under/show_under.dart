@@ -192,7 +192,7 @@ final hillDwarf = {
       "id": "ability_score_increase_hill_dwarf_001",
       "title": "Ability Score Increase",
       "description": "Your Wisdom score increases by 1.",
-      "showUnder": ["character.abilityScores", "character.wisdom"]
+      "showUnder": ["character.abilityScores", "character.abilityScores.wisdom"]
     },
     {
       "id": "dwarven_toughness_hill_dwarf_002",
@@ -242,9 +242,6 @@ You start with the following equipment, in addition to the equipment granted by 
 -   (_a_) a light crossbow and 20 bolts or (_b_) two handaxes
     
 -   (_a_) a dungeoneer’s pack or (_b_) an explorer’s pack
-    
-
-  
 
 **The** **Fighter**
 

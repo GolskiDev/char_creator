@@ -7,10 +7,24 @@ class JsonEnumValue {
   final String value;
   final String text;
 
-  JsonEnumValue({
+  const JsonEnumValue({
     required this.value,
     required this.text,
   });
+
+  factory JsonEnumValue.fromJson(Map<String, dynamic> json) {
+    return JsonEnumValue(
+      value: json['value'] as String,
+      text: json['text'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'value': value,
+      'text': text,
+    };
+  }
 
   @override
   bool operator ==(Object other) =>
@@ -26,12 +40,40 @@ class JsonEnumValue {
 class JsonEnum implements Identifiable {
   @override
   final String id;
+  final String? title;
+  final String? description;
   final Set<JsonEnumValue> values;
 
   const JsonEnum({
+    this.title,
+    this.description,
     required this.id,
     this.values = const {},
   });
+
+  factory JsonEnum.fromJson(Map<String, dynamic> json) {
+    return JsonEnum(
+      id: json['id'] as String,
+      title: json['title'] as String?,
+      description: json['description'] as String?,
+      values: (json['values'] as List<dynamic>?)
+              ?.map((e) => JsonEnumValue(
+                    value: e['value'] as String,
+                    text: e['text'] as String,
+                  ))
+              .toSet() ??
+          {},
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'values': values.map((e) => e.toJson()).toList(),
+    };
+  }
 
   @override
   bool operator ==(Object other) =>
