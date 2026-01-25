@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:spells_and_tools/common/widgets/small_square_widget.dart';
-import 'package:spells_and_tools/features/show_under/edit_property_page_int.dart';
 import 'package:spells_and_tools/features/show_under/show_under.dart';
+import 'package:spells_and_tools/features/show_under/widgets/int_editor.dart';
 
 import '../edit_property_page_builder.dart';
 import '../trait_model.dart';
@@ -213,32 +213,38 @@ class ExampleCharacterPage extends HookConsumerWidget {
                     tag: 'ability_${entry.key}',
                     icon: Icons.fitness_center,
                     title: entry.value.toString(),
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      int tempValue = entry.value;
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return ShowUnderDataProvider(
-                              data: selectedTraits.value
-                                  .map(
-                                    (traitId) => exampleItems.firstWhereOrNull(
-                                      (item) => item.id == traitId,
-                                    ),
-                                  )
-                                  .nonNulls
-                                  .toList(),
-                              child: EditPropertyPageInt(
-                                propertyIcon: Icons.fitness_center,
-                                propertyId:
-                                    'character.abilityScores.${entry.key.toLowerCase()}',
-                                propertyName: entry.key,
-                                propertyDescription: null,
-                                initialValue: entry.value,
-                              ),
+                            return EditPropertyPageBuilder(
+                              propertyId:
+                                  'character.abilityScores.${entry.key.toLowerCase()}',
+                              editorWidgetBuilder: (context) {
+                                return IntEditor(
+                                  value: tempValue,
+                                  label: entry.key,
+                                  icon: Icons.fitness_center,
+                                  onChanged: (val) {
+                                    tempValue = val ?? 0;
+                                  },
+                                );
+                              },
+                              onSaved: () {
+                                Navigator.of(context).pop(tempValue);
+                              },
                             );
                           },
                         ),
                       );
+                      if (result != null) {
+                        abilityScores.value = {
+                          ...abilityScores.value,
+                          entry.key: result as int,
+                        };
+                      }
                     },
                     subtitle: entry.key
                         .substring(
@@ -261,14 +267,24 @@ class ExampleCharacterPage extends HookConsumerWidget {
             context,
             MaterialPageRoute(
               builder: (context) {
+                int tempValue = 34;
                 return ShowUnderDataProvider(
                   data: exampleItems,
-                  child: EditPropertyPageInt(
-                    propertyIcon: Icons.cake,
+                  child: EditPropertyPageBuilder(
                     propertyId: 'character.age',
-                    propertyName: 'Age',
-                    propertyDescription: null,
-                    initialValue: 34,
+                    editorWidgetBuilder: (context) {
+                      return IntEditor(
+                        value: tempValue,
+                        label: 'Age',
+                        icon: Icons.cake,
+                        onChanged: (val) {
+                          tempValue = val ?? 0;
+                        },
+                      );
+                    },
+                    onSaved: () {
+                      Navigator.of(context).pop(tempValue);
+                    },
                   ),
                 );
               },
