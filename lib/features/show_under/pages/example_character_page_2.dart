@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../edit_property_page_builder.dart';
 import '../example_character_data.dart';
 import '../json_enums/enum_field_single_choice.dart';
+import '../json_enums/enums_examples.dart';
 import '../json_enums/json_enums.dart';
 import '../widgets/character_widgets.dart';
 import '../widgets/enum_single_choice_editor.dart';
@@ -98,18 +99,127 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
               },
             );
           },
-          alignmentBuilder: () => traitBuilder(
-            tag: 'character.alignment',
-            icon: Icons.balance,
-            title: 'Lawful Good',
-            subtitle: 'Alignment',
-          ),
-          sizeBuilder: () => traitBuilder(
-            tag: 'character.size',
-            icon: Icons.height,
-            title: 'Medium',
-            subtitle: 'Size',
-          ),
+          alignmentBuilder: () {
+            final selectedAlignment =
+                character.characterEnums.singleChoiceFields
+                    .firstWhere(
+                      (field) => field.options.id == 'alignment',
+                      orElse: () => EnumFieldSingleChoice(
+                          options: alignmentTypes, selectedValue: null),
+                    )
+                    .selectedValue;
+            return TraitBuilder(
+              tag: 'character.alignment',
+              icon: Icons.balance,
+              title: selectedAlignment?.text ?? '-',
+              subtitle: 'Alignment',
+              onTap: () async {
+                final result = await Navigator.push<JsonEnumValue?>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return HookBuilder(
+                        builder: (context) {
+                          final tempValue =
+                              useState<JsonEnumValue?>(selectedAlignment);
+                          return EditPropertyPageBuilder(
+                            propertyId: 'character.alignment',
+                            editorWidgetBuilder: (context) {
+                              return EnumSingleChoiceEditor(
+                                enumData: alignmentTypes,
+                                initialValue: tempValue.value,
+                                label: 'Alignment',
+                                icon: Icons.balance,
+                                onChanged: (val) {
+                                  tempValue.value = val;
+                                },
+                              );
+                            },
+                            onSaved: () {
+                              Navigator.of(context).pop(tempValue.value);
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+                if (result != null) {
+                  final newField = EnumFieldSingleChoice(
+                      options: alignmentTypes, selectedValue: result);
+                  final newFields = {
+                    ...character.characterEnums.singleChoiceFields
+                        .where((f) => f.options.id != 'alignment'),
+                    newField,
+                  };
+                  characterState.value = character.copyWith(
+                    characterEnums: character.characterEnums
+                        .copyWith(singleChoiceFields: newFields),
+                  );
+                }
+              },
+            );
+          },
+          sizeBuilder: () {
+            final selectedSize = character.characterEnums.singleChoiceFields
+                .firstWhere(
+                  (field) => field.options.id == 'size',
+                  orElse: () => EnumFieldSingleChoice(
+                      options: characterSizes, selectedValue: null),
+                )
+                .selectedValue;
+            return TraitBuilder(
+              tag: 'character.size',
+              icon: Icons.height,
+              title: selectedSize?.text ?? '-',
+              subtitle: 'Size',
+              onTap: () async {
+                final result = await Navigator.push<JsonEnumValue?>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return HookBuilder(
+                        builder: (context) {
+                          final tempValue =
+                              useState<JsonEnumValue?>(selectedSize);
+                          return EditPropertyPageBuilder(
+                            propertyId: 'character.size',
+                            editorWidgetBuilder: (context) {
+                              return EnumSingleChoiceEditor(
+                                enumData: characterSizes,
+                                initialValue: tempValue.value,
+                                label: 'Size',
+                                icon: Icons.height,
+                                onChanged: (val) {
+                                  tempValue.value = val;
+                                },
+                              );
+                            },
+                            onSaved: () {
+                              Navigator.of(context).pop(tempValue.value);
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+                if (result != null) {
+                  final newField = EnumFieldSingleChoice(
+                      options: characterSizes, selectedValue: result);
+                  final newFields = {
+                    ...character.characterEnums.singleChoiceFields
+                        .where((f) => f.options.id != 'size'),
+                    newField,
+                  };
+                  characterState.value = character.copyWith(
+                    characterEnums: character.characterEnums
+                        .copyWith(singleChoiceFields: newFields),
+                  );
+                }
+              },
+            );
+          },
           speedBuilder: () => traitBuilder(
             tag: 'character.speed',
             icon: Icons.directions_walk,
