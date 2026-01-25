@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'example_character_data.dart';
@@ -9,7 +10,8 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Example usage of the widgets
-    final character = exampleCharacter5e;
+    final characterState = useState(exampleCharacter5e);
+    final character = characterState.value;
     final abilityScores = character.abilityScores;
 
     Widget listTileThemeWrapper({required Widget child}) =>
@@ -91,7 +93,20 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
           listTileThemeWrapper: listTileThemeWrapper,
         );
 
+    Widget raceBuilder() => ListTile(
+          leading: const Icon(Icons.groups),
+          title: const Text('Click here to add the race'),
+          subtitle: const Text('No race selected'),
+          onTap: () {
+            // TODO: Implement navigation to race selection page
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Race selection coming soon!')),
+            );
+          },
+        );
+
     final items = [
+      raceBuilder(),
       groupBuilder(
         groupTitle: 'Ability Scores',
         grupIcon: Icons.fitness_center,

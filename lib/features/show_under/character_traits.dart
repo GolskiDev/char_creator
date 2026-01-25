@@ -41,6 +41,7 @@ class CharacterTraits {
 }
 
 final listOfCharacterTraits = [
+  "character.race",
   "character.abilityScores.constitution", //and others
   "character.age",
   "character.alignment",
