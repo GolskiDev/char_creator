@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../edit_property_page_builder.dart';
 import '../example_character_data.dart';
 import '../widgets/character_widgets.dart';
+import '../widgets/int_editor.dart';
 
 class ExampleCharacterPage2 extends HookConsumerWidget {
   const ExampleCharacterPage2({super.key});
@@ -48,12 +50,51 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
         );
 
     Widget othersBuilder() => OthersBuilder(
-          ageBuilder: () => traitBuilder(
-            tag: 'character.age',
-            icon: Icons.cake,
-            title: '30',
-            subtitle: 'Age',
-          ),
+          ageBuilder: () {
+            final age = character.others?.age;
+            return TraitBuilder(
+              tag: 'character.age',
+              icon: Icons.cake,
+              title: age?.toString() ?? '-',
+              subtitle: 'Age',
+              onTap: () async {
+                final result = await Navigator.push<int>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return HookBuilder(
+                        builder: (context) {
+                          final age = useState<int?>(character.others?.age);
+                          return EditPropertyPageBuilder(
+                            propertyId: 'character.age',
+                            editorWidgetBuilder: (context) {
+                              return IntEditor(
+                                value: age.value,
+                                label: 'Age',
+                                icon: Icons.cake,
+                                onChanged: (val) {
+                                  age.value = val;
+                                },
+                              );
+                            },
+                            onSaved: () {
+                              Navigator.of(context).pop(age.value);
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+                if (result != null) {
+                  characterState.value = character.copyWith(
+                    others: character.others?.copyWith(age: () => result) ??
+                        character.others,
+                  );
+                }
+              },
+            );
+          },
           alignmentBuilder: () => traitBuilder(
             tag: 'character.alignment',
             icon: Icons.balance,

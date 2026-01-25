@@ -82,7 +82,6 @@ class EditPropertyPageBuilder<T> extends HookConsumerWidget {
               if (onSaved != null) {
                 onSaved!();
               }
-              Navigator.of(context).pop();
             },
           ),
         ],

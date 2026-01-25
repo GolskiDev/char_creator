@@ -5,6 +5,7 @@ class Character5eOtherProps {
   final int? ac;
   final int? currentSpeed;
   final int? initiative;
+  final int? age;
 
   Character5eOtherProps({
     required this.maxHP,
@@ -13,6 +14,7 @@ class Character5eOtherProps {
     required this.ac,
     required this.currentSpeed,
     required this.initiative,
+    required this.age,
   });
 
   Character5eOtherProps.empty()
@@ -21,7 +23,8 @@ class Character5eOtherProps {
         currentHP = null,
         ac = null,
         currentSpeed = null,
-        initiative = null;
+        initiative = null,
+        age = null;
 
   Character5eOtherProps copyWith({
     int? Function()? maxHP,
@@ -30,6 +33,7 @@ class Character5eOtherProps {
     int? Function()? ac,
     int? Function()? currentSpeed,
     int? Function()? initiative,
+    int? Function()? age,
   }) {
     return Character5eOtherProps(
       maxHP: maxHP != null ? maxHP() : this.maxHP,
@@ -38,6 +42,7 @@ class Character5eOtherProps {
       ac: ac != null ? ac() : this.ac,
       currentSpeed: currentSpeed != null ? currentSpeed() : this.currentSpeed,
       initiative: initiative != null ? initiative() : this.initiative,
+      age: age != null ? age() : this.age,
     );
   }
 
@@ -49,6 +54,7 @@ class Character5eOtherProps {
       ac: map['ac'] as int?,
       currentSpeed: map['currentSpeed'] as int?,
       initiative: map['initiative'] as int?,
+      age: map['age'] as int?,
     );
   }
 
@@ -60,6 +66,7 @@ class Character5eOtherProps {
       'ac': ac,
       'currentSpeed': currentSpeed,
       'initiative': initiative,
+      'age': age,
     };
   }
 
@@ -73,7 +80,8 @@ class Character5eOtherProps {
         other.currentHP == currentHP &&
         other.ac == ac &&
         other.currentSpeed == currentSpeed &&
-        other.initiative == initiative;
+        other.initiative == initiative &&
+        other.age == age;
   }
 
   @override
@@ -83,6 +91,7 @@ class Character5eOtherProps {
         currentHP.hashCode ^
         ac.hashCode ^
         currentSpeed.hashCode ^
-        initiative.hashCode;
+        initiative.hashCode ^
+        age.hashCode;
   }
 }

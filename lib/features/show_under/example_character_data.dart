@@ -36,6 +36,7 @@ final exampleCharacter5e = Character5eModelV1.empty(
     ac: 17,
     currentSpeed: 30,
     initiative: 2,
+    age: null,
   ),
   characterTraits: CharacterTraits(traitIds: {'darkvision', 'brave'}),
   characterEnums: CharacterEnums(),

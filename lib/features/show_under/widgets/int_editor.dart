@@ -31,6 +31,7 @@ class IntEditor extends StatelessWidget {
       title: Text(labelText),
       subtitle: descriptionText != null ? Text(descriptionText) : null,
       trailing: SizedBox(
+        width: 100,
         child: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
