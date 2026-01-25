@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'example_character_data.dart';
 import 'widgets/character_widgets.dart';
 
 class ExampleCharacterPage2 extends HookConsumerWidget {
@@ -9,14 +9,8 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Example usage of the widgets
-    final abilityScores = useState<Map<String, int>>({
-      'Strength': 15,
-      'Dexterity': 14,
-      'Constitution': 13,
-      'Intelligence': 12,
-      'Wisdom': 10,
-      'Charisma': 8,
-    });
+    final character = exampleCharacter5e;
+    final abilityScores = character.abilityScores;
 
     Widget listTileThemeWrapper({required Widget child}) =>
         ListTileThemeWrapper(child: child);
@@ -46,7 +40,7 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
           grupIcon: grupIcon,
           groupTitle: groupTitle,
           children: children,
-          abilityScoresLength: abilityScores.value.length,
+          abilityScoresLength: abilityScores?.abilityScores.length ?? 0,
           listTileThemeWrapper: listTileThemeWrapper,
           preferredWidth: preferredWidth,
         );
@@ -101,14 +95,14 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
       groupBuilder(
         groupTitle: 'Ability Scores',
         grupIcon: Icons.fitness_center,
-        children: abilityScores.value.entries
+        children: (abilityScores?.abilityScores.entries ?? const {})
             .map((entry) => Card(
                   clipBehavior: Clip.antiAlias,
                   child: traitBuilder(
-                    tag: 'ability_${entry.key}',
+                    tag: 'ability_${entry.key.name}',
                     icon: Icons.fitness_center,
-                    title: entry.value.toString(),
-                    subtitle: entry.key.substring(0, 3).toUpperCase(),
+                    title: (entry.value.value ?? '-').toString(),
+                    subtitle: entry.key.name.substring(0, 3).toUpperCase(),
                   ),
                 ))
             .toList(),
