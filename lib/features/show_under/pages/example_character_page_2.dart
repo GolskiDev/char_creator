@@ -387,28 +387,22 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return HookBuilder(
-                                builder: (context) {
-                                  final tempValue = useState<JsonEnumValue?>(
-                                      selectedAlignment);
-                                  return EditPropertyPageBuilder(
-                                    propertyId: 'character.alignment',
-                                    editorWidgetBuilder: (context) {
-                                      return EnumSingleChoiceEditor(
-                                        enumData: alignmentTypes,
-                                        initialValue: tempValue.value,
-                                        label: 'Alignment',
-                                        icon: Icons.balance,
-                                        onChanged: (val) {
-                                          tempValue.value = val;
-                                        },
-                                      );
-                                    },
-                                    onSaved: () {
-                                      Navigator.of(context)
-                                          .pop(tempValue.value);
+                              JsonEnumValue? tempValue = selectedAlignment;
+                              return EditPropertyPageBuilder(
+                                propertyId: 'character.alignment',
+                                editorWidgetBuilder: (context) {
+                                  return EnumSingleChoiceEditor(
+                                    enumData: alignmentTypes,
+                                    initialValue: tempValue,
+                                    label: 'Alignment',
+                                    icon: Icons.balance,
+                                    onChanged: (val) {
+                                      tempValue = val;
                                     },
                                   );
+                                },
+                                onSaved: () {
+                                  Navigator.of(context).pop(tempValue);
                                 },
                               );
                             },
@@ -449,28 +443,22 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return HookBuilder(
-                                builder: (context) {
-                                  final tempValue =
-                                      useState<JsonEnumValue?>(selectedSize);
-                                  return EditPropertyPageBuilder(
-                                    propertyId: 'character.size',
-                                    editorWidgetBuilder: (context) {
-                                      return EnumSingleChoiceEditor(
-                                        enumData: characterSizes,
-                                        initialValue: tempValue.value,
-                                        label: 'Size',
-                                        icon: Icons.height,
-                                        onChanged: (val) {
-                                          tempValue.value = val;
-                                        },
-                                      );
-                                    },
-                                    onSaved: () {
-                                      Navigator.of(context)
-                                          .pop(tempValue.value);
+                              JsonEnumValue? tempValue = selectedSize;
+                              return EditPropertyPageBuilder(
+                                propertyId: 'character.size',
+                                editorWidgetBuilder: (context) {
+                                  return EnumSingleChoiceEditor(
+                                    enumData: characterSizes,
+                                    initialValue: tempValue,
+                                    label: 'Size',
+                                    icon: Icons.height,
+                                    onChanged: (val) {
+                                      tempValue = val;
                                     },
                                   );
+                                },
+                                onSaved: () {
+                                  Navigator.of(context).pop(tempValue);
                                 },
                               );
                             },
@@ -558,27 +546,23 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
             context,
             MaterialPageRoute(
               builder: (context) {
-                return HookBuilder(
-                  builder: (context) {
-                    final tempValue = useState<JsonEnumValue?>(selectedRace);
-                    return EditPropertyPageBuilder(
-                      propertyId: 'character.race',
-                      editorWidgetBuilder: (context) {
-                        return EnumSingleChoiceEditor(
-                          enumData: availableRaces,
-                          initialValue: tempValue.value,
-                          label: 'Race',
-                          icon: Icons.groups,
-                          description: 'Race defines some character traits.',
-                          onChanged: (val) {
-                            tempValue.value = val;
-                          },
-                        );
-                      },
-                      onSaved: () {
-                        Navigator.of(context).pop(tempValue.value);
+                JsonEnumValue? tempValue = selectedRace;
+                return EditPropertyPageBuilder(
+                  propertyId: 'character.race',
+                  editorWidgetBuilder: (context) {
+                    return EnumSingleChoiceEditor(
+                      enumData: availableRaces,
+                      initialValue: tempValue,
+                      label: 'Race',
+                      icon: Icons.groups,
+                      description: 'Race defines some character traits.',
+                      onChanged: (val) {
+                        tempValue = val;
                       },
                     );
+                  },
+                  onSaved: () {
+                    Navigator.of(context).pop(tempValue);
                   },
                 );
               },
