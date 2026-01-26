@@ -122,25 +122,21 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return HookBuilder(
-                                builder: (context) {
-                                  final value = useState<int?>(maxHP);
-                                  return EditPropertyPageBuilder(
-                                    propertyId: 'character.maxHP',
-                                    editorWidgetBuilder: (context) {
-                                      return IntEditor(
-                                        value: value.value,
-                                        label: 'Max HP',
-                                        icon: Icons.favorite,
-                                        onChanged: (val) {
-                                          value.value = val;
-                                        },
-                                      );
-                                    },
-                                    onSaved: () {
-                                      Navigator.of(context).pop(value.value);
+                              int? tempValue = maxHP;
+                              return EditPropertyPageBuilder(
+                                propertyId: 'character.maxHP',
+                                editorWidgetBuilder: (context) {
+                                  return IntEditor(
+                                    value: tempValue,
+                                    label: 'Max HP',
+                                    icon: Icons.favorite,
+                                    onChanged: (val) {
+                                      tempValue = val;
                                     },
                                   );
+                                },
+                                onSaved: () {
+                                  Navigator.of(context).pop(tempValue);
                                 },
                               );
                             },
@@ -169,25 +165,21 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return HookBuilder(
-                                builder: (context) {
-                                  final value = useState<int?>(temporaryHP);
-                                  return EditPropertyPageBuilder(
-                                    propertyId: 'character.temporaryHP',
-                                    editorWidgetBuilder: (context) {
-                                      return IntEditor(
-                                        value: value.value,
-                                        label: 'Temporary HP',
-                                        icon: Icons.healing,
-                                        onChanged: (val) {
-                                          value.value = val;
-                                        },
-                                      );
-                                    },
-                                    onSaved: () {
-                                      Navigator.of(context).pop(value.value);
+                              int? tempValue = temporaryHP;
+                              return EditPropertyPageBuilder(
+                                propertyId: 'character.temporaryHP',
+                                editorWidgetBuilder: (context) {
+                                  return IntEditor(
+                                    value: tempValue,
+                                    label: 'Temporary HP',
+                                    icon: Icons.healing,
+                                    onChanged: (val) {
+                                      tempValue = val;
                                     },
                                   );
+                                },
+                                onSaved: () {
+                                  Navigator.of(context).pop(tempValue);
                                 },
                               );
                             },
@@ -216,25 +208,21 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return HookBuilder(
-                                builder: (context) {
-                                  final value = useState<int?>(currentHP);
-                                  return EditPropertyPageBuilder(
-                                    propertyId: 'character.currentHP',
-                                    editorWidgetBuilder: (context) {
-                                      return IntEditor(
-                                        value: value.value,
-                                        label: 'Current HP',
-                                        icon: Icons.bloodtype,
-                                        onChanged: (val) {
-                                          value.value = val;
-                                        },
-                                      );
-                                    },
-                                    onSaved: () {
-                                      Navigator.of(context).pop(value.value);
+                              int? tempValue = currentHP;
+                              return EditPropertyPageBuilder(
+                                propertyId: 'character.currentHP',
+                                editorWidgetBuilder: (context) {
+                                  return IntEditor(
+                                    value: tempValue,
+                                    label: 'Current HP',
+                                    icon: Icons.bloodtype,
+                                    onChanged: (val) {
+                                      tempValue = val;
                                     },
                                   );
+                                },
+                                onSaved: () {
+                                  Navigator.of(context).pop(tempValue);
                                 },
                               );
                             },
@@ -263,25 +251,21 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return HookBuilder(
-                                builder: (context) {
-                                  final value = useState<int?>(ac);
-                                  return EditPropertyPageBuilder(
-                                    propertyId: 'character.ac',
-                                    editorWidgetBuilder: (context) {
-                                      return IntEditor(
-                                        value: value.value,
-                                        label: 'Armor Class (AC)',
-                                        icon: Icons.shield,
-                                        onChanged: (val) {
-                                          value.value = val;
-                                        },
-                                      );
-                                    },
-                                    onSaved: () {
-                                      Navigator.of(context).pop(value.value);
+                              int? tempValue = ac;
+                              return EditPropertyPageBuilder(
+                                propertyId: 'character.ac',
+                                editorWidgetBuilder: (context) {
+                                  return IntEditor(
+                                    value: tempValue,
+                                    label: 'Armor Class (AC)',
+                                    icon: Icons.shield,
+                                    onChanged: (val) {
+                                      tempValue = val;
                                     },
                                   );
+                                },
+                                onSaved: () {
+                                  Navigator.of(context).pop(tempValue);
                                 },
                               );
                             },
@@ -310,25 +294,21 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return HookBuilder(
-                                builder: (context) {
-                                  final value = useState<int?>(currentSpeed);
-                                  return EditPropertyPageBuilder(
-                                    propertyId: 'character.currentSpeed',
-                                    editorWidgetBuilder: (context) {
-                                      return IntEditor(
-                                        value: value.value,
-                                        label: 'Current Speed',
-                                        icon: Icons.directions_run,
-                                        onChanged: (val) {
-                                          value.value = val;
-                                        },
-                                      );
-                                    },
-                                    onSaved: () {
-                                      Navigator.of(context).pop(value.value);
+                              int? tempValue = currentSpeed;
+                              return EditPropertyPageBuilder(
+                                propertyId: 'character.currentSpeed',
+                                editorWidgetBuilder: (context) {
+                                  return IntEditor(
+                                    value: tempValue,
+                                    label: 'Current Speed',
+                                    icon: Icons.directions_run,
+                                    onChanged: (val) {
+                                      tempValue = val;
                                     },
                                   );
+                                },
+                                onSaved: () {
+                                  Navigator.of(context).pop(tempValue);
                                 },
                               );
                             },
@@ -357,25 +337,21 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return HookBuilder(
-                                builder: (context) {
-                                  final value = useState<int?>(initiative);
-                                  return EditPropertyPageBuilder(
-                                    propertyId: 'character.initiative',
-                                    editorWidgetBuilder: (context) {
-                                      return IntEditor(
-                                        value: value.value,
-                                        label: 'Initiative',
-                                        icon: Icons.flash_on,
-                                        onChanged: (val) {
-                                          value.value = val;
-                                        },
-                                      );
-                                    },
-                                    onSaved: () {
-                                      Navigator.of(context).pop(value.value);
+                              int? tempValue = initiative;
+                              return EditPropertyPageBuilder(
+                                propertyId: 'character.initiative',
+                                editorWidgetBuilder: (context) {
+                                  return IntEditor(
+                                    value: tempValue,
+                                    label: 'Initiative',
+                                    icon: Icons.flash_on,
+                                    onChanged: (val) {
+                                      tempValue = val;
                                     },
                                   );
+                                },
+                                onSaved: () {
+                                  Navigator.of(context).pop(tempValue);
                                 },
                               );
                             },
