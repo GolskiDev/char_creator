@@ -4,10 +4,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../edit_property_page_builder.dart';
 import '../example_character_data.dart';
+import '../json_enums/enum_field_multiple_choice.dart';
 import '../json_enums/enum_field_single_choice.dart';
 import '../json_enums/enums_examples.dart';
 import '../json_enums/json_enums.dart';
 import '../widgets/character_widgets.dart';
+import '../widgets/enum_multiple_choice_editor.dart';
 import '../widgets/enum_single_choice_editor.dart';
 import '../widgets/int_editor.dart';
 
@@ -493,12 +495,74 @@ class ExampleCharacterPage2 extends HookConsumerWidget {
                     title: 'Proficiencies',
                     subtitle: 'Various Proficiencies',
                   ),
-                  traitBuilder(
-                    tag: 'character.languages',
-                    icon: Icons.language,
-                    title: 'Languages',
-                    subtitle: 'Known Languages',
-                  ),
+                  (() {
+                    // Use the languages enum from enums_examples.dart
+                    final availableLanguages = languages;
+
+                    // Find the selected languages from character.characterEnums.multipleChoiceFields
+                    final selectedLanguagesField = character
+                        .characterEnums.multipleChoiceFields
+                        .firstWhere(
+                      (field) => field.options.id == 'language',
+                      orElse: () => EnumFieldMultipleChoice(
+                          options: availableLanguages, selectedValues: {}),
+                    );
+                    final selectedLanguages =
+                        selectedLanguagesField.selectedValues;
+
+                    return TraitBuilder(
+                      tag: 'character.languages',
+                      icon: Icons.language,
+                      title: selectedLanguages.isEmpty
+                          ? 'No languages selected'
+                          : selectedLanguages.map((e) => e.text).join(', '),
+                      subtitle: 'Known Languages',
+                      onTap: () async {
+                        final result = await Navigator.push<Set<JsonEnumValue>>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              Set<JsonEnumValue> tempValues =
+                                  Set<JsonEnumValue>.from(selectedLanguages);
+                              return EditPropertyPageBuilder(
+                                propertyId: 'character.languages',
+                                editorWidgetBuilder: (context) {
+                                  return EnumMultipleChoiceEditor(
+                                    enumData: availableLanguages,
+                                    initialValues: tempValues,
+                                    label: 'Languages',
+                                    icon: Icons.language,
+                                    onChanged: (vals) {
+                                      tempValues = vals;
+                                    },
+                                  );
+                                },
+                                onSaved: () {
+                                  Navigator.of(context).pop(tempValues);
+                                },
+                              );
+                            },
+                          ),
+                        );
+                        if (result != null) {
+                          final newField = EnumFieldMultipleChoice(
+                            options: availableLanguages,
+                            selectedValues: result,
+                          );
+                          final newFields = {
+                            ...character.characterEnums.multipleChoiceFields
+                                .where((f) => f.options.id != 'language'),
+                            newField,
+                          };
+                          characterState.value = character.copyWith(
+                            characterEnums: character.characterEnums.copyWith(
+                              multipleChoiceFields: newFields,
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  })(),
                 ]
                     .map(
                       (e) => Card(
