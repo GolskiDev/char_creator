@@ -12,19 +12,27 @@ dependencies:
 
   # Firebase dependencies
   firebase_core:
-  cloud_firestore: 
+  cloud_firestore:
   firebase_auth:
-  firebase_ui_firestore: 
-  firebase_ui_auth: 
+  firebase_ui_firestore:
+  firebase_ui_auth:
   file_picker: ^6.1.1
-  
 
   # State management
-  riverpod: 
-  flutter_riverpod: 
+  riverpod:
+  flutter_riverpod:
 
   # navigation
   go_router:
+
+  # LLM text generation
+  langchain: ^0.8.1
+  langchain_anthropic: ^0.3.1
+  langchain_ollama: ^0.4.1
+  langchain_openai: ^0.8.1+1
+  uuid: ^4.5.3
+  shared_preferences:
+  path_provider:
 
 
 dev_dependencies:
