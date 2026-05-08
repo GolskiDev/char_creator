@@ -15,6 +15,7 @@ class SpellTextsPage extends StatefulWidget {
   final List<Spell> spells;
   final SpellTextService service;
   final PromptHistoryService promptHistory;
+  final Map<String, int>? firestoreCountBySpellId;
   final bool showExportButton;
   final void Function(String json)? onExport;
   final VoidCallback? onUploadToFirestore;
@@ -24,6 +25,7 @@ class SpellTextsPage extends StatefulWidget {
     required this.spells,
     required this.service,
     required this.promptHistory,
+    this.firestoreCountBySpellId,
     this.showExportButton = true,
     this.onExport,
     this.onUploadToFirestore,
@@ -85,6 +87,7 @@ class _SpellTextsPageState extends State<SpellTextsPage> {
             SpellSelector(
               spells: widget.spells,
               selected: _selectedSpells,
+              firestoreCount: widget.firestoreCountBySpellId,
               onSelectionChanged: (s) => setState(() => _selectedSpells = s),
             ),
             const SizedBox(height: 16),
@@ -107,6 +110,7 @@ class _SpellTextsPageState extends State<SpellTextsPage> {
           _FilterChips(
             spells: widget.spells,
             selected: _filterSpellId,
+            firestoreCount: widget.firestoreCountBySpellId,
             onSelected: (id) => setState(() => _filterSpellId = id),
           ),
           Expanded(
@@ -198,12 +202,14 @@ class _SpellTextsPageState extends State<SpellTextsPage> {
 class _FilterChips extends StatelessWidget {
   final List<Spell> spells;
   final String? selected;
+  final Map<String, int>? firestoreCount;
   final void Function(String? spellId) onSelected;
 
   const _FilterChips({
     required this.spells,
     required this.selected,
     required this.onSelected,
+    this.firestoreCount,
   });
 
   @override
@@ -219,15 +225,17 @@ class _FilterChips extends StatelessWidget {
             onSelected: (_) => onSelected(null),
           ),
           ...spells.map(
-            (s) => Padding(
-              padding: const EdgeInsets.only(left: 6),
-              child: FilterChip(
-                label: Text(s.title),
-                selected: selected == s.id,
-                onSelected: (_) =>
-                    onSelected(selected == s.id ? null : s.id),
-              ),
-            ),
+            (s) {
+              final count = firestoreCount?[s.id] ?? 0;
+              return Padding(
+                padding: const EdgeInsets.only(left: 6),
+                child: FilterChip(
+                  label: Text(count > 0 ? '${s.title} ($count)' : s.title),
+                  selected: selected == s.id,
+                  onSelected: (_) => onSelected(selected == s.id ? null : s.id),
+                ),
+              );
+            },
           ),
         ],
       ),

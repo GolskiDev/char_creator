@@ -6,12 +6,14 @@ import '../models/spell.dart';
 class SpellSelector extends StatefulWidget {
   final List<Spell> spells;
   final List<Spell> selected;
+  final Map<String, int>? firestoreCount;
   final void Function(List<Spell> selected) onSelectionChanged;
 
   const SpellSelector({
     super.key,
     required this.spells,
     required this.selected,
+    this.firestoreCount,
     required this.onSelectionChanged,
   });
 
@@ -78,6 +80,7 @@ class _SpellSelectorState extends State<SpellSelector> {
           itemBuilder: (context, index) {
             final spell = widget.spells[index];
             final checked = _selectedIds.contains(spell.id);
+            final count = widget.firestoreCount?[spell.id] ?? 0;
             return CheckboxListTile(
               dense: true,
               contentPadding: EdgeInsets.zero,
@@ -85,6 +88,15 @@ class _SpellSelectorState extends State<SpellSelector> {
               onChanged: (_) => _toggle(spell),
               secondary: _SpellThumbnail(imagePath: spell.imagePath),
               title: Text(spell.title, style: const TextStyle(fontSize: 13)),
+              subtitle: count > 0
+                  ? Text(
+                      '$count in Firestore',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    )
+                  : null,
             );
           },
         ),

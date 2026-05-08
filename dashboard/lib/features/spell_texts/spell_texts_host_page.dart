@@ -420,10 +420,15 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
         ),
       );
     }
+    final firestoreCount = <String, int>{
+      for (final spell in _spells)
+        spell.id: _firestoreTexts.where((t) => t.spellId == spell.id).length,
+    };
     return SpellTextsPage(
       spells: _spells,
       service: _service!,
       promptHistory: _promptHistory!,
+      firestoreCountBySpellId: firestoreCount,
       showExportButton: true,
       onExport: _showJsonDialog,
       onUploadToFirestore: _uploadAcceptedToFirestore,
@@ -476,16 +481,17 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
   Widget _buildTextList({
     required List<DailyText> texts,
     required SpellSortBy sort,
-    required Widget Function(DailyText, int) tileBuilder,
+    required Widget Function(DailyText, {required bool indented}) tileBuilder,
   }) {
     if (texts.isEmpty) return const SizedBox.shrink();
     final items = _sortedItems(texts, sort);
+    final grouped = sort == SpellSortBy.levelThenName;
     return ListView.builder(
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
         if (item is String) return _LevelHeader(label: item);
-        return tileBuilder(item as DailyText, index);
+        return tileBuilder(item as DailyText, indented: grouped);
       },
     );
   }
@@ -532,9 +538,10 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
               : _buildTextList(
                   texts: _stagingTexts,
                   sort: _stagingSort,
-                  tileBuilder: (text, _) => _DailyTextTile(
+                  tileBuilder: (text, {required bool indented}) => _DailyTextTile(
                     key: ValueKey(text.id),
                     text: text,
+                    indented: indented,
                     onEdit: () => _showDailyTextDialog(context, existing: text),
                     onDelete: () => setState(
                         () => _stagingTexts.removeWhere((t) => t.id == text.id)),
@@ -604,9 +611,10 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
                   : _buildTextList(
                       texts: _firestoreTexts,
                       sort: _firestoreSort,
-                      tileBuilder: (text, _) => _DailyTextTile(
+                      tileBuilder: (text, {required bool indented}) => _DailyTextTile(
                         key: ValueKey(text.id),
                         text: text,
+                        indented: indented,
                         onEdit: () => _showDailyTextDialog(
                           context,
                           existing: text,
@@ -634,14 +642,28 @@ class _LevelHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Text(
-        label,
-        style: Theme.of(context)
-            .textTheme
-            .labelMedium
-            ?.copyWith(color: Theme.of(context).colorScheme.primary),
+      padding: const EdgeInsets.fromLTRB(12, 16, 16, 4),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: scheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Expanded(child: Divider()),
+        ],
       ),
     );
   }
@@ -651,17 +673,22 @@ class _DailyTextTile extends StatelessWidget {
   final DailyText text;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final bool indented;
 
   const _DailyTextTile({
     super.key,
     required this.text,
     required this.onEdit,
     required this.onDelete,
+    this.indented = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      contentPadding: indented
+          ? const EdgeInsets.only(left: 28, right: 8)
+          : const EdgeInsets.symmetric(horizontal: 16),
       title: Text(text.subtitle),
       subtitle: Text('Spell ID: ${text.spellId}'),
       trailing: Row(
