@@ -705,6 +705,7 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
   final _idCtrl = TextEditingController();
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
+  bool _showManual = false;
 
   @override
   void initState() {
@@ -734,11 +735,13 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
   }
 
   Future<void> _pickFromSrd() async {
-    final spell = await SpellPickerDialog.show(context);
-    if (spell == null) return;
+    final picked = await SpellPickerDialog.show(context);
+    if (picked == null || picked.isEmpty) return;
     setState(() {
-      if (!_spells.any((s) => s.id == spell.id)) {
-        _spells.add(spell);
+      for (final spell in picked) {
+        if (!_spells.any((s) => s.id == spell.id)) {
+          _spells.add(spell);
+        }
       }
     });
   }
@@ -752,47 +755,61 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              children: [
-                SizedBox(
-                  width: 80,
-                  child: TextField(
-                    controller: _idCtrl,
-                    decoration: const InputDecoration(labelText: 'ID'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: _titleCtrl,
-                    decoration: const InputDecoration(labelText: 'Title'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    controller: _descCtrl,
-                    decoration: const InputDecoration(labelText: 'Description'),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: _add,
-                  tooltip: 'Add spell',
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
+            // Primary action
             Align(
               alignment: Alignment.centerLeft,
-              child: TextButton.icon(
+              child: FilledButton.icon(
                 onPressed: _pickFromSrd,
                 icon: const Icon(Icons.auto_awesome, size: 16),
                 label: const Text('Browse SRD spells'),
               ),
             ),
-            const SizedBox(height: 4),
+            // Collapsed manual add
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: () => setState(() => _showManual = !_showManual),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.outline,
+                  textStyle: Theme.of(context).textTheme.bodySmall,
+                ),
+                child: Text(_showManual ? 'Hide manual add' : 'Add manually…'),
+              ),
+            ),
+            if (_showManual) ...[
+              Row(
+                children: [
+                  SizedBox(
+                    width: 80,
+                    child: TextField(
+                      controller: _idCtrl,
+                      decoration: const InputDecoration(labelText: 'ID'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: _titleCtrl,
+                      decoration: const InputDecoration(labelText: 'Title'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    flex: 2,
+                    child: TextField(
+                      controller: _descCtrl,
+                      decoration: const InputDecoration(labelText: 'Description'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: _add,
+                    tooltip: 'Add spell',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+            ],
             if (_spells.isNotEmpty)
               SizedBox(
                 height: 200,

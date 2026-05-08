@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import '../models/spell.dart';
 import '../services/srd_loader.dart';
 
-/// A dialog for browsing and selecting a spell from the SRD.
-/// Returns the selected [Spell] (dashboard model) when confirmed.
+enum _SortBy { levelThenName, name, schoolThenName }
+
+/// A dialog for browsing and selecting multiple spells from the SRD.
+/// Returns a list of selected [Spell]s (dashboard model) when confirmed.
 class SpellPickerDialog extends StatefulWidget {
   const SpellPickerDialog({super.key});
 
-  static Future<Spell?> show(BuildContext context) {
-    return showDialog<Spell>(
+  static Future<List<Spell>?> show(BuildContext context) {
+    return showDialog<List<Spell>>(
       context: context,
       builder: (_) => const SpellPickerDialog(),
     );
@@ -24,9 +26,13 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
 
   List<SrdSpell> _allSpells = [];
   List<SrdSpell> _filtered = [];
-  SrdSpell? _selected;
+  final Set<String> _checkedIds = {};
+  SrdSpell? _previewed;
+  _SortBy _sortBy = _SortBy.levelThenName;
   bool _loading = true;
   String? _error;
+
+  double _listWidth = 320;
 
   @override
   void initState() {
@@ -47,7 +53,7 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
       if (mounted) {
         setState(() {
           _allSpells = spells;
-          _filtered = spells;
+          _applyFilterAndSort();
           _loading = false;
         });
       }
@@ -56,37 +62,70 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
     }
   }
 
-  void _onSearch() {
+  void _onSearch() => setState(_applyFilterAndSort);
+
+  void _onSortChanged(_SortBy value) => setState(() {
+        _sortBy = value;
+        _applyFilterAndSort();
+      });
+
+  void _applyFilterAndSort() {
     final query = _searchCtrl.text.toLowerCase().trim();
+    final list = query.isEmpty
+        ? List<SrdSpell>.from(_allSpells)
+        : _allSpells.where((s) => s.name.toLowerCase().contains(query)).toList();
+
+    switch (_sortBy) {
+      case _SortBy.levelThenName:
+        list.sort((a, b) {
+          final c = a.level.compareTo(b.level);
+          return c != 0 ? c : a.name.compareTo(b.name);
+        });
+      case _SortBy.name:
+        list.sort((a, b) => a.name.compareTo(b.name));
+      case _SortBy.schoolThenName:
+        list.sort((a, b) {
+          final sa = a.school ?? '';
+          final sb = b.school ?? '';
+          final c = sa.compareTo(sb);
+          return c != 0 ? c : a.name.compareTo(b.name);
+        });
+    }
+    _filtered = list;
+  }
+
+  void _toggleCheck(SrdSpell spell) {
     setState(() {
-      _filtered = query.isEmpty
-          ? _allSpells
-          : _allSpells.where((s) => s.name.toLowerCase().contains(query)).toList();
+      if (_checkedIds.contains(spell.id)) {
+        _checkedIds.remove(spell.id);
+      } else {
+        _checkedIds.add(spell.id);
+      }
     });
   }
 
   void _confirm() {
-    if (_selected == null) return;
-    final s = _selected!;
-    Navigator.of(context).pop(
-      Spell(
-        id: s.id,
-        title: s.name,
-        description: s.description,
-        imagePath: s.imageAssetPath,
-      ),
-    );
+    final result = _allSpells
+        .where((s) => _checkedIds.contains(s.id))
+        .map((s) => Spell(
+              id: s.id,
+              title: s.name,
+              description: s.description,
+              imagePath: s.imageAssetPath,
+            ))
+        .toList();
+    Navigator.of(context).pop(result);
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 700, maxHeight: 560),
+        constraints: const BoxConstraints(maxWidth: 960, maxHeight: 680),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 14, 8, 8),
               child: Row(
                 children: [
                   Text(
@@ -105,18 +144,27 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
             Expanded(child: _buildBody()),
             const Divider(height: 1),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  if (_checkedIds.isNotEmpty)
+                    Text(
+                      '${_checkedIds.length} selected',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  const Spacer(),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 8),
                   FilledButton(
-                    onPressed: _selected == null ? null : _confirm,
-                    child: const Text('Select'),
+                    onPressed: _checkedIds.isEmpty ? null : _confirm,
+                    child: Text(
+                      _checkedIds.isEmpty
+                          ? 'Add spells'
+                          : 'Add ${_checkedIds.length} spell${_checkedIds.length == 1 ? '' : 's'}',
+                    ),
                   ),
                 ],
               ),
@@ -131,109 +179,185 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_error != null) return Center(child: Text('Error: $_error'));
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Left: search + list
-        SizedBox(
-          width: 300,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: TextField(
-                  controller: _searchCtrl,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    hintText: 'Search spells...',
-                    prefixIcon: const Icon(Icons.search, size: 18),
-                    isDense: true,
-                    suffixIcon: _searchCtrl.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 16),
-                            onPressed: () {
-                              _searchCtrl.clear();
-                              _onSearch();
-                            },
-                          )
-                        : null,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _filtered.length,
-                  itemBuilder: (context, index) {
-                    final spell = _filtered[index];
-                    final isSelected = _selected?.id == spell.id;
-                    return ListTile(
-                      dense: true,
-                      selected: isSelected,
-                      title: Text(spell.name),
-                      subtitle: Text(
-                        '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school!)}' : ''}',
-                        style: const TextStyle(fontSize: 11),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Row(
+          children: [
+            // Left: search + sort + list
+            SizedBox(
+              width: _listWidth,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+                    child: TextField(
+                      controller: _searchCtrl,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: 'Search spells...',
+                        prefixIcon: const Icon(Icons.search, size: 18),
+                        isDense: true,
+                        suffixIcon: _searchCtrl.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, size: 16),
+                                onPressed: () {
+                                  _searchCtrl.clear();
+                                  _onSearch();
+                                },
+                              )
+                            : null,
                       ),
-                      onTap: () => setState(() => _selected = spell),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+                    child: DropdownButtonFormField<_SortBy>(
+                      initialValue: _sortBy,
+                      isDense: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Sort by',
+                        isDense: true,
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: _SortBy.levelThenName,
+                          child: Row(children: [
+                            const Icon(Icons.format_list_numbered, size: 16),
+                            const SizedBox(width: 8),
+                            const Text('Level → Name'),
+                          ]),
+                        ),
+                        DropdownMenuItem(
+                          value: _SortBy.name,
+                          child: Row(children: [
+                            const Icon(Icons.sort_by_alpha, size: 16),
+                            const SizedBox(width: 8),
+                            const Text('Name'),
+                          ]),
+                        ),
+                        DropdownMenuItem(
+                          value: _SortBy.schoolThenName,
+                          child: Row(children: [
+                            const Icon(Icons.school, size: 16),
+                            const SizedBox(width: 8),
+                            const Text('School → Name'),
+                          ]),
+                        ),
+                      ],
+                      onChanged: (v) => _onSortChanged(v!),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _filtered.length,
+                      itemBuilder: (context, index) {
+                        final spell = _filtered[index];
+                        final isChecked = _checkedIds.contains(spell.id);
+                        final isPreviewed = _previewed?.id == spell.id;
+                        return ListTile(
+                          dense: true,
+                          selected: isPreviewed,
+                          leading: Checkbox(
+                            value: isChecked,
+                            onChanged: (_) => _toggleCheck(spell),
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          title: Text(spell.name),
+                          subtitle: Text(
+                            '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school!)}' : ''}',
+                            style: const TextStyle(fontSize: 11),
+                          ),
+                          onTap: () => setState(() => _previewed = spell),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        const VerticalDivider(width: 1),
-        // Right: preview
-        Expanded(child: _buildPreview()),
-      ],
+            ),
+            // Draggable divider
+            _ResizeDivider(
+              onDrag: (dx) => setState(() {
+                _listWidth =
+                    (_listWidth + dx).clamp(180.0, constraints.maxWidth - 200.0);
+              }),
+            ),
+            // Right: preview
+            Expanded(child: _buildPreview()),
+          ],
+        );
+      },
     );
   }
 
   Widget _buildPreview() {
-    if (_selected == null) {
+    if (_previewed == null) {
       return const Center(
         child: Text(
-          'Select a spell to preview',
+          'Tap a spell to preview',
           style: TextStyle(color: Colors.grey),
         ),
       );
     }
 
-    final spell = _selected!;
+    final spell = _previewed!;
+    final isChecked = _checkedIds.contains(spell.id);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Image
+          // Portrait image, vertically centered
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.asset(
               spell.imageAssetPath,
-              height: 160,
-              width: double.infinity,
+              width: 130,
+              height: 210,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
-                height: 160,
-                width: double.infinity,
-                color: Colors.grey.shade200,
+                width: 130,
+                height: 210,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: const Icon(Icons.auto_awesome, size: 48, color: Colors.grey),
               ),
             ),
           ),
-          const SizedBox(height: 12),
-          Text(spell.name, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 4),
-          Text(
-            '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school!)}' : ''}',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            spell.description,
-            style: Theme.of(context).textTheme.bodySmall,
-            maxLines: 6,
-            overflow: TextOverflow.ellipsis,
+          const SizedBox(width: 14),
+          // Title + metadata + description
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        spell.name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    Checkbox(
+                      value: isChecked,
+                      onChanged: (_) => _toggleCheck(spell),
+                    ),
+                  ],
+                ),
+                Text(
+                  '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school!)}' : ''}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  spell.description,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -242,4 +366,44 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
 
   String _capitalize(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+}
+
+class _ResizeDivider extends StatelessWidget {
+  final void Function(double dx) onDrag;
+
+  const _ResizeDivider({required this.onDrag});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).dividerColor;
+    return MouseRegion(
+      cursor: SystemMouseCursors.resizeColumn,
+      child: GestureDetector(
+        onHorizontalDragUpdate: (details) => onDrag(details.delta.dx),
+        child: SizedBox(
+          width: 12,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Thin divider line
+              Positioned.fill(
+                child: Center(
+                  child: Container(width: 1, color: color),
+                ),
+              ),
+              // Grip pill
+              Container(
+                width: 4,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
