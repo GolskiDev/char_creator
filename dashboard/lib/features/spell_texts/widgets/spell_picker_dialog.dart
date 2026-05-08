@@ -7,12 +7,17 @@ import 'spell_sort_dropdown.dart';
 /// A dialog for browsing and selecting multiple spells from the SRD.
 /// Returns a list of selected [Spell]s (dashboard model) when confirmed.
 class SpellPickerDialog extends StatefulWidget {
-  const SpellPickerDialog({super.key});
+  final Map<String, int> firestoreCount;
 
-  static Future<List<Spell>?> show(BuildContext context) {
+  const SpellPickerDialog({super.key, this.firestoreCount = const {}});
+
+  static Future<List<Spell>?> show(
+    BuildContext context, {
+    Map<String, int> firestoreCount = const {},
+  }) {
     return showDialog<List<Spell>>(
       context: context,
-      builder: (_) => const SpellPickerDialog(),
+      builder: (_) => SpellPickerDialog(firestoreCount: firestoreCount),
     );
   }
 
@@ -222,6 +227,7 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
                         final spell = _filtered[index];
                         final isChecked = _checkedIds.contains(spell.id);
                         final isPreviewed = _previewed?.id == spell.id;
+                        final count = widget.firestoreCount[spell.id] ?? 0;
                         return ListTile(
                           dense: true,
                           selected: isPreviewed,
@@ -235,6 +241,9 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
                             '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school!)}' : ''}',
                             style: const TextStyle(fontSize: 11),
                           ),
+                          trailing: count > 0
+                              ? _CountBadge(count: count)
+                              : null,
                           onTap: () => setState(() => _previewed = spell),
                         );
                       },
@@ -270,6 +279,7 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
 
     final spell = _previewed!;
     final isChecked = _checkedIds.contains(spell.id);
+    final count = widget.firestoreCount[spell.id] ?? 0;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -319,6 +329,10 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
                   '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school!)}' : ''}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
+                if (count > 0) ...[
+                  const SizedBox(height: 4),
+                  _CountBadge(count: count),
+                ],
                 const SizedBox(height: 8),
                 Text(
                   spell.description,
@@ -334,6 +348,36 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
 
   String _capitalize(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+}
+
+class _CountBadge extends StatelessWidget {
+  final int count;
+  const _CountBadge({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: scheme.secondaryContainer,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            '$count in Firestore',
+            style: TextStyle(
+              fontSize: 11,
+              color: scheme.onSecondaryContainer,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _ResizeDivider extends StatelessWidget {

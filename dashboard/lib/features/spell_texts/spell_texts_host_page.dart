@@ -82,7 +82,7 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
         orElse: () => LlmProvider.openAI,
       );
       _apiKey = prefs.getString(_keyApiKey) ?? '';
-      _model = prefs.getString(_keyModel) ?? 'gpt-4.1-nano-2026-03-17';
+      _model = prefs.getString(_keyModel) ?? 'gpt-5.4-nano-2026-03-17';
       _baseUrl = prefs.getString(_keyBaseUrl) ?? '';
       final rawSpells = prefs.getStringList(_keySpells) ?? [];
       _spells = rawSpells.map(_spellFromRaw).whereType<Spell>().toList();
@@ -319,9 +319,17 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
   }
 
   void _openSpellManager() {
+    final firestoreCount = {
+      for (final spell in _spells)
+        spell.id: _firestoreTexts.where((t) => t.spellId == spell.id).length,
+    };
     showDialog<void>(
       context: context,
-      builder: (_) => _SpellManagerDialog(spells: _spells, onSave: _saveSpells),
+      builder: (_) => _SpellManagerDialog(
+        spells: _spells,
+        onSave: _saveSpells,
+        firestoreCount: firestoreCount,
+      ),
     );
   }
 
@@ -830,8 +838,13 @@ class _LlmConfigDialogState extends State<_LlmConfigDialog> {
 class _SpellManagerDialog extends StatefulWidget {
   final List<Spell> spells;
   final Future<void> Function(List<Spell>) onSave;
+  final Map<String, int> firestoreCount;
 
-  const _SpellManagerDialog({required this.spells, required this.onSave});
+  const _SpellManagerDialog({
+    required this.spells,
+    required this.onSave,
+    required this.firestoreCount,
+  });
 
   @override
   State<_SpellManagerDialog> createState() => _SpellManagerDialogState();
@@ -872,7 +885,7 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
   }
 
   Future<void> _pickFromSrd() async {
-    final picked = await SpellPickerDialog.show(context);
+    final picked = await SpellPickerDialog.show(context, firestoreCount: widget.firestoreCount);
     if (picked == null || picked.isEmpty) return;
     setState(() {
       for (final spell in picked) {
