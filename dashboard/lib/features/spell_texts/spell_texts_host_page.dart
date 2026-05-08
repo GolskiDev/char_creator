@@ -14,6 +14,7 @@ import 'services/llm_provider.dart';
 import 'services/prompt_history_service.dart';
 import 'services/spell_storage_service.dart';
 import 'services/spell_text_service.dart';
+import 'widgets/spell_picker_dialog.dart';
 import 'widgets/spell_texts_page.dart';
 
 class SpellTextsHostPage extends StatefulWidget {
@@ -36,9 +37,9 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
   List<Spell> _spells = [];
   bool _loadingService = true;
   String? _error;
-  LlmProvider _provider = LlmProvider.anthropic;
+  LlmProvider _provider = LlmProvider.openAI;
   String _apiKey = '';
-  String _model = 'claude-haiku-4-5-20251001';
+  String _model = 'gpt-5.4-nano-2026-03-17';
   String _baseUrl = '';
 
   // DailyText management
@@ -62,11 +63,13 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
   Future<void> _initService() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      _provider = LlmProvider.values.byName(
-        prefs.getString(_keyProvider) ?? LlmProvider.anthropic.name,
+      final savedProvider = prefs.getString(_keyProvider);
+      _provider = LlmProvider.values.firstWhere(
+        (p) => p.name == savedProvider,
+        orElse: () => LlmProvider.openAI,
       );
       _apiKey = prefs.getString(_keyApiKey) ?? '';
-      _model = prefs.getString(_keyModel) ?? 'claude-haiku-4-5-20251001';
+      _model = prefs.getString(_keyModel) ?? 'gpt-4.1-nano-2026-03-17';
       _baseUrl = prefs.getString(_keyBaseUrl) ?? '';
       final rawSpells = prefs.getStringList(_keySpells) ?? [];
       _spells = rawSpells.map(_spellFromRaw).whereType<Spell>().toList();
@@ -730,6 +733,16 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
     });
   }
 
+  Future<void> _pickFromSrd() async {
+    final spell = await SpellPickerDialog.show(context);
+    if (spell == null) return;
+    setState(() {
+      if (!_spells.any((s) => s.id == spell.id)) {
+        _spells.add(spell);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -770,7 +783,16 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: _pickFromSrd,
+                icon: const Icon(Icons.auto_awesome, size: 16),
+                label: const Text('Browse SRD spells'),
+              ),
+            ),
+            const SizedBox(height: 4),
             if (_spells.isNotEmpty)
               SizedBox(
                 height: 200,

@@ -10,6 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  spells_and_tools:
+    path: ../
+
   # Firebase dependencies
   firebase_core:
   cloud_firestore:
