@@ -96,13 +96,14 @@ class SpellTextService {
     onDismissed?.call(result);
   }
 
-  /// Returns a JSON string containing only accepted results.
+  /// Returns a JSON string of accepted results in DailyText format {id, spellId, subtitle}.
   String exportAcceptedToJson() {
-    final accepted = _results
-        .where((r) => r.status == SpellTextStatus.accepted)
-        .map((r) => r.toJson())
-        .toList();
-    return jsonEncode(accepted);
+    final accepted = _results.where((r) => r.status == SpellTextStatus.accepted);
+    return jsonEncode(
+      accepted
+          .map((r) => {'id': r.id, 'spellId': r.spellId, 'subtitle': r.generatedText})
+          .toList(),
+    );
   }
 
   SpellTextResult _findById(String id) {

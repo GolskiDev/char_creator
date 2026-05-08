@@ -16,4 +16,12 @@ class DailyText {
   Map<String, dynamic> toJson() {
     return {'id': id, 'spellId': spellId, 'subtitle': subtitle};
   }
+
+  DailyText copyWith({String? id, String? spellId, String? subtitle}) {
+    return DailyText(
+      id: id ?? this.id,
+      spellId: spellId ?? this.spellId,
+      subtitle: subtitle ?? this.subtitle,
+    );
+  }
 }

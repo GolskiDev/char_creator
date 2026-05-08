@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'agreements/agreements_list_page.dart';
-import 'daily_texts/daily_texts_list_page.dart';
 import 'spell_texts/spell_texts_host_page.dart';
 import 'updates/updates_page.dart';
 
@@ -18,7 +17,6 @@ class _MainPageState extends State<MainPage> {
   static final List<_NavItem> _navItems = [
     _NavItem('Agreements', Icons.description, AgreementsListPage()),
     _NavItem('App Versions', Icons.system_update, AppVersionsPage()),
-    _NavItem('Daily Texts', Icons.text_snippet, DailyTextsListPage()),
     _NavItem('Spell Texts', Icons.auto_awesome, SpellTextsHostPage()),
   ];
 

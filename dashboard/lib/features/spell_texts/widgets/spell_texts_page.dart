@@ -17,6 +17,7 @@ class SpellTextsPage extends StatefulWidget {
   final PromptHistoryService promptHistory;
   final bool showExportButton;
   final void Function(String json)? onExport;
+  final VoidCallback? onUploadToFirestore;
 
   const SpellTextsPage({
     super.key,
@@ -25,6 +26,7 @@ class SpellTextsPage extends StatefulWidget {
     required this.promptHistory,
     this.showExportButton = true,
     this.onExport,
+    this.onUploadToFirestore,
   });
 
   @override
@@ -129,20 +131,27 @@ class _SpellTextsPageState extends State<SpellTextsPage> {
                     },
                   ),
           ),
-          if (widget.showExportButton)
+          if (widget.showExportButton || widget.onUploadToFirestore != null)
             Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  FilledButton.icon(
-                    onPressed: () {
-                      final json = widget.service.exportAcceptedToJson();
-                      widget.onExport?.call(json);
-                    },
-                    icon: const Icon(Icons.download),
-                    label: const Text('Export accepted'),
-                  ),
+                  if (widget.showExportButton)
+                    OutlinedButton.icon(
+                      onPressed: () =>
+                          widget.onExport?.call(widget.service.exportAcceptedToJson()),
+                      icon: const Icon(Icons.download),
+                      label: const Text('Export accepted'),
+                    ),
+                  if (widget.onUploadToFirestore != null) ...[
+                    const SizedBox(width: 8),
+                    FilledButton.icon(
+                      onPressed: widget.onUploadToFirestore,
+                      icon: const Icon(Icons.cloud_upload),
+                      label: const Text('Upload to Firestore'),
+                    ),
+                  ],
                 ],
               ),
             ),
