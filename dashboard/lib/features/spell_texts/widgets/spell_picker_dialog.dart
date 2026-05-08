@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/spell.dart';
 import '../services/srd_loader.dart';
-
-enum _SortBy { levelThenName, name, schoolThenName }
+import 'spell_sort_dropdown.dart';
 
 /// A dialog for browsing and selecting multiple spells from the SRD.
 /// Returns a list of selected [Spell]s (dashboard model) when confirmed.
@@ -28,7 +27,7 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
   List<SrdSpell> _filtered = [];
   final Set<String> _checkedIds = {};
   SrdSpell? _previewed;
-  _SortBy _sortBy = _SortBy.levelThenName;
+  SpellSortBy _sortBy = SpellSortBy.levelThenName;
   bool _loading = true;
   String? _error;
 
@@ -64,7 +63,7 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
 
   void _onSearch() => setState(_applyFilterAndSort);
 
-  void _onSortChanged(_SortBy value) => setState(() {
+  void _onSortChanged(SpellSortBy value) => setState(() {
         _sortBy = value;
         _applyFilterAndSort();
       });
@@ -76,14 +75,14 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
         : _allSpells.where((s) => s.name.toLowerCase().contains(query)).toList();
 
     switch (_sortBy) {
-      case _SortBy.levelThenName:
+      case SpellSortBy.levelThenName:
         list.sort((a, b) {
           final c = a.level.compareTo(b.level);
           return c != 0 ? c : a.name.compareTo(b.name);
         });
-      case _SortBy.name:
+      case SpellSortBy.name:
         list.sort((a, b) => a.name.compareTo(b.name));
-      case _SortBy.schoolThenName:
+      case SpellSortBy.schoolThenName:
         list.sort((a, b) {
           final sa = a.school ?? '';
           final sb = b.school ?? '';
@@ -211,40 +210,9 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
-                    child: DropdownButtonFormField<_SortBy>(
-                      initialValue: _sortBy,
-                      isDense: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Sort by',
-                        isDense: true,
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          value: _SortBy.levelThenName,
-                          child: Row(children: [
-                            const Icon(Icons.format_list_numbered, size: 16),
-                            const SizedBox(width: 8),
-                            const Text('Level → Name'),
-                          ]),
-                        ),
-                        DropdownMenuItem(
-                          value: _SortBy.name,
-                          child: Row(children: [
-                            const Icon(Icons.sort_by_alpha, size: 16),
-                            const SizedBox(width: 8),
-                            const Text('Name'),
-                          ]),
-                        ),
-                        DropdownMenuItem(
-                          value: _SortBy.schoolThenName,
-                          child: Row(children: [
-                            const Icon(Icons.school, size: 16),
-                            const SizedBox(width: 8),
-                            const Text('School → Name'),
-                          ]),
-                        ),
-                      ],
-                      onChanged: (v) => _onSortChanged(v!),
+                    child: SpellSortDropdown(
+                      value: _sortBy,
+                      onChanged: _onSortChanged,
                     ),
                   ),
                   Expanded(

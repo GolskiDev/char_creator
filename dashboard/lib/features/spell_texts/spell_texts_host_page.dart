@@ -14,7 +14,9 @@ import 'services/llm_provider.dart';
 import 'services/prompt_history_service.dart';
 import 'services/spell_storage_service.dart';
 import 'services/spell_text_service.dart';
+import 'services/srd_loader.dart';
 import 'widgets/spell_picker_dialog.dart';
+import 'widgets/spell_sort_dropdown.dart';
 import 'widgets/spell_texts_page.dart';
 
 class SpellTextsHostPage extends StatefulWidget {
@@ -49,11 +51,22 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
   List<DailyText> _firestoreTexts = [];
   bool _loadingFirestore = true;
 
+  // SRD lookup for sorting
+  Map<String, SrdSpell> _srdSpells = {};
+  SpellSortBy _stagingSort = SpellSortBy.levelThenName;
+  SpellSortBy _firestoreSort = SpellSortBy.levelThenName;
+
   @override
   void initState() {
     super.initState();
     _initService();
     _loadFirestore();
+    _loadSrdSpells();
+  }
+
+  Future<void> _loadSrdSpells() async {
+    final spells = await SrdLoader.loadSpells();
+    if (mounted) setState(() => _srdSpells = {for (final s in spells) s.id: s});
   }
 
   // ---------------------------------------------------------------------------
@@ -417,6 +430,66 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Sort + group helpers for DailyText lists
+  // ---------------------------------------------------------------------------
+
+  List<Object> _sortedItems(List<DailyText> texts, SpellSortBy sort) {
+    final sorted = List<DailyText>.from(texts);
+    switch (sort) {
+      case SpellSortBy.levelThenName:
+        sorted.sort((a, b) {
+          final sa = _srdSpells[a.spellId];
+          final sb = _srdSpells[b.spellId];
+          if (sa == null && sb == null) return 0;
+          if (sa == null) return 1;
+          if (sb == null) return -1;
+          final c = sa.level.compareTo(sb.level);
+          return c != 0 ? c : sa.name.compareTo(sb.name);
+        });
+      case SpellSortBy.name:
+        sorted.sort((a, b) {
+          final na = _srdSpells[a.spellId]?.name ?? a.spellId;
+          final nb = _srdSpells[b.spellId]?.name ?? b.spellId;
+          return na.compareTo(nb);
+        });
+      case SpellSortBy.schoolThenName:
+        sorted.sort((a, b) => a.spellId.compareTo(b.spellId));
+    }
+    if (sort != SpellSortBy.levelThenName) return sorted;
+
+    // Interleave level headers
+    final items = <Object>[];
+    int? lastLevel;
+    for (final text in sorted) {
+      final spell = _srdSpells[text.spellId];
+      final level = spell?.level;
+      if (level != lastLevel) {
+        items.add(spell?.levelLabel ?? 'Unknown');
+        lastLevel = level;
+      }
+      items.add(text);
+    }
+    return items;
+  }
+
+  Widget _buildTextList({
+    required List<DailyText> texts,
+    required SpellSortBy sort,
+    required Widget Function(DailyText, int) tileBuilder,
+  }) {
+    if (texts.isEmpty) return const SizedBox.shrink();
+    final items = _sortedItems(texts, sort);
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        if (item is String) return _LevelHeader(label: item);
+        return tileBuilder(item as DailyText, index);
+      },
+    );
+  }
+
   Widget _buildStagingTab() {
     return Column(
       children: [
@@ -427,6 +500,15 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
               Text(
                 'Pending upload',
                 style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(width: 12),
+              SizedBox(
+                width: 160,
+                child: SpellSortDropdown(
+                  value: _stagingSort,
+                  onChanged: (v) => setState(() => _stagingSort = v),
+                  options: const [SpellSortBy.levelThenName, SpellSortBy.name],
+                ),
               ),
               const Spacer(),
               TextButton.icon(
@@ -447,16 +529,16 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
         Expanded(
           child: _stagingTexts.isEmpty
               ? const Center(child: Text('No pending texts. Import JSON or add manually.'))
-              : ListView.builder(
-                  itemCount: _stagingTexts.length,
-                  itemBuilder: (context, index) {
-                    final text = _stagingTexts[index];
-                    return _DailyTextTile(
-                      text: text,
-                      onEdit: () => _showDailyTextDialog(context, existing: text),
-                      onDelete: () => setState(() => _stagingTexts.removeAt(index)),
-                    );
-                  },
+              : _buildTextList(
+                  texts: _stagingTexts,
+                  sort: _stagingSort,
+                  tileBuilder: (text, _) => _DailyTextTile(
+                    key: ValueKey(text.id),
+                    text: text,
+                    onEdit: () => _showDailyTextDialog(context, existing: text),
+                    onDelete: () => setState(
+                        () => _stagingTexts.removeWhere((t) => t.id == text.id)),
+                  ),
                 ),
         ),
         const Divider(height: 1),
@@ -495,6 +577,15 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
           child: Row(
             children: [
               Text('Firestore', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(width: 12),
+              SizedBox(
+                width: 160,
+                child: SpellSortDropdown(
+                  value: _firestoreSort,
+                  onChanged: (v) => setState(() => _firestoreSort = v),
+                  options: const [SpellSortBy.levelThenName, SpellSortBy.name],
+                ),
+              ),
               const Spacer(),
               IconButton(
                 tooltip: 'Refresh',
@@ -510,23 +601,22 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
               ? const Center(child: CircularProgressIndicator())
               : _firestoreTexts.isEmpty
                   ? const Center(child: Text('No texts on Firestore yet.'))
-                  : ListView.builder(
-                      itemCount: _firestoreTexts.length,
-                      itemBuilder: (context, index) {
-                        final text = _firestoreTexts[index];
-                        return _DailyTextTile(
-                          text: text,
-                          onEdit: () => _showDailyTextDialog(
-                            context,
-                            existing: text,
-                            isFirestore: true,
-                          ),
-                          onDelete: () async {
-                            await _repository.delete(text.id);
-                            await _loadFirestore();
-                          },
-                        );
-                      },
+                  : _buildTextList(
+                      texts: _firestoreTexts,
+                      sort: _firestoreSort,
+                      tileBuilder: (text, _) => _DailyTextTile(
+                        key: ValueKey(text.id),
+                        text: text,
+                        onEdit: () => _showDailyTextDialog(
+                          context,
+                          existing: text,
+                          isFirestore: true,
+                        ),
+                        onDelete: () async {
+                          await _repository.delete(text.id);
+                          await _loadFirestore();
+                        },
+                      ),
                     ),
         ),
       ],
@@ -538,12 +628,32 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
 // Shared tile for DailyText items
 // ---------------------------------------------------------------------------
 
+class _LevelHeader extends StatelessWidget {
+  final String label;
+  const _LevelHeader({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Text(
+        label,
+        style: Theme.of(context)
+            .textTheme
+            .labelMedium
+            ?.copyWith(color: Theme.of(context).colorScheme.primary),
+      ),
+    );
+  }
+}
+
 class _DailyTextTile extends StatelessWidget {
   final DailyText text;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const _DailyTextTile({
+    super.key,
     required this.text,
     required this.onEdit,
     required this.onDelete,
