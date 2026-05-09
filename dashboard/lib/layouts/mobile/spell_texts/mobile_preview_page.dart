@@ -146,9 +146,10 @@ class _MobilePreviewPageState extends State<MobilePreviewPage> {
         ),
         body: GestureDetector(
           onHorizontalDragEnd: (details) {
-            if (details.primaryVelocity == null) return;
-            if (details.primaryVelocity! < -300) _ctrl.goNext();
-            if (details.primaryVelocity! > 300) _ctrl.goPrev();
+            final velocity = details.primaryVelocity;
+            if (velocity == null) return;
+            if (velocity < -300) _ctrl.goNext();
+            if (velocity > 300) _ctrl.goPrev();
           },
           child: Column(
             children: [

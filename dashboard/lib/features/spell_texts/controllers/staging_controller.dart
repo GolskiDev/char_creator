@@ -40,8 +40,9 @@ class StagingController extends ChangeNotifier {
   // ---------------------------------------------------------------------------
 
   List<SpellTextResult> get filteredResults {
-    if (parent.service == null) return [];
-    return parent.service!.results.where((r) {
+    final svc = parent.service;
+    if (svc == null) return [];
+    return svc.results.where((r) {
       if (filterSpellIds.isNotEmpty && !filterSpellIds.contains(r.spellId)) {
         return false;
       }
@@ -117,27 +118,32 @@ class StagingController extends ChangeNotifier {
   }
 
   Future<void> accept(String id) async {
-    await parent.service!.accept(id);
+    final svc = parent.service;
+    if (svc == null) return;
+    await svc.accept(id);
     parent.notifyListeners();
   }
 
   Future<void> dismiss(String id) async {
-    await parent.service!.dismiss(id);
+    final svc = parent.service;
+    if (svc == null) return;
+    await svc.dismiss(id);
     parent.notifyListeners();
   }
 
   /// Imports results from a JSON file. Returns ({added, skipped}).
   Future<({int added, int skipped})> importFromFile(
       List<Spell> spells) async {
-    final picked = await FilePicker.platform.pickFiles(
+    final picked = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['json'],
     );
-    if (picked == null || picked.files.single.bytes == null) {
+    final bytes = picked?.files.single.bytes;
+    if (picked == null || bytes == null) {
       return (added: 0, skipped: 0);
     }
 
-    final jsonString = utf8.decode(picked.files.single.bytes!);
+    final jsonString = utf8.decode(bytes);
     late final List<dynamic> jsonList;
     try {
       jsonList = json.decode(jsonString) as List<dynamic>;
@@ -160,7 +166,9 @@ class StagingController extends ChangeNotifier {
       );
     }).toList();
 
-    final skipped = await parent.service!.importResults(incoming);
+    final svc = parent.service;
+    if (svc == null) return (added: 0, skipped: 0);
+    final skipped = await svc.importResults(incoming);
     parent.notifyListeners();
     notifyListeners();
     return (added: incoming.length - skipped, skipped: skipped);

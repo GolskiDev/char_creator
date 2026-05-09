@@ -117,7 +117,9 @@ class _AgreementDeleteAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!kDebugMode || type == null || ref == null) {
+    final agreementType = type;
+    final widgetRef = ref;
+    if (!kDebugMode || agreementType == null || widgetRef == null) {
       return const SizedBox.shrink();
     }
     return IconButton(
@@ -144,9 +146,9 @@ class _AgreementDeleteAction extends StatelessWidget {
           ),
         );
         if (confirmed == true) {
-          await ref!
+          await widgetRef
               .read(agreementsRepositoryProvider)
-              .deleteAgreement(type!, agreement.version);
+              .deleteAgreement(agreementType, agreement.version);
           if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Agreement ${agreement.version} deleted.')),
@@ -363,11 +365,12 @@ class _AddAgreementFab extends ConsumerWidget {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    if (formKey.currentState?.validate() ?? false) {
+                    final type = selectedType;
+                    if (type != null && (formKey.currentState?.validate() ?? false)) {
                       final repo = ref.read(agreementsRepositoryProvider);
                       await repo.addAgreement(
                         AgreementModel(
-                          type: selectedType!,
+                          type: type,
                           effectiveDate: Timestamp.fromDate(selectedDate),
                           version: versionController.text.trim(),
                           extra: {'link_en': linkController.text.trim()},

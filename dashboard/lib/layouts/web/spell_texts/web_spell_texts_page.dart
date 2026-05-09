@@ -184,7 +184,7 @@ class _WebSpellTextsPageState extends State<WebSpellTextsPage> {
   void _openSettings() {
     showDialog<void>(
       context: context,
-      builder: (_) => _LlmConfigDialog(
+      builder: (_) => LlmConfigDialog(
         provider: _ctrl.provider,
         apiKey: _ctrl.apiKey,
         model: _ctrl.model,
@@ -212,8 +212,9 @@ class _WebSpellTextsPageState extends State<WebSpellTextsPage> {
   }
 
   void _openSnippetManager() {
-    if (_ctrl.snippetService == null) return;
-    SnippetManagerDialog.show(context, _ctrl.snippetService!);
+    final snippetService = _ctrl.snippetService;
+    if (snippetService == null) return;
+    SnippetManagerDialog.show(context, snippetService);
   }
 }
 
@@ -252,7 +253,7 @@ class _TabBadge extends StatelessWidget {
 // LLM config dialog
 // ---------------------------------------------------------------------------
 
-class _LlmConfigDialog extends StatefulWidget {
+class LlmConfigDialog extends StatefulWidget {
   final LlmProvider provider;
   final String apiKey;
   final String model;
@@ -264,7 +265,8 @@ class _LlmConfigDialog extends StatefulWidget {
     required String baseUrl,
   }) onSave;
 
-  const _LlmConfigDialog({
+  const LlmConfigDialog({
+    super.key,
     required this.provider,
     required this.apiKey,
     required this.model,
@@ -273,10 +275,10 @@ class _LlmConfigDialog extends StatefulWidget {
   });
 
   @override
-  State<_LlmConfigDialog> createState() => _LlmConfigDialogState();
+  State<LlmConfigDialog> createState() => _LlmConfigDialogState();
 }
 
-class _LlmConfigDialogState extends State<_LlmConfigDialog> {
+class _LlmConfigDialogState extends State<LlmConfigDialog> {
   late LlmProvider _provider;
   late final TextEditingController _apiKey;
   late final TextEditingController _model;
@@ -315,7 +317,7 @@ class _LlmConfigDialogState extends State<_LlmConfigDialog> {
                   .map((p) =>
                       DropdownMenuItem(value: p, child: Text(p.name)))
                   .toList(),
-              onChanged: (v) => setState(() => _provider = v!),
+              onChanged: (v) { if (v != null) setState(() => _provider = v); },
             ),
             const SizedBox(height: 12),
             if (_provider != LlmProvider.ollama)

@@ -33,7 +33,7 @@ class WebSpellTextCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (duplicateWarning != null)
+            if (duplicateWarning case final warning?)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Row(
@@ -43,7 +43,7 @@ class WebSpellTextCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        duplicateWarning!,
+                        warning,
                         style: TextStyle(fontSize: 11, color: scheme.error),
                       ),
                     ),
@@ -64,18 +64,18 @@ class WebSpellTextCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(result.generatedText),
             if (result.temperature != null ||
-                (result.metadata != null && result.metadata!.isNotEmpty)) ...[
+                result.metadata?.isNotEmpty == true) ...[
               const SizedBox(height: 6),
               Wrap(
                 spacing: 4,
                 runSpacing: 4,
                 children: [
-                  if (result.temperature != null)
+                  if (result.temperature case final temp?)
                     MetaChip(
-                      label: 'temp: ${result.temperature!.toStringAsFixed(1)}',
+                      label: 'temp: ${temp.toStringAsFixed(1)}',
                     ),
-                  if (result.metadata != null)
-                    ...result.metadata!.entries
+                  if (result.metadata case final meta?)
+                    ...meta.entries
                         .map((e) => MetaChip(label: '${e.key}: ${e.value}')),
                 ],
               ),

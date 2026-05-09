@@ -115,18 +115,19 @@ class _SpellThumbnail extends StatelessWidget {
     const size = 40.0;
 
     // Show network images if the path is a URL.
-    final isUrl = imagePath != null &&
-        (imagePath!.startsWith('http://') || imagePath!.startsWith('https://'));
+    final path = imagePath;
+    final isUrl = path != null &&
+        (path.startsWith('http://') || path.startsWith('https://'));
 
     if (isUrl) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(4),
         child: Image.network(
-          imagePath!,
+          path,
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const SizedBox(
+          errorBuilder: (_, __, e) => const SizedBox(
             width: size,
             height: size,
             child: Icon(Icons.broken_image, size: 24),
@@ -137,7 +138,7 @@ class _SpellThumbnail extends StatelessWidget {
 
     // On web, local file paths are not accessible — fall back to icon.
     // On mobile, local paths can be loaded; that path is handled in the host app.
-    if (imagePath == null || kIsWeb) {
+    if (path == null || kIsWeb) {
       return const SizedBox(
         width: size,
         height: size,
@@ -147,7 +148,7 @@ class _SpellThumbnail extends StatelessWidget {
 
     // Mobile: load from local file path via Image.file (dart:io).
     // This import is in a separate file to keep web compilation clean.
-    return _MobileImage(path: imagePath!, size: size);
+    return _MobileImage(path: path, size: size);
   }
 }
 

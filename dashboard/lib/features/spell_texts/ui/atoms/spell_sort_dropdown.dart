@@ -34,7 +34,7 @@ class SpellSortDropdown extends StatelessWidget {
             ]),
           ),
       ],
-      onChanged: (v) => onChanged(v!),
+      onChanged: (v) { if (v != null) onChanged(v); },
     );
   }
 

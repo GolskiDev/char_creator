@@ -38,7 +38,7 @@ class SpellTextResult {
         'generatedText': generatedText,
         'createdAt': createdAt.toIso8601String(),
         'status': status.name,
-        if (metadata != null && metadata!.isNotEmpty) 'metadata': metadata,
+        if (metadata?.isNotEmpty == true) 'metadata': metadata,
         if (temperature != null) 'temperature': temperature,
       };
 

@@ -90,11 +90,10 @@ class MobileSpellTextCard extends StatelessWidget {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (result.temperature != null) ...[
+                      if (result.temperature case final temp?) ...[
                         const SizedBox(height: 4),
                         MetaChip(
-                          label:
-                              'temp: ${result.temperature!.toStringAsFixed(1)}',
+                          label: 'temp: ${temp.toStringAsFixed(1)}',
                         ),
                       ],
                     ],

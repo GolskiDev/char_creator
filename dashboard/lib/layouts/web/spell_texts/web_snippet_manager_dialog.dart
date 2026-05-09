@@ -66,14 +66,17 @@ class _SnippetManagerDialogState extends State<SnippetManagerDialog> {
       if (_editing == null) {
         await widget.service.add(name, content);
       } else {
-        await widget.service.update(
-          PromptSnippet(
-            id: _editing!.id,
-            name: name,
-            content: content,
-            createdAt: _editing!.createdAt,
-          ),
-        );
+        final editing = _editing;
+        if (editing != null) {
+          await widget.service.update(
+            PromptSnippet(
+              id: editing.id,
+              name: name,
+              content: content,
+              createdAt: editing.createdAt,
+            ),
+          );
+        }
       }
       if (mounted) {
         setState(() {

@@ -71,10 +71,11 @@ class _PromptEditorPanelState extends State<PromptEditorPanel> {
   }
 
   void _showSnippetInsert(BuildContext context) {
-    if (widget.snippetService == null) return;
+    final snippetService = widget.snippetService;
+    if (snippetService == null) return;
     SnippetInsertSheet.show(
       context,
-      service: widget.snippetService!,
+      service: snippetService,
       onInsert: (ref) {
         final sel = _controller.selection;
         final text = _controller.text;
@@ -123,39 +124,78 @@ class _PromptEditorPanelState extends State<PromptEditorPanel> {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Text('Count:', style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(width: 8),
-            _CountField(
-              value: widget.count,
-              onChanged: widget.onCountChanged,
-            ),
-            const SizedBox(width: 16),
-            Text('Temp:', style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(width: 4),
-            SizedBox(
-              width: 120,
-              child: Slider(
-                value: widget.temperature,
-                min: 0.0,
-                max: widget.temperatureMax,
-                divisions: (widget.temperatureMax * 10).round(),
-                label: widget.temperature.toStringAsFixed(1),
-                onChanged: widget.onTemperatureChanged,
-              ),
-            ),
-            Text(
-              '${widget.temperature.toStringAsFixed(1)}/${widget.temperatureMax.toStringAsFixed(0)}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const Spacer(),
-            FilledButton.icon(
-              onPressed: () => widget.onGenerate(_controller.text.trim()),
-              icon: const Icon(Icons.auto_awesome),
-              label: const Text('Generate'),
-            ),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final narrow = constraints.maxWidth < 480;
+            if (narrow) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Text('Count:', style: Theme.of(context).textTheme.bodyMedium),
+                      const SizedBox(width: 8),
+                      _CountField(value: widget.count, onChanged: widget.onCountChanged),
+                      const SizedBox(width: 16),
+                      Text('Temp:', style: Theme.of(context).textTheme.bodyMedium),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Slider(
+                          value: widget.temperature,
+                          min: 0.0,
+                          max: widget.temperatureMax,
+                          divisions: (widget.temperatureMax * 10).round(),
+                          label: widget.temperature.toStringAsFixed(1),
+                          onChanged: widget.onTemperatureChanged,
+                        ),
+                      ),
+                      Text(
+                        widget.temperature.toStringAsFixed(1),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
+                    onPressed: () => widget.onGenerate(_controller.text.trim()),
+                    icon: const Icon(Icons.auto_awesome),
+                    label: const Text('Generate'),
+                  ),
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Text('Count:', style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(width: 8),
+                _CountField(value: widget.count, onChanged: widget.onCountChanged),
+                const SizedBox(width: 16),
+                Text('Temp:', style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(width: 4),
+                SizedBox(
+                  width: 120,
+                  child: Slider(
+                    value: widget.temperature,
+                    min: 0.0,
+                    max: widget.temperatureMax,
+                    divisions: (widget.temperatureMax * 10).round(),
+                    label: widget.temperature.toStringAsFixed(1),
+                    onChanged: widget.onTemperatureChanged,
+                  ),
+                ),
+                Text(
+                  '${widget.temperature.toStringAsFixed(1)}/${widget.temperatureMax.toStringAsFixed(0)}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const Spacer(),
+                FilledButton.icon(
+                  onPressed: () => widget.onGenerate(_controller.text.trim()),
+                  icon: const Icon(Icons.auto_awesome),
+                  label: const Text('Generate'),
+                ),
+              ],
+            );
+          },
         ),
       ],
     );

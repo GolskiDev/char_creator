@@ -13,8 +13,9 @@ import '../../web/spell_texts/web_snippet_manager_dialog.dart';
 /// Layout is single-column with full-width fields.
 class MobileGeneratePage extends StatefulWidget {
   final SpellTextsController ctrl;
+  final VoidCallback? onOpenSettings;
 
-  const MobileGeneratePage({super.key, required this.ctrl});
+  const MobileGeneratePage({super.key, required this.ctrl, this.onOpenSettings});
 
   @override
   State<MobileGeneratePage> createState() => _MobileGeneratePageState();
@@ -95,12 +96,15 @@ class _MobileGeneratePageState extends State<MobileGeneratePage> {
   }
 
   void _openSnippetManager() {
-    if (widget.ctrl.snippetService == null) return;
-    SnippetManagerDialog.show(context, widget.ctrl.snippetService!);
+    final snippetService = widget.ctrl.snippetService;
+    if (snippetService == null) return;
+    SnippetManagerDialog.show(context, snippetService);
   }
 
   @override
   Widget build(BuildContext context) {
+    final promptHistory = widget.ctrl.promptHistory;
+    if (promptHistory == null) return const SizedBox.shrink();
     return SingleChildScrollView(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -123,6 +127,11 @@ class _MobileGeneratePageState extends State<MobileGeneratePage> {
                   icon: const Icon(Icons.extension_outlined),
                   onPressed: _openSnippetManager,
                 ),
+              IconButton(
+                tooltip: 'LLM settings',
+                icon: const Icon(Icons.settings),
+                onPressed: widget.onOpenSettings,
+              ),
             ],
           ),
           SpellSelector(
@@ -133,7 +142,7 @@ class _MobileGeneratePageState extends State<MobileGeneratePage> {
           ),
           const SizedBox(height: 16),
           PromptEditorPanel(
-            promptHistory: widget.ctrl.promptHistory!,
+            promptHistory: promptHistory,
             snippetService: widget.ctrl.snippetService,
             count: _count,
             onCountChanged: (v) => setState(() => _count = v),

@@ -27,12 +27,18 @@ class SrdLoader {
   static List<SrdSpell>? _cache;
 
   static Future<List<SrdSpell>> loadSpells() async {
-    if (_cache != null) return _cache!;
-    final jsonString = await rootBundle.loadString(
-      'packages/spells_and_tools/assets/spells.json',
-    );
+    final cached = _cache;
+    if (cached != null) return cached;
+    final jsonString = await rootBundle
+        .loadString('packages/spells_and_tools/assets/spells.json')
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception(
+            'Timed out loading spell data. Is the spells_and_tools asset bundled?',
+          ),
+        );
     final List<dynamic> data = jsonDecode(jsonString) as List<dynamic>;
-    _cache = data.map((e) {
+    final result = data.map((e) {
       final m = e as Map<String, dynamic>;
       return SrdSpell(
         id: m['id'] as String,
@@ -42,6 +48,7 @@ class SrdLoader {
         description: m['description'] as String,
       );
     }).toList();
-    return _cache!;
+    _cache = result;
+    return result;
   }
 }

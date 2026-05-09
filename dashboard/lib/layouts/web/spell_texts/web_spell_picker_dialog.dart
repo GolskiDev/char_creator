@@ -185,85 +185,240 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Row(
-          children: [
-            // Left: search + sort + list
-            SizedBox(
-              width: _listWidth,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-                    child: TextField(
-                      controller: _searchCtrl,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: 'Search spells...',
-                        prefixIcon: const Icon(Icons.search, size: 18),
-                        isDense: true,
-                        suffixIcon: _searchCtrl.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear, size: 16),
-                                onPressed: () {
-                                  _searchCtrl.clear();
-                                  _onSearch();
-                                },
-                              )
-                            : null,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
-                    child: SpellSortDropdown(
-                      value: _sortBy,
-                      onChanged: _onSortChanged,
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _filtered.length,
-                      itemBuilder: (context, index) {
-                        final spell = _filtered[index];
-                        final isChecked = _checkedIds.contains(spell.id);
-                        final isPreviewed = _previewed?.id == spell.id;
-                        final count = widget.firestoreCount[spell.id] ?? 0;
-                        return ListTile(
-                          dense: true,
-                          selected: isPreviewed,
-                          leading: Checkbox(
-                            value: isChecked,
-                            onChanged: (_) => _toggleCheck(spell),
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          title: Text(spell.name),
-                          subtitle: Text(
-                            '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school!)}' : ''}',
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                          trailing: count > 0
-                              ? _CountBadge(count: count)
-                              : null,
-                          onTap: () => setState(() => _previewed = spell),
-                        );
+        if (constraints.maxWidth < 520) {
+          return _buildNarrowBody();
+        }
+        return _buildWideBody(constraints);
+      },
+    );
+  }
+
+  Widget _buildNarrowBody() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+          child: TextField(
+            controller: _searchCtrl,
+            decoration: InputDecoration(
+              hintText: 'Search spells...',
+              prefixIcon: const Icon(Icons.search, size: 18),
+              isDense: true,
+              suffixIcon: _searchCtrl.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, size: 16),
+                      onPressed: () {
+                        _searchCtrl.clear();
+                        _onSearch();
                       },
+                    )
+                  : null,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+          child: SpellSortDropdown(value: _sortBy, onChanged: _onSortChanged),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _filtered.length,
+            itemBuilder: (context, index) {
+              final spell = _filtered[index];
+              final isChecked = _checkedIds.contains(spell.id);
+              final count = widget.firestoreCount[spell.id] ?? 0;
+              return ListTile(
+                dense: true,
+                leading: Checkbox(
+                  value: isChecked,
+                  onChanged: (_) => _toggleCheck(spell),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                title: Text(spell.name),
+                subtitle: Text(
+                  '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school ?? '')}' : ''}',
+                  style: const TextStyle(fontSize: 11),
+                ),
+                trailing: count > 0 ? _CountBadge(count: count) : null,
+                onTap: () => _showMobilePreview(spell),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showMobilePreview(SrdSpell spell) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetCtx) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          final isChecked = _checkedIds.contains(spell.id);
+          final count = widget.firestoreCount[spell.id] ?? 0;
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                MediaQuery.of(context).viewInsets.bottom + 16,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          spell.imageAssetPath,
+                          width: 90,
+                          height: 145,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, e) => Container(
+                            width: 90,
+                            height: 145,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade800,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.auto_awesome, size: 36, color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(spell.name, style: Theme.of(context).textTheme.titleMedium),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school ?? '')}' : ''}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            if (count > 0) ...[
+                              const SizedBox(height: 6),
+                              _CountBadge(count: count),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(spell.description, style: Theme.of(context).textTheme.bodySmall),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () {
+                        setState(() {
+                          if (_checkedIds.contains(spell.id)) {
+                            _checkedIds.remove(spell.id);
+                          } else {
+                            _checkedIds.add(spell.id);
+                          }
+                        });
+                        setSheetState(() {});
+                      },
+                      style: isChecked
+                          ? FilledButton.styleFrom(
+                              backgroundColor: Theme.of(context).colorScheme.error,
+                            )
+                          : null,
+                      child: Text(isChecked ? 'Remove' : 'Add spell'),
                     ),
                   ),
                 ],
               ),
             ),
-            // Draggable divider
-            _ResizeDivider(
-              onDrag: (dx) => setState(() {
-                _listWidth =
-                    (_listWidth + dx).clamp(180.0, constraints.maxWidth - 200.0);
-              }),
-            ),
-            // Right: preview
-            Expanded(child: _buildPreview()),
-          ],
-        );
-      },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildWideBody(BoxConstraints constraints) {
+    return Row(
+      children: [
+        // Left: search + sort + list
+        SizedBox(
+          width: _listWidth,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+                child: TextField(
+                  controller: _searchCtrl,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: 'Search spells...',
+                    prefixIcon: const Icon(Icons.search, size: 18),
+                    isDense: true,
+                    suffixIcon: _searchCtrl.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 16),
+                            onPressed: () {
+                              _searchCtrl.clear();
+                              _onSearch();
+                            },
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+                child: SpellSortDropdown(
+                  value: _sortBy,
+                  onChanged: _onSortChanged,
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _filtered.length,
+                  itemBuilder: (context, index) {
+                    final spell = _filtered[index];
+                    final isChecked = _checkedIds.contains(spell.id);
+                    final isPreviewed = _previewed?.id == spell.id;
+                    final count = widget.firestoreCount[spell.id] ?? 0;
+                    return ListTile(
+                      dense: true,
+                      selected: isPreviewed,
+                      leading: Checkbox(
+                        value: isChecked,
+                        onChanged: (_) => _toggleCheck(spell),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      title: Text(spell.name),
+                      subtitle: Text(
+                        '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school ?? '')}' : ''}',
+                        style: const TextStyle(fontSize: 11),
+                      ),
+                      trailing: count > 0 ? _CountBadge(count: count) : null,
+                      onTap: () => setState(() => _previewed = spell),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Draggable divider
+        _ResizeDivider(
+          onDrag: (dx) => setState(() {
+            _listWidth =
+                (_listWidth + dx).clamp(180.0, constraints.maxWidth - 200.0);
+          }),
+        ),
+        // Right: preview
+        Expanded(child: _buildPreview()),
+      ],
     );
   }
 
@@ -277,7 +432,8 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
       );
     }
 
-    final spell = _previewed!;
+    final spell = _previewed;
+    if (spell == null) return const SizedBox.shrink();
     final isChecked = _checkedIds.contains(spell.id);
     final count = widget.firestoreCount[spell.id] ?? 0;
     return SingleChildScrollView(
@@ -326,7 +482,7 @@ class _SpellPickerDialogState extends State<SpellPickerDialog> {
                   ],
                 ),
                 Text(
-                  '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school!)}' : ''}',
+                  '${spell.levelLabel}${spell.school != null ? ' · ${_capitalize(spell.school ?? '')}' : ''}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 if (count > 0) ...[

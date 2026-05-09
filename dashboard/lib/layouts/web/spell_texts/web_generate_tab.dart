@@ -76,8 +76,8 @@ class _WebGenerateTabState extends State<WebGenerateTab> {
     final snippetNames = snippetService.snippets.map((s) => s.name).toSet();
     final refs = RegExp(r'\{\{snippet:([^}]+)\}\}').allMatches(promptText);
     final unresolved = refs
-        .map((m) => m.group(1)!)
-        .where((name) => !snippetNames.contains(name))
+        .map((m) => m.group(1) ?? '')
+        .where((name) => name.isNotEmpty && !snippetNames.contains(name))
         .toSet();
     if (unresolved.isNotEmpty && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -104,6 +104,8 @@ class _WebGenerateTabState extends State<WebGenerateTab> {
 
   @override
   Widget build(BuildContext context) {
+    final promptHistory = widget.ctrl.promptHistory;
+    if (promptHistory == null) return const SizedBox.shrink();
     return SingleChildScrollView(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -132,7 +134,7 @@ class _WebGenerateTabState extends State<WebGenerateTab> {
           ),
           const SizedBox(height: 12),
           PromptEditorPanel(
-            promptHistory: widget.ctrl.promptHistory!,
+            promptHistory: promptHistory,
             snippetService: widget.ctrl.snippetService,
             count: _count,
             onCountChanged: (v) => setState(() => _count = v),

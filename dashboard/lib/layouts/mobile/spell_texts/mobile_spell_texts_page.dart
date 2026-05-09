@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../features/spell_texts/controllers/firestore_controller.dart';
 import '../../../features/spell_texts/controllers/spell_texts_controller.dart';
 import '../../../features/spell_texts/controllers/staging_controller.dart';
+import '../../../features/spell_texts/services/llm_provider.dart';
+import '../../web/spell_texts/web_spell_texts_page.dart' show LlmConfigDialog;
 import 'mobile_firestore_page.dart';
 import 'mobile_generate_page.dart';
 import 'mobile_staging_page.dart';
@@ -46,9 +48,47 @@ class _MobileSpellTextsPageState extends State<MobileSpellTextsPage> {
     );
   }
 
+  void _openSettings() {
+    showDialog<void>(
+      context: context,
+      builder: (_) => LlmConfigDialog(
+        provider: _ctrl.provider,
+        apiKey: _ctrl.apiKey,
+        model: _ctrl.model,
+        baseUrl: _ctrl.baseUrl,
+        onSave: ({required provider, required apiKey, required model, required baseUrl}) =>
+            _ctrl.saveConfig(
+              newProvider: provider,
+              newApiKey: apiKey,
+              newModel: model,
+              newBaseUrl: baseUrl,
+            ),
+      ),
+    );
+  }
+
   Widget _buildBody(BuildContext context) {
     if (_ctrl.loadingService) {
       return const Center(child: CircularProgressIndicator());
+    }
+    if (_ctrl.error != null) {
+      return Center(child: Text('Error: ${_ctrl.error}'));
+    }
+    if (_ctrl.apiKey.isEmpty && _ctrl.provider != LlmProvider.ollama) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Configure your LLM API key to get started.'),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: _openSettings,
+              icon: const Icon(Icons.settings),
+              label: const Text('Open settings'),
+            ),
+          ],
+        ),
+      );
     }
 
     return DefaultTabController(
@@ -91,7 +131,7 @@ class _MobileSpellTextsPageState extends State<MobileSpellTextsPage> {
           Expanded(
             child: TabBarView(
               children: [
-                MobileGeneratePage(ctrl: _ctrl),
+                MobileGeneratePage(ctrl: _ctrl, onOpenSettings: _openSettings),
                 MobileStagingPage(staging: _staging, parent: _ctrl),
                 MobileFirestorePage(firestore: _firestore, parent: _ctrl),
               ],

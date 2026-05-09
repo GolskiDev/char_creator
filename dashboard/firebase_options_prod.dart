@@ -8,20 +8,23 @@ import 'package:flutter/foundation.dart'
 ///
 /// Example:
 /// ```dart
-/// import 'firebase_options.dart';
+/// import 'firebase_options_prod.dart';
 /// // ...
 /// await Firebase.initializeApp(
 ///   options: DefaultFirebaseOptions.currentPlatform,
 /// );
 /// ```
-class DefaultFirebaseOptionsDev {
+class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for android - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.iOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for ios - '
@@ -50,21 +53,13 @@ class DefaultFirebaseOptionsDev {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCTIrU8HM4dUqYiodtNj6CdAzXRPyi9KNg',
-    appId: '1:475193088114:web:54c79e251fd89b375d4aeb',
-    messagingSenderId: '475193088114',
-    projectId: 'spell-and-tools-dev',
-    authDomain: 'spell-and-tools-dev.firebaseapp.com',
-    storageBucket: 'spell-and-tools-dev.firebasestorage.app',
-    measurementId: 'G-3ZQW8916PQ',
-  );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDHdzujE9hoUyqkXktatxSmm-zQzUQIMMs',
-    appId: '1:475193088114:android:2d7a73747e5daf9b5d4aeb',
-    messagingSenderId: '475193088114',
-    projectId: 'spell-and-tools-dev',
-    storageBucket: 'spell-and-tools-dev.firebasestorage.app',
+    apiKey: 'AIzaSyA_kL5S7Ul1wlo54Kv2qXfy-zp-VgMka9A',
+    appId: '1:277623677619:web:230ec09a7b7e8340f0c6c6',
+    messagingSenderId: '277623677619',
+    projectId: 'just-a-rock-dev',
+    authDomain: 'just-a-rock-dev.firebaseapp.com',
+    storageBucket: 'just-a-rock-dev.firebasestorage.app',
+    measurementId: 'G-K4K7VVP1BV',
   );
 
 }

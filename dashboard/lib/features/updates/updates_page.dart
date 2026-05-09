@@ -43,15 +43,20 @@ class _AppVersionsPageState extends ConsumerState<AppVersionsPage> {
       body: latestAsync.when(
         data: (latest) => requiredAsync.when(
           data: (required) {
-            // Always update controllers with latest Firestore data
-            _controllers['latest_android'] ??= TextEditingController();
-            _controllers['latest_ios'] ??= TextEditingController();
-            _controllers['required_android'] ??= TextEditingController();
-            _controllers['required_ios'] ??= TextEditingController();
-            _controllers['latest_android']!.text = latest['android'] ?? '';
-            _controllers['latest_ios']!.text = latest['ios'] ?? '';
-            _controllers['required_android']!.text = required['android'] ?? '';
-            _controllers['required_ios']!.text = required['ios'] ?? '';
+            final latestAndroid =
+                _controllers['latest_android'] ??= TextEditingController();
+            final latestIos =
+                _controllers['latest_ios'] ??= TextEditingController();
+            final requiredAndroid =
+                _controllers['required_android'] ??= TextEditingController();
+            final requiredIos =
+                _controllers['required_ios'] ??= TextEditingController();
+            latestAndroid.text = latest['android'] ?? '';
+            latestIos.text = latest['ios'] ?? '';
+            requiredAndroid.text = required['android'] ?? '';
+            requiredIos.text = required['ios'] ?? '';
+
+            String? orNull(String text) => text.isEmpty ? null : text;
 
             return Padding(
               padding: const EdgeInsets.all(16),
@@ -64,12 +69,12 @@ class _AppVersionsPageState extends ConsumerState<AppVersionsPage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextFormField(
-                      controller: _controllers['latest_android'],
+                      controller: latestAndroid,
                       decoration: const InputDecoration(labelText: 'Android'),
                       validator: _versionValidator,
                     ),
                     TextFormField(
-                      controller: _controllers['latest_ios'],
+                      controller: latestIos,
                       decoration: const InputDecoration(labelText: 'iOS'),
                       validator: _versionValidator,
                     ),
@@ -79,12 +84,12 @@ class _AppVersionsPageState extends ConsumerState<AppVersionsPage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextFormField(
-                      controller: _controllers['required_android'],
+                      controller: requiredAndroid,
                       decoration: const InputDecoration(labelText: 'Android'),
                       validator: _versionValidator,
                     ),
                     TextFormField(
-                      controller: _controllers['required_ios'],
+                      controller: requiredIos,
                       decoration: const InputDecoration(labelText: 'iOS'),
                       validator: _versionValidator,
                     ),
@@ -93,51 +98,21 @@ class _AppVersionsPageState extends ConsumerState<AppVersionsPage> {
                       onPressed: _saving
                           ? null
                           : () async {
-                              if (!_formKey.currentState!.validate()) return;
+                              if (!(_formKey.currentState?.validate() ?? false)) return;
                               setState(() => _saving = true);
-                              // Only update changed fields
                               final latestUpdate = <String, dynamic>{};
                               final requiredUpdate = <String, dynamic>{};
-                              if ((_controllers['latest_android']!.text.isEmpty
-                                      ? null
-                                      : _controllers['latest_android']!.text) !=
-                                  (latest['android'] ?? null)) {
-                                latestUpdate['android'] =
-                                    _controllers['latest_android']!.text.isEmpty
-                                    ? null
-                                    : _controllers['latest_android']!.text;
+                              if (orNull(latestAndroid.text) != latest['android']) {
+                                latestUpdate['android'] = orNull(latestAndroid.text);
                               }
-                              if ((_controllers['latest_ios']!.text.isEmpty
-                                      ? null
-                                      : _controllers['latest_ios']!.text) !=
-                                  (latest['ios'] ?? null)) {
-                                latestUpdate['ios'] =
-                                    _controllers['latest_ios']!.text.isEmpty
-                                    ? null
-                                    : _controllers['latest_ios']!.text;
+                              if (orNull(latestIos.text) != latest['ios']) {
+                                latestUpdate['ios'] = orNull(latestIos.text);
                               }
-                              if ((_controllers['required_android']!
-                                          .text
-                                          .isEmpty
-                                      ? null
-                                      : _controllers['required_android']!
-                                            .text) !=
-                                  (required['android'] ?? null)) {
-                                requiredUpdate['android'] =
-                                    _controllers['required_android']!
-                                        .text
-                                        .isEmpty
-                                    ? null
-                                    : _controllers['required_android']!.text;
+                              if (orNull(requiredAndroid.text) != required['android']) {
+                                requiredUpdate['android'] = orNull(requiredAndroid.text);
                               }
-                              if ((_controllers['required_ios']!.text.isEmpty
-                                      ? null
-                                      : _controllers['required_ios']!.text) !=
-                                  (required['ios'] ?? null)) {
-                                requiredUpdate['ios'] =
-                                    _controllers['required_ios']!.text.isEmpty
-                                    ? null
-                                    : _controllers['required_ios']!.text;
+                              if (orNull(requiredIos.text) != required['ios']) {
+                                requiredUpdate['ios'] = orNull(requiredIos.text);
                               }
                               if (latestUpdate.isNotEmpty) {
                                 await repo.setVersionDoc(

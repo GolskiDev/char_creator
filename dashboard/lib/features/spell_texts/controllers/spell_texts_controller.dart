@@ -37,7 +37,7 @@ class SpellTextsController extends ChangeNotifier {
 
   LlmProvider provider = LlmProvider.openAI;
   String apiKey = '';
-  String model = 'gpt-4o-mini';
+  String model = 'gpt-5.4-nano-2026-03-17';
   String baseUrl = '';
 
   // ---------------------------------------------------------------------------
@@ -45,9 +45,10 @@ class SpellTextsController extends ChangeNotifier {
   // ---------------------------------------------------------------------------
 
   List<SpellTextResult> get readyToPush {
-    if (service == null) return [];
+    final svc = service;
+    if (svc == null) return [];
     final firestoreIds = firestoreTexts.map((t) => t.id).toSet();
-    return service!.results
+    return svc.results
         .where((r) =>
             r.status == SpellTextStatus.accepted &&
             !firestoreIds.contains(r.id))
@@ -97,7 +98,7 @@ class SpellTextsController extends ChangeNotifier {
         orElse: () => LlmProvider.openAI,
       );
       apiKey = prefs.getString(_keyApiKey) ?? '';
-      model = prefs.getString(_keyModel) ?? 'gpt-4o-mini';
+      model = prefs.getString(_keyModel) ?? 'gpt-5.4-nano-2026-03-17';
       baseUrl = prefs.getString(_keyBaseUrl) ?? '';
       final rawSpells = prefs.getStringList(_keySpells) ?? [];
       spells = rawSpells.map(_spellFromRaw).whereType<Spell>().toList();
@@ -161,7 +162,13 @@ class SpellTextsController extends ChangeNotifier {
     baseUrl = newBaseUrl;
     loadingService = true;
     notifyListeners();
-    await _buildServices();
+    try {
+      await _buildServices();
+    } catch (e) {
+      error = e.toString();
+      loadingService = false;
+      notifyListeners();
+    }
   }
 
   Future<void> saveSpells(List<Spell> newSpells) async {
