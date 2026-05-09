@@ -9,11 +9,14 @@ import '../models/spell_text_status.dart';
 import '../models/spells_config.dart';
 import 'llm_client.dart';
 import 'llm_client_factory.dart';
+import 'llm_response_parser.dart';
+import 'snippet_service.dart';
 import 'spell_storage_service.dart';
 
 class SpellTextService {
   final SpellStorageService _storage;
   final LlmClient _llm;
+  final SnippetService? _snippetService;
   final void Function(SpellTextResult)? onAccepted;
   final void Function(SpellTextResult)? onDismissed;
 
@@ -24,10 +27,12 @@ class SpellTextService {
     required SpellsConfig config,
     SpellStorageService? storage,
     LlmClient? llmClientOverride,
+    SnippetService? snippetService,
     this.onAccepted,
     this.onDismissed,
   })  : _storage = storage ?? SpellStorageService(),
-        _llm = llmClientOverride ?? buildLlmClient(config);
+        _llm = llmClientOverride ?? buildLlmClient(config),
+        _snippetService = snippetService;
 
   List<SpellTextResult> get results => List.unmodifiable(_results);
 
@@ -43,16 +48,23 @@ class SpellTextService {
   Future<SpellTextResult> generate({
     required Spell spell,
     required PromptTemplate promptTemplate,
+    double temperature = 1.0,
   }) async {
-    final prompt = promptTemplate.resolve(spell);
-    final text = await _llm.generate(prompt);
+    final snippetMap = <String, String>{
+      for (final s in (_snippetService?.snippets ?? [])) s.name: s.content,
+    };
+    final prompt = promptTemplate.resolve(spell, snippets: snippetMap);
+    final raw = await _llm.generate(prompt, temperature: temperature);
+    final parsed = parseLlmResponse(raw);
 
     final result = SpellTextResult(
       id: _uuid.v4(),
       spellId: spell.id,
       spellTitle: spell.title,
       spellDescription: spell.description,
-      generatedText: text,
+      generatedText: parsed.text,
+      metadata: parsed.metadata,
+      temperature: temperature,
       createdAt: DateTime.now(),
     );
 
@@ -66,11 +78,16 @@ class SpellTextService {
     required List<Spell> spells,
     required PromptTemplate promptTemplate,
     required int count,
+    double temperature = 1.0,
   }) async {
     final generated = <SpellTextResult>[];
     for (final spell in spells) {
       for (var i = 0; i < count; i++) {
-        generated.add(await generate(spell: spell, promptTemplate: promptTemplate));
+        generated.add(await generate(
+          spell: spell,
+          promptTemplate: promptTemplate,
+          temperature: temperature,
+        ));
       }
     }
     return generated;
@@ -94,6 +111,23 @@ class SpellTextService {
     result.status = SpellTextStatus.dismissed;
     await _storage.saveAll(_results);
     onDismissed?.call(result);
+  }
+
+  /// Imports a list of results, skipping any with IDs that already exist.
+  /// Returns the number of duplicates skipped.
+  Future<int> importResults(List<SpellTextResult> incoming) async {
+    final existingIds = _results.map((r) => r.id).toSet();
+    final toAdd = incoming.where((r) => !existingIds.contains(r.id)).toList();
+    final skipped = incoming.length - toAdd.length;
+    _results.insertAll(0, toAdd);
+    await _storage.saveAll(_results);
+    return skipped;
+  }
+
+  /// Removes a result by ID.
+  Future<void> deleteResult(String id) async {
+    _results.removeWhere((r) => r.id == id);
+    await _storage.saveAll(_results);
   }
 
   /// Returns a JSON string of accepted results in DailyText format {id, spellId, subtitle}.
