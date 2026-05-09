@@ -1,23 +1,24 @@
-import 'dart:convert';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 
 import 'models/daily_text.dart';
 import 'models/spell.dart';
+import 'models/spell_text_result.dart';
 import 'models/spell_text_status.dart';
 import 'models/spells_config.dart';
 import 'services/daily_text_repository.dart';
 import 'services/llm_provider.dart';
 import 'services/prompt_history_service.dart';
+import 'services/snippet_service.dart';
 import 'services/spell_storage_service.dart';
 import 'services/spell_text_service.dart';
 import 'services/srd_loader.dart';
+import 'widgets/firestore_tab.dart';
+import 'widgets/generate_tab.dart';
+import 'widgets/snippet_manager_dialog.dart';
 import 'widgets/spell_picker_dialog.dart';
 import 'widgets/spell_sort_dropdown.dart';
-import 'widgets/spell_texts_page.dart';
+import 'widgets/staging_tab.dart';
 
 class SpellTextsHostPage extends StatefulWidget {
   const SpellTextsHostPage({super.key});
@@ -36,24 +37,22 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
   // LLM generation
   SpellTextService? _service;
   PromptHistoryService? _promptHistory;
+  SnippetService? _snippetService;
   List<Spell> _spells = [];
   bool _loadingService = true;
   String? _error;
   LlmProvider _provider = LlmProvider.openAI;
   String _apiKey = '';
-  String _model = 'gpt-5.4-nano-2026-03-17';
+  String _model = 'gpt-4o-mini';
   String _baseUrl = '';
 
-  // DailyText management
+  // DailyText / Firestore
   final _repository = DailyTextRepository();
-  final _uuid = const Uuid();
-  final List<DailyText> _stagingTexts = [];
   List<DailyText> _firestoreTexts = [];
   bool _loadingFirestore = true;
 
-  // SRD lookup for sorting
+  // SRD lookup + sort
   Map<String, SrdSpell> _srdSpells = {};
-  SpellSortBy _stagingSort = SpellSortBy.levelThenName;
   SpellSortBy _firestoreSort = SpellSortBy.levelThenName;
 
   @override
@@ -66,11 +65,13 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
 
   Future<void> _loadSrdSpells() async {
     final spells = await SrdLoader.loadSpells();
-    if (mounted) setState(() => _srdSpells = {for (final s in spells) s.id: s});
+    if (mounted) {
+      setState(() => _srdSpells = {for (final s in spells) s.id: s});
+    }
   }
 
   // ---------------------------------------------------------------------------
-  // LLM service init
+  // Service init
   // ---------------------------------------------------------------------------
 
   Future<void> _initService() async {
@@ -82,19 +83,24 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
         orElse: () => LlmProvider.openAI,
       );
       _apiKey = prefs.getString(_keyApiKey) ?? '';
-      _model = prefs.getString(_keyModel) ?? 'gpt-5.4-nano-2026-03-17';
+      _model = prefs.getString(_keyModel) ?? 'gpt-4o-mini';
       _baseUrl = prefs.getString(_keyBaseUrl) ?? '';
       final rawSpells = prefs.getStringList(_keySpells) ?? [];
       _spells = rawSpells.map(_spellFromRaw).whereType<Spell>().toList();
       await _buildServices();
     } catch (e) {
-      if (mounted) setState(() { _error = e.toString(); _loadingService = false; });
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _loadingService = false;
+        });
+      }
     }
   }
 
   Future<void> _buildServices() async {
     if (_apiKey.isEmpty && _provider != LlmProvider.ollama) {
-      if (mounted) setState(() { _loadingService = false; });
+      if (mounted) setState(() => _loadingService = false);
       return;
     }
     final config = SpellsConfig(
@@ -103,14 +109,23 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
       model: _model,
       baseUrl: _baseUrl.isEmpty ? null : _baseUrl,
     );
-    final service = SpellTextService(config: config, storage: SpellStorageService());
+    final snippetService = SnippetService();
+    await snippetService.init();
+
+    final service = SpellTextService(
+      config: config,
+      storage: SpellStorageService(),
+      snippetService: snippetService,
+    );
     final history = PromptHistoryService();
     await service.init();
     await history.init();
+
     if (mounted) {
       setState(() {
         _service = service;
         _promptHistory = history;
+        _snippetService = snippetService;
         _loadingService = false;
       });
     }
@@ -143,56 +158,47 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
     setState(() => _spells = spells);
   }
 
-  static String _spellToRaw(Spell s) => '${s.id}|${s.title}|${s.description}';
+  static String _spellToRaw(Spell s) =>
+      '${s.id}|${s.title}|${s.description}';
 
   static Spell? _spellFromRaw(String raw) {
     final parts = raw.split('|');
     if (parts.length < 3) return null;
-    return Spell(id: parts[0], title: parts[1], description: parts.sublist(2).join('|'));
+    return Spell(
+        id: parts[0],
+        title: parts[1],
+        description: parts.sublist(2).join('|'));
   }
 
   // ---------------------------------------------------------------------------
-  // DailyText management
+  // Firestore
   // ---------------------------------------------------------------------------
 
   Future<void> _loadFirestore() async {
     setState(() => _loadingFirestore = true);
     final texts = await _repository.fetchAll();
-    if (mounted) setState(() { _firestoreTexts = texts; _loadingFirestore = false; });
-  }
-
-  Future<void> _importJson() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['json'],
-    );
-    if (result == null || result.files.single.bytes == null) return;
-    final jsonString = utf8.decode(result.files.single.bytes!);
-    final List<dynamic> jsonList = json.decode(jsonString);
-    final newTexts = jsonList
-        .map((e) => DailyText.fromJson(e as Map<String, dynamic>))
-        .toList();
-    setState(() => _stagingTexts.addAll(newTexts));
-  }
-
-  Future<void> _uploadStagingToFirestore() async {
-    for (final text in _stagingTexts) {
-      await _repository.add(text);
+    if (mounted) {
+      setState(() {
+        _firestoreTexts = texts;
+        _loadingFirestore = false;
+      });
     }
-    setState(() => _stagingTexts.clear());
-    await _loadFirestore();
   }
 
   Future<void> _uploadAcceptedToFirestore() async {
     if (_service == null) return;
+    final firestoreIds = _firestoreTexts.map((t) => t.id).toSet();
     final accepted = _service!.results
-        .where((r) => r.status == SpellTextStatus.accepted)
-        .map((r) => DailyText(id: r.id, spellId: r.spellId, subtitle: r.generatedText))
+        .where((r) =>
+            r.status == SpellTextStatus.accepted &&
+            !firestoreIds.contains(r.id))
+        .map((r) =>
+            DailyText(id: r.id, spellId: r.spellId, subtitle: r.generatedText))
         .toList();
     if (accepted.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No accepted results to upload.')),
+          const SnackBar(content: Text('No new accepted results to push.')),
         );
       }
       return;
@@ -203,45 +209,75 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
     await _loadFirestore();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Uploaded ${accepted.length} texts to Firestore.')),
+        SnackBar(
+            content: Text('Pushed ${accepted.length} texts to Firestore.')),
       );
     }
   }
 
-  void _showDailyTextDialog(
-    BuildContext context, {
-    DailyText? existing,
-    bool isFirestore = false,
-  }) {
-    final idCtrl = TextEditingController(text: existing?.id ?? '');
-    final spellIdCtrl = TextEditingController(text: existing?.spellId ?? '');
-    final subtitleCtrl = TextEditingController(text: existing?.subtitle ?? '');
+  Future<void> _pushSingle(SpellTextResult result) async {
+    await _repository.add(
+      DailyText(
+          id: result.id,
+          spellId: result.spellId,
+          subtitle: result.generatedText),
+    );
+    await _loadFirestore();
+  }
+
+  void _confirmDeleteFirestore(DailyText text) {
+    final spellName = _srdSpells[text.spellId]?.name ?? text.spellId;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete text?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(spellName,
+                style: Theme.of(ctx).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            Text(text.subtitle),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await _repository.delete(text.id);
+              await _loadFirestore();
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditDialog(DailyText text) {
+    final spellIdCtrl = TextEditingController(text: text.spellId);
+    final subtitleCtrl = TextEditingController(text: text.subtitle);
 
     showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(existing == null ? 'Add Text' : 'Edit Text'),
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit Text'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: idCtrl,
-                      decoration: const InputDecoration(labelText: 'ID'),
-                      enabled: existing == null,
-                    ),
-                  ),
-                  if (existing == null)
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      tooltip: 'Generate ID',
-                      onPressed: () =>
-                          idCtrl.text = _uuid.v4().replaceAll('-', '').substring(0, 12),
-                    ),
-                ],
+              TextField(
+                controller: TextEditingController(text: text.id),
+                decoration: const InputDecoration(labelText: 'ID'),
+                enabled: false,
               ),
               TextField(
                 controller: spellIdCtrl,
@@ -256,45 +292,20 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(ctx),
             child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () {
-              final text = DailyText(
-                id: idCtrl.text.trim(),
+              final updated = DailyText(
+                id: text.id,
                 spellId: spellIdCtrl.text.trim(),
                 subtitle: subtitleCtrl.text.trim(),
               );
-              Navigator.pop(context);
-              if (existing == null) {
-                setState(() => _stagingTexts.add(text));
-              } else if (isFirestore) {
-                _repository.update(text).then((_) => _loadFirestore());
-              } else {
-                setState(() {
-                  final idx = _stagingTexts.indexWhere((d) => d.id == text.id);
-                  if (idx != -1) _stagingTexts[idx] = text;
-                });
-              }
+              Navigator.pop(ctx);
+              _repository.update(updated).then((_) => _loadFirestore());
             },
-            child: Text(existing == null ? 'Add' : 'Save'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showJsonDialog(String jsonString) {
-    showDialog<void>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Exported JSON'),
-        content: SingleChildScrollView(child: SelectableText(jsonString)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const Text('Save'),
           ),
         ],
       ),
@@ -302,7 +313,7 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
   }
 
   // ---------------------------------------------------------------------------
-  // Settings dialogs
+  // Dialogs
   // ---------------------------------------------------------------------------
 
   void _openSettings() {
@@ -321,7 +332,8 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
   void _openSpellManager() {
     final firestoreCount = {
       for (final spell in _spells)
-        spell.id: _firestoreTexts.where((t) => t.spellId == spell.id).length,
+        spell.id:
+            _firestoreTexts.where((t) => t.spellId == spell.id).length,
     };
     showDialog<void>(
       context: context,
@@ -333,12 +345,51 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
     );
   }
 
+  void _openSnippetManager() {
+    if (_snippetService == null) return;
+    SnippetManagerDialog.show(context, _snippetService!);
+  }
+
   // ---------------------------------------------------------------------------
   // Build
   // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
+    final service = _service;
+    final firestoreIds = _firestoreTexts.map((t) => t.id).toSet();
+    final readyToPush = service?.results
+            .where((r) =>
+                r.status == SpellTextStatus.accepted &&
+                !firestoreIds.contains(r.id))
+            .toList() ??
+        [];
+
+    // IDs of ready-to-push items whose text content already exists in Firestore
+    // for the same spell (content match, different ID).
+    final firestoreTextsBySpell = <String, Set<String>>{};
+    for (final t in _firestoreTexts) {
+      firestoreTextsBySpell
+          .putIfAbsent(t.spellId, () => {})
+          .add(t.subtitle.trim());
+    }
+    final textDuplicateIds = {
+      for (final r in readyToPush)
+        if (firestoreTextsBySpell[r.spellId]
+                ?.contains(r.generatedText.trim()) ==
+            true)
+          r.id,
+    };
+    final pendingCount = service?.results
+            .where((r) => r.status == SpellTextStatus.pending)
+            .length ??
+        0;
+    final firestoreCount = <String, int>{
+      for (final spell in _spells)
+        spell.id:
+            _firestoreTexts.where((t) => t.spellId == spell.id).length,
+    };
+
     return DefaultTabController(
       length: 3,
       child: Column(
@@ -346,17 +397,42 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
           TabBar(
             tabs: [
               const Tab(text: 'Generate'),
-              Tab(text: 'Staging (${_stagingTexts.length})'),
-              const Tab(text: 'Firestore'),
+              Tab(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Staging'),
+                    if (pendingCount > 0) ...[
+                      const SizedBox(width: 6),
+                      _TabBadge(count: pendingCount),
+                    ],
+                  ],
+                ),
+              ),
+              Tab(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Firestore'),
+                    if (readyToPush.isNotEmpty) ...[
+                      const SizedBox(width: 6),
+                      _TabBadge(
+                        count: readyToPush.length,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ],
           ),
           const Divider(height: 1),
           Expanded(
             child: TabBarView(
               children: [
-                _buildGenerateTab(),
-                _buildStagingTab(),
-                _buildFirestoreTab(),
+                _buildGenerateTab(firestoreCount),
+                _buildStagingTab(service, firestoreCount),
+                _buildFirestoreTab(readyToPush, textDuplicateIds),
               ],
             ),
           ),
@@ -365,7 +441,11 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
     );
   }
 
-  Widget _buildGenerateTab() {
+  // ---------------------------------------------------------------------------
+  // Tab body builders
+  // ---------------------------------------------------------------------------
+
+  Widget _buildGenerateTab(Map<String, int> firestoreCount) {
     return Column(
       children: [
         Padding(
@@ -378,7 +458,13 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
                 icon: const Icon(Icons.list, size: 18),
                 label: Text('Spells (${_spells.length})'),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
+              if (_snippetService != null)
+                IconButton(
+                  tooltip: 'Manage snippets',
+                  icon: const Icon(Icons.extension_outlined),
+                  onPressed: _openSnippetManager,
+                ),
               IconButton(
                 tooltip: 'LLM settings',
                 icon: const Icon(Icons.settings),
@@ -388,13 +474,15 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
           ),
         ),
         const Divider(height: 1),
-        Expanded(child: _buildGenerateBody()),
+        Expanded(child: _buildGenerateBody(firestoreCount)),
       ],
     );
   }
 
-  Widget _buildGenerateBody() {
-    if (_loadingService) return const Center(child: CircularProgressIndicator());
+  Widget _buildGenerateBody(Map<String, int> firestoreCount) {
+    if (_loadingService) {
+      return const Center(child: CircularProgressIndicator());
+    }
     if (_error != null) return Center(child: Text('Error: $_error'));
     if (_apiKey.isEmpty && _provider != LlmProvider.ollama) {
       return Center(
@@ -428,322 +516,84 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
         ),
       );
     }
-    final firestoreCount = <String, int>{
-      for (final spell in _spells)
-        spell.id: _firestoreTexts.where((t) => t.spellId == spell.id).length,
-    };
-    return SpellTextsPage(
+    return GenerateTab(
       spells: _spells,
       service: _service!,
       promptHistory: _promptHistory!,
+      snippetService: _snippetService!,
+      provider: _provider,
       firestoreCountBySpellId: firestoreCount,
-      showExportButton: true,
-      onExport: _showJsonDialog,
-      onUploadToFirestore: _uploadAcceptedToFirestore,
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Sort + group helpers for DailyText lists
-  // ---------------------------------------------------------------------------
-
-  List<Object> _sortedItems(List<DailyText> texts, SpellSortBy sort) {
-    final sorted = List<DailyText>.from(texts);
-    switch (sort) {
-      case SpellSortBy.levelThenName:
-        sorted.sort((a, b) {
-          final sa = _srdSpells[a.spellId];
-          final sb = _srdSpells[b.spellId];
-          if (sa == null && sb == null) return 0;
-          if (sa == null) return 1;
-          if (sb == null) return -1;
-          final c = sa.level.compareTo(sb.level);
-          return c != 0 ? c : sa.name.compareTo(sb.name);
-        });
-      case SpellSortBy.name:
-        sorted.sort((a, b) {
-          final na = _srdSpells[a.spellId]?.name ?? a.spellId;
-          final nb = _srdSpells[b.spellId]?.name ?? b.spellId;
-          return na.compareTo(nb);
-        });
-      case SpellSortBy.schoolThenName:
-        sorted.sort((a, b) => a.spellId.compareTo(b.spellId));
+  Widget _buildStagingTab(
+      SpellTextService? service, Map<String, int> firestoreCount) {
+    if (service == null) {
+      return const Center(child: CircularProgressIndicator());
     }
-    if (sort != SpellSortBy.levelThenName) return sorted;
-
-    // Interleave level headers
-    final items = <Object>[];
-    int? lastLevel;
-    for (final text in sorted) {
-      final spell = _srdSpells[text.spellId];
-      final level = spell?.level;
-      if (level != lastLevel) {
-        items.add(spell?.levelLabel ?? 'Unknown');
-        lastLevel = level;
-      }
-      items.add(text);
-    }
-    return items;
-  }
-
-  Widget _buildTextList({
-    required List<DailyText> texts,
-    required SpellSortBy sort,
-    required Widget Function(DailyText, {required bool indented}) tileBuilder,
-  }) {
-    if (texts.isEmpty) return const SizedBox.shrink();
-    final items = _sortedItems(texts, sort);
-    final grouped = sort == SpellSortBy.levelThenName;
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
-        if (item is String) return _LevelHeader(label: item);
-        return tileBuilder(item as DailyText, indented: grouped);
+    return StagingTab(
+      key: ValueKey(service),
+      service: service,
+      spells: _spells,
+      firestoreCountBySpellId: firestoreCount,
+      onPushAccepted: () async {
+        await _uploadAcceptedToFirestore();
+        if (mounted) setState(() {});
       },
     );
   }
 
-  Widget _buildStagingTab() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Row(
-            children: [
-              Text(
-                'Pending upload',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(width: 12),
-              SizedBox(
-                width: 160,
-                child: SpellSortDropdown(
-                  value: _stagingSort,
-                  onChanged: (v) => setState(() => _stagingSort = v),
-                  options: const [SpellSortBy.levelThenName, SpellSortBy.name],
-                ),
-              ),
-              const Spacer(),
-              TextButton.icon(
-                onPressed: _importJson,
-                icon: const Icon(Icons.upload_file, size: 18),
-                label: const Text('Import JSON'),
-              ),
-              const SizedBox(width: 4),
-              IconButton(
-                tooltip: 'Add manually',
-                icon: const Icon(Icons.add),
-                onPressed: () => _showDailyTextDialog(context),
-              ),
-            ],
-          ),
-        ),
-        const Divider(height: 1),
-        Expanded(
-          child: _stagingTexts.isEmpty
-              ? const Center(child: Text('No pending texts. Import JSON or add manually.'))
-              : _buildTextList(
-                  texts: _stagingTexts,
-                  sort: _stagingSort,
-                  tileBuilder: (text, {required bool indented}) => _DailyTextTile(
-                    key: ValueKey(text.id),
-                    text: text,
-                    indented: indented,
-                    onEdit: () => _showDailyTextDialog(context, existing: text),
-                    onDelete: () => setState(
-                        () => _stagingTexts.removeWhere((t) => t.id == text.id)),
-                  ),
-                ),
-        ),
-        const Divider(height: 1),
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              OutlinedButton.icon(
-                onPressed: _stagingTexts.isEmpty
-                    ? null
-                    : () => _showJsonDialog(
-                          jsonEncode(_stagingTexts.map((t) => t.toJson()).toList()),
-                        ),
-                icon: const Icon(Icons.download, size: 18),
-                label: const Text('Export JSON'),
-              ),
-              const SizedBox(width: 8),
-              FilledButton.icon(
-                onPressed: _stagingTexts.isEmpty ? null : _uploadStagingToFirestore,
-                icon: const Icon(Icons.cloud_upload, size: 18),
-                label: const Text('Upload all to Firestore'),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _confirmDeleteFirestore(DailyText text) {
-    final spellName = _srdSpells[text.spellId]?.name ?? text.spellId;
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete text?'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(spellName, style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 8),
-            Text(text.subtitle),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            onPressed: () async {
-              Navigator.pop(context);
-              await _repository.delete(text.id);
-              await _loadFirestore();
-            },
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFirestoreTab() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Row(
-            children: [
-              Text('Firestore', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(width: 12),
-              SizedBox(
-                width: 160,
-                child: SpellSortDropdown(
-                  value: _firestoreSort,
-                  onChanged: (v) => setState(() => _firestoreSort = v),
-                  options: const [SpellSortBy.levelThenName, SpellSortBy.name],
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                tooltip: 'Refresh',
-                icon: const Icon(Icons.refresh),
-                onPressed: _loadFirestore,
-              ),
-            ],
-          ),
-        ),
-        const Divider(height: 1),
-        Expanded(
-          child: _loadingFirestore
-              ? const Center(child: CircularProgressIndicator())
-              : _firestoreTexts.isEmpty
-                  ? const Center(child: Text('No texts on Firestore yet.'))
-                  : _buildTextList(
-                      texts: _firestoreTexts,
-                      sort: _firestoreSort,
-                      tileBuilder: (text, {required bool indented}) => _DailyTextTile(
-                        key: ValueKey(text.id),
-                        text: text,
-                        indented: indented,
-                        onEdit: () => _showDailyTextDialog(
-                          context,
-                          existing: text,
-                          isFirestore: true,
-                        ),
-                        onDelete: () => _confirmDeleteFirestore(text),
-                      ),
-                    ),
-        ),
-      ],
+  Widget _buildFirestoreTab(
+      List<SpellTextResult> readyToPush, Set<String> textDuplicateIds) {
+    return FirestoreTab(
+      firestoreTexts: _firestoreTexts,
+      loadingFirestore: _loadingFirestore,
+      readyToPush: readyToPush,
+      textDuplicateIds: textDuplicateIds,
+      srdSpells: _srdSpells,
+      sort: _firestoreSort,
+      onSortChanged: (v) => setState(() => _firestoreSort = v),
+      onRefresh: _loadFirestore,
+      onEdit: _showEditDialog,
+      onDelete: _confirmDeleteFirestore,
+      onPushSingle: (result) async {
+        await _pushSingle(result);
+        if (mounted) setState(() {});
+      },
+      onPushAll: () async {
+        await _uploadAcceptedToFirestore();
+        if (mounted) setState(() {});
+      },
     );
   }
 }
 
 // ---------------------------------------------------------------------------
-// Shared tile for DailyText items
+// Tab badge
 // ---------------------------------------------------------------------------
 
-class _LevelHeader extends StatelessWidget {
-  final String label;
-  const _LevelHeader({required this.label});
+class _TabBadge extends StatelessWidget {
+  final int count;
+  final Color? color;
+
+  const _TabBadge({required this.count, this.color});
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 16, 16, 4),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-            decoration: BoxDecoration(
-              color: scheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: scheme.onPrimaryContainer,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          const Expanded(child: Divider()),
-        ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+      decoration: BoxDecoration(
+        color: color ?? scheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(10),
       ),
-    );
-  }
-}
-
-class _DailyTextTile extends StatelessWidget {
-  final DailyText text;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-  final bool indented;
-
-  const _DailyTextTile({
-    super.key,
-    required this.text,
-    required this.onEdit,
-    required this.onDelete,
-    this.indented = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: indented
-          ? const EdgeInsets.only(left: 28, right: 8)
-          : const EdgeInsets.symmetric(horizontal: 16),
-      title: Text(text.subtitle),
-      subtitle: Text('Spell ID: ${text.spellId}'),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined, size: 18),
-            onPressed: onEdit,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, size: 18),
-            onPressed: onDelete,
-          ),
-        ],
+      child: Text(
+        '$count',
+        style: TextStyle(
+          fontSize: 11,
+          color: color != null ? Colors.white : scheme.onSecondaryContainer,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -813,7 +663,8 @@ class _LlmConfigDialogState extends State<_LlmConfigDialog> {
               initialValue: _provider,
               decoration: const InputDecoration(labelText: 'Provider'),
               items: LlmProvider.values
-                  .map((p) => DropdownMenuItem(value: p, child: Text(p.name)))
+                  .map((p) =>
+                      DropdownMenuItem(value: p, child: Text(p.name)))
                   .toList(),
               onChanged: (v) => setState(() => _provider = v!),
             ),
@@ -918,7 +769,8 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
   }
 
   Future<void> _pickFromSrd() async {
-    final picked = await SpellPickerDialog.show(context, firestoreCount: widget.firestoreCount);
+    final picked = await SpellPickerDialog.show(context,
+        firestoreCount: widget.firestoreCount);
     if (picked == null || picked.isEmpty) return;
     setState(() {
       for (final spell in picked) {
@@ -938,7 +790,6 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Primary action
             Align(
               alignment: Alignment.centerLeft,
               child: FilledButton.icon(
@@ -947,16 +798,18 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
                 label: const Text('Browse SRD spells'),
               ),
             ),
-            // Collapsed manual add
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton(
-                onPressed: () => setState(() => _showManual = !_showManual),
+                onPressed: () =>
+                    setState(() => _showManual = !_showManual),
                 style: TextButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.outline,
+                  foregroundColor:
+                      Theme.of(context).colorScheme.outline,
                   textStyle: Theme.of(context).textTheme.bodySmall,
                 ),
-                child: Text(_showManual ? 'Hide manual add' : 'Add manually…'),
+                child: Text(
+                    _showManual ? 'Hide manual add' : 'Add manually…'),
               ),
             ),
             if (_showManual) ...[
@@ -966,14 +819,16 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
                     width: 80,
                     child: TextField(
                       controller: _idCtrl,
-                      decoration: const InputDecoration(labelText: 'ID'),
+                      decoration:
+                          const InputDecoration(labelText: 'ID'),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
                       controller: _titleCtrl,
-                      decoration: const InputDecoration(labelText: 'Title'),
+                      decoration:
+                          const InputDecoration(labelText: 'Title'),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -981,7 +836,8 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
                     flex: 2,
                     child: TextField(
                       controller: _descCtrl,
-                      decoration: const InputDecoration(labelText: 'Description'),
+                      decoration: const InputDecoration(
+                          labelText: 'Description'),
                     ),
                   ),
                   IconButton(
@@ -1009,8 +865,10 @@ class _SpellManagerDialogState extends State<_SpellManagerDialog> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 18),
-                        onPressed: () => setState(() => _spells.removeAt(index)),
+                        icon: const Icon(Icons.delete_outline,
+                            size: 18),
+                        onPressed: () =>
+                            setState(() => _spells.removeAt(index)),
                       ),
                     );
                   },

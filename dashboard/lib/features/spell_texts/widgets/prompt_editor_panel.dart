@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../models/prompt_template.dart';
 import '../services/prompt_history_service.dart';
+import '../services/snippet_service.dart';
+import 'snippet_manager_dialog.dart';
 
 class PromptEditorPanel extends StatefulWidget {
   final PromptHistoryService promptHistory;
   final void Function(String promptText) onGenerate;
   final int count;
   final void Function(int count) onCountChanged;
+  final double temperature;
+  final double temperatureMax;
+  final void Function(double) onTemperatureChanged;
+
+  /// When provided, shows a snippet insert button in the header.
+  final SnippetService? snippetService;
 
   const PromptEditorPanel({
     super.key,
@@ -15,6 +23,10 @@ class PromptEditorPanel extends StatefulWidget {
     required this.onGenerate,
     required this.count,
     required this.onCountChanged,
+    this.temperature = 0.7,
+    this.temperatureMax = 1.0,
+    required this.onTemperatureChanged,
+    this.snippetService,
   });
 
   @override
@@ -58,6 +70,25 @@ class _PromptEditorPanelState extends State<PromptEditorPanel> {
     );
   }
 
+  void _showSnippetInsert(BuildContext context) {
+    if (widget.snippetService == null) return;
+    SnippetInsertSheet.show(
+      context,
+      service: widget.snippetService!,
+      onInsert: (ref) {
+        final sel = _controller.selection;
+        final text = _controller.text;
+        final start = sel.isValid ? sel.start : text.length;
+        final end = sel.isValid ? sel.end : text.length;
+        final newText = text.replaceRange(start, end, ref);
+        _controller.value = TextEditingValue(
+          text: newText,
+          selection: TextSelection.collapsed(offset: start + ref.length),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -67,6 +98,12 @@ class _PromptEditorPanelState extends State<PromptEditorPanel> {
           children: [
             Text('Prompt template', style: Theme.of(context).textTheme.titleSmall),
             const Spacer(),
+            if (widget.snippetService != null)
+              IconButton(
+                tooltip: 'Insert snippet',
+                icon: const Icon(Icons.extension_outlined),
+                onPressed: () => _showSnippetInsert(context),
+              ),
             IconButton(
               tooltip: 'History',
               icon: const Icon(Icons.history),
@@ -90,11 +127,27 @@ class _PromptEditorPanelState extends State<PromptEditorPanel> {
           children: [
             Text('Count:', style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(width: 8),
-            _CountStepper(
+            _CountField(
               value: widget.count,
-              min: 1,
-              max: 5,
               onChanged: widget.onCountChanged,
+            ),
+            const SizedBox(width: 16),
+            Text('Temp:', style: Theme.of(context).textTheme.bodyMedium),
+            const SizedBox(width: 4),
+            SizedBox(
+              width: 120,
+              child: Slider(
+                value: widget.temperature,
+                min: 0.0,
+                max: widget.temperatureMax,
+                divisions: (widget.temperatureMax * 10).round(),
+                label: widget.temperature.toStringAsFixed(1),
+                onChanged: widget.onTemperatureChanged,
+              ),
+            ),
+            Text(
+              '${widget.temperature.toStringAsFixed(1)}/${widget.temperatureMax.toStringAsFixed(0)}',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             const Spacer(),
             FilledButton.icon(
@@ -109,18 +162,51 @@ class _PromptEditorPanelState extends State<PromptEditorPanel> {
   }
 }
 
-class _CountStepper extends StatelessWidget {
+class _CountField extends StatefulWidget {
   final int value;
-  final int min;
-  final int max;
   final void Function(int) onChanged;
 
-  const _CountStepper({
-    required this.value,
-    required this.min,
-    required this.max,
-    required this.onChanged,
-  });
+  const _CountField({required this.value, required this.onChanged});
+
+  @override
+  State<_CountField> createState() => _CountFieldState();
+}
+
+class _CountFieldState extends State<_CountField> {
+  late final TextEditingController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = TextEditingController(text: '${widget.value}');
+  }
+
+  @override
+  void didUpdateWidget(_CountField old) {
+    super.didUpdateWidget(old);
+    if (old.value != widget.value) {
+      final pos = _ctrl.selection;
+      _ctrl.text = '${widget.value}';
+      // Restore cursor if still valid.
+      if (pos.start <= _ctrl.text.length) _ctrl.selection = pos;
+    }
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _commit(String raw) {
+    final n = int.tryParse(raw.trim());
+    if (n != null && n >= 1) {
+      widget.onChanged(n);
+    } else {
+      // Revert to last valid value.
+      _ctrl.text = '${widget.value}';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,13 +216,29 @@ class _CountStepper extends StatelessWidget {
         IconButton(
           visualDensity: VisualDensity.compact,
           icon: const Icon(Icons.remove),
-          onPressed: value > min ? () => onChanged(value - 1) : null,
+          onPressed: widget.value > 1
+              ? () => widget.onChanged(widget.value - 1)
+              : null,
         ),
-        Text('$value', style: Theme.of(context).textTheme.bodyLarge),
+        SizedBox(
+          width: 40,
+          child: TextField(
+            controller: _ctrl,
+            textAlign: TextAlign.center,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              isDense: true,
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+            ),
+            onSubmitted: _commit,
+            onTapOutside: (_) => _commit(_ctrl.text),
+          ),
+        ),
         IconButton(
           visualDensity: VisualDensity.compact,
           icon: const Icon(Icons.add),
-          onPressed: value < max ? () => onChanged(value + 1) : null,
+          onPressed: () => widget.onChanged(widget.value + 1),
         ),
       ],
     );
