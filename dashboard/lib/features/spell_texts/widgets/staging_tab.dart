@@ -9,6 +9,7 @@ import '../models/spell_text_result.dart';
 import '../models/spell_text_status.dart';
 import '../services/spell_text_service.dart';
 import '../services/srd_loader.dart';
+import 'spell_preview_dialog.dart';
 import 'spell_sort_dropdown.dart';
 import 'spell_text_card.dart';
 
@@ -104,6 +105,22 @@ class _StagingTabState extends State<StagingTab> {
     return items;
   }
 
+  void _openPreview(int startIndex, List<SpellTextResult> list) {
+    SpellPreviewDialog.show(
+      context,
+      results: list,
+      initialIndex: startIndex,
+      onAccept: (id) async {
+        await widget.service.accept(id);
+        if (mounted) setState(() {});
+      },
+      onDismiss: (id) async {
+        await widget.service.dismiss(id);
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
   Future<void> _importJson() async {
     final picked = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -171,8 +188,11 @@ class _StagingTabState extends State<StagingTab> {
       for (final s in SpellTextStatus.values)
         s: results.where((r) => r.status == s).length,
     };
+    final pendingCount = statusCounts[SpellTextStatus.pending] ?? 0;
     final filtered = _filteredResults;
     final items = _sortedItems(filtered);
+    // Filtered results as a flat list (no level headers) for preview index math.
+    final filteredFlat = filtered;
 
     return Column(
       children: [
@@ -189,6 +209,19 @@ class _StagingTabState extends State<StagingTab> {
                 ),
               ),
               const Spacer(),
+              TextButton.icon(
+                onPressed: pendingCount > 0
+                    ? () {
+                        final pending = filteredFlat
+                            .where((r) =>
+                                r.status == SpellTextStatus.pending)
+                            .toList();
+                        _openPreview(0, pending);
+                      }
+                    : null,
+                icon: const Icon(Icons.play_circle_outline, size: 18),
+                label: Text('Review ($pendingCount)'),
+              ),
               TextButton.icon(
                 onPressed: _importJson,
                 icon: const Icon(Icons.upload_file, size: 18),
@@ -226,9 +259,12 @@ class _StagingTabState extends State<StagingTab> {
                     final item = items[index];
                     if (item is String) return _LevelHeader(label: item);
                     final result = item as SpellTextResult;
+                    final flatIndex = filteredFlat.indexOf(result);
                     return SpellTextCard(
                       key: ValueKey(result.id),
                       result: result,
+                      onPreview: () => _openPreview(
+                          flatIndex < 0 ? 0 : flatIndex, filteredFlat),
                       onAccept: () async {
                         await widget.service.accept(result.id);
                         setState(() {});

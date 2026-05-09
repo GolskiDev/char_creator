@@ -11,6 +11,9 @@ class SpellTextCard extends StatelessWidget {
   /// When non-null, shows a push-to-Firestore button alongside accept/dismiss.
   final VoidCallback? onPush;
 
+  /// When non-null, shows a preview button (eye icon) to open the full preview.
+  final VoidCallback? onPreview;
+
   /// When non-null, shows a warning banner with this message.
   final String? duplicateWarning;
 
@@ -20,6 +23,7 @@ class SpellTextCard extends StatelessWidget {
     required this.onAccept,
     required this.onDismiss,
     this.onPush,
+    this.onPreview,
     this.duplicateWarning,
   });
 
@@ -92,6 +96,13 @@ class SpellTextCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                if (onPreview != null)
+                  IconButton(
+                    tooltip: 'Preview',
+                    icon: Icon(Icons.visibility_outlined,
+                        color: scheme.onSurfaceVariant),
+                    onPressed: onPreview,
+                  ),
                 if (result.status != SpellTextStatus.dismissed)
                   IconButton(
                     tooltip: 'Dismiss',
