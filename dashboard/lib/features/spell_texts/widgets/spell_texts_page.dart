@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/spell.dart';
 import '../models/spell_text_result.dart';
+import '../models/spell_text_status.dart';
 import '../services/prompt_history_service.dart';
 import '../services/spell_text_service.dart';
 import 'prompt_editor_panel.dart';
@@ -37,7 +38,8 @@ class SpellTextsPage extends StatefulWidget {
 
 class _SpellTextsPageState extends State<SpellTextsPage> {
   List<Spell> _selectedSpells = [];
-  String? _filterSpellId; // null = show all
+  final Set<String> _filterSpellIds = {}; // empty = show all
+  final Set<SpellTextStatus> _visibleStatuses = {SpellTextStatus.pending};
   int _count = 1;
   bool _generating = false;
 
@@ -75,8 +77,20 @@ class _SpellTextsPageState extends State<SpellTextsPage> {
   }
 
   List<SpellTextResult> get _filteredResults {
-    if (_filterSpellId == null) return widget.service.results;
-    return widget.service.resultsForSpell(_filterSpellId!);
+    return widget.service.results.where((r) {
+      if (_filterSpellIds.isNotEmpty && !_filterSpellIds.contains(r.spellId)) return false;
+      return _visibleStatuses.contains(r.status);
+    }).toList();
+  }
+
+  void _toggleStatus(SpellTextStatus status) {
+    setState(() {
+      if (_visibleStatuses.contains(status)) {
+        _visibleStatuses.remove(status);
+      } else {
+        _visibleStatuses.add(status);
+      }
+    });
   }
 
   Widget _buildControls() => SingleChildScrollView(
@@ -84,13 +98,27 @@ class _SpellTextsPageState extends State<SpellTextsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SpellSelector(
-              spells: widget.spells,
-              selected: _selectedSpells,
-              firestoreCount: widget.firestoreCountBySpellId,
-              onSelectionChanged: (s) => setState(() => _selectedSpells = s),
+            // Collapsible spell selector
+            Theme(
+              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              child: ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: Text(
+                  'Spells (${_selectedSpells.length}/${widget.spells.length})',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                initiallyExpanded: false,
+                children: [
+                  SpellSelector(
+                    spells: widget.spells,
+                    selected: _selectedSpells,
+                    firestoreCount: widget.firestoreCountBySpellId,
+                    onSelectionChanged: (s) => setState(() => _selectedSpells = s),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             PromptEditorPanel(
               promptHistory: widget.promptHistory,
               count: _count,
@@ -107,15 +135,29 @@ class _SpellTextsPageState extends State<SpellTextsPage> {
 
   Widget _buildResults() => Column(
         children: [
-          _FilterChips(
+          _ResultsFilterBar(
             spells: widget.spells,
-            selected: _filterSpellId,
+            selectedSpells: _filterSpellIds,
             firestoreCount: widget.firestoreCountBySpellId,
-            onSelected: (id) => setState(() => _filterSpellId = id),
+            onSpellToggle: (id) => setState(() {
+              if (_filterSpellIds.contains(id)) {
+                _filterSpellIds.remove(id);
+              } else {
+                _filterSpellIds.add(id);
+              }
+            }),
+            visibleStatuses: _visibleStatuses,
+            onStatusToggle: _toggleStatus,
+            statusCounts: {
+              for (final s in SpellTextStatus.values)
+                s: widget.service.results
+                    .where((r) => r.status == s)
+                    .length,
+            },
           ),
           Expanded(
             child: _filteredResults.isEmpty
-                ? const Center(child: Text('No generated texts yet.'))
+                ? const Center(child: Text('No results for the current filters.'))
                 : ListView.builder(
                     itemCount: _filteredResults.length,
                     itemBuilder: (context, index) {
@@ -199,46 +241,90 @@ class _SpellTextsPageState extends State<SpellTextsPage> {
   }
 }
 
-class _FilterChips extends StatelessWidget {
+class _ResultsFilterBar extends StatelessWidget {
   final List<Spell> spells;
-  final String? selected;
+  final Set<String> selectedSpells;
   final Map<String, int>? firestoreCount;
-  final void Function(String? spellId) onSelected;
+  final void Function(String) onSpellToggle;
+  final Set<SpellTextStatus> visibleStatuses;
+  final void Function(SpellTextStatus) onStatusToggle;
+  final Map<SpellTextStatus, int> statusCounts;
 
-  const _FilterChips({
+  const _ResultsFilterBar({
     required this.spells,
-    required this.selected,
-    required this.onSelected,
+    required this.selectedSpells,
+    required this.onSpellToggle,
+    required this.visibleStatuses,
+    required this.onStatusToggle,
+    required this.statusCounts,
     this.firestoreCount,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    return SizedBox(
+      height: 48,
       child: Row(
         children: [
-          FilterChip(
-            label: const Text('All'),
-            selected: selected == null,
-            onSelected: (_) => onSelected(null),
+          // Spell chips — scrollable
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: Row(
+                children: spells.map((s) {
+                  final count = firestoreCount?[s.id] ?? 0;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: FilterChip(
+                      label: Text(count > 0 ? '${s.title} ($count)' : s.title),
+                      selected: selectedSpells.contains(s.id),
+                      onSelected: (_) => onSpellToggle(s.id),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
           ),
-          ...spells.map(
-            (s) {
-              final count = firestoreCount?[s.id] ?? 0;
-              return Padding(
-                padding: const EdgeInsets.only(left: 6),
-                child: FilterChip(
-                  label: Text(count > 0 ? '${s.title} ($count)' : s.title),
-                  selected: selected == s.id,
-                  onSelected: (_) => onSelected(selected == s.id ? null : s.id),
-                ),
-              );
-            },
+          // Status chips — fixed on the right
+          const VerticalDivider(width: 1),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Row(
+              children: SpellTextStatus.values.map((s) {
+                final (tooltip, icon) = switch (s) {
+                  SpellTextStatus.pending   => ('New', Icons.hourglass_empty),
+                  SpellTextStatus.accepted  => ('Accepted', Icons.check_circle_outline),
+                  SpellTextStatus.dismissed => ('Dismissed', Icons.cancel_outlined),
+                };
+                final count = statusCounts[s] ?? 0;
+                final selected = visibleStatuses.contains(s);
+                return Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: Tooltip(
+                    message: '$tooltip ($count)',
+                    child: FilterChip(
+                      label: Icon(
+                        icon,
+                        size: 16,
+                        color: selected ? null : Colors.grey,
+                      ),
+                      selected: selected,
+                      onSelected: (_) => onStatusToggle(s),
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
           ),
         ],
       ),
     );
   }
 }
+

@@ -584,6 +584,42 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
     );
   }
 
+  void _confirmDeleteFirestore(DailyText text) {
+    final spellName = _srdSpells[text.spellId]?.name ?? text.spellId;
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete text?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(spellName, style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            Text(text.subtitle),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            onPressed: () async {
+              Navigator.pop(context);
+              await _repository.delete(text.id);
+              await _loadFirestore();
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildFirestoreTab() {
     return Column(
       children: [
@@ -628,10 +664,7 @@ class _SpellTextsHostPageState extends State<SpellTextsHostPage> {
                           existing: text,
                           isFirestore: true,
                         ),
-                        onDelete: () async {
-                          await _repository.delete(text.id);
-                          await _loadFirestore();
-                        },
+                        onDelete: () => _confirmDeleteFirestore(text),
                       ),
                     ),
         ),
