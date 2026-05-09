@@ -14,11 +14,22 @@ class PromptTemplate {
     required this.createdAt,
   });
 
-  /// Returns the prompt with spell-specific placeholders substituted.
-  String resolve(Spell spell) => text
-      .replaceAll('{{title}}', spell.title)
-      .replaceAll('{{description}}', spell.description)
-      .replaceAll('{{id}}', spell.id);
+  /// Returns the prompt with snippet and spell-specific placeholders substituted.
+  ///
+  /// [snippets] maps snippet names to their content. Snippet references
+  /// (`{{snippet:name}}`) are expanded first so snippet content can itself
+  /// contain `{{title}}` / `{{description}}` / `{{id}}` placeholders.
+  /// Unknown snippet references are left as-is.
+  String resolve(Spell spell, {Map<String, String> snippets = const {}}) {
+    var result = text;
+    for (final entry in snippets.entries) {
+      result = result.replaceAll('{{snippet:${entry.key}}}', entry.value);
+    }
+    return result
+        .replaceAll('{{title}}', spell.title)
+        .replaceAll('{{description}}', spell.description)
+        .replaceAll('{{id}}', spell.id);
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
