@@ -21,6 +21,7 @@ class SpellSortDropdown extends StatelessWidget {
     return DropdownButtonFormField<SpellSortBy>(
       initialValue: value,
       isDense: true,
+      isExpanded: true,
       decoration: const InputDecoration(labelText: 'Sort by', isDense: true),
       items: [
         for (final opt in options)
@@ -29,7 +30,7 @@ class SpellSortDropdown extends StatelessWidget {
             child: Row(children: [
               Icon(_iconFor(opt), size: 16),
               const SizedBox(width: 8),
-              Text(_labelFor(opt)),
+              Text(_labelFor(opt), overflow: TextOverflow.ellipsis),
             ]),
           ),
       ],
