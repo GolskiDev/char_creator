@@ -1,15 +1,19 @@
+import 'dart:io' show Platform;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'features/agreements/agreements_list_page.dart';
-import 'features/auth/auth_page.dart';
 import 'features/auth/auth_providers.dart';
-import 'features/main_feature.dart';
-import 'features/updates/updates_page.dart';
+import 'layouts/mobile/mobile_app_shell.dart';
+import 'layouts/web/auth/web_auth_page.dart';
+import 'layouts/web/web_app_shell.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) => Navigation.goRouter(ref));
+
+bool get _isMobilePlatform =>
+    !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
 class Navigation {
   static GoRouter goRouter(Ref ref) {
@@ -17,23 +21,20 @@ class Navigation {
       debugLogDiagnostics: kDebugMode,
       initialLocation: '/main',
       routes: [
-        GoRoute(path: '/', builder: (context, state) => const AuthPage()),
-        GoRoute(path: '/main', builder: (context, state) => const MainPage()),
         GoRoute(
-          path: '/agreements',
-          builder: (context, state) => const AgreementsListPage(),
+          path: '/',
+          builder: (context, state) => const WebAuthPage(),
         ),
         GoRoute(
-          path: '/app_versions',
-          builder: (context, state) => const AppVersionsPage(),
+          path: '/main',
+          builder: (context, state) =>
+              _isMobilePlatform ? const MobileAppShell() : const WebAppShell(),
         ),
       ],
       refreshListenable: GoRouterAuthRiverpodRefreshStream(ref),
       redirect: (context, state) async {
         final isAuth = await ref.read(isAuthenticatedProvider.future);
-        if (!isAuth) {
-          return '/';
-        }
+        if (!isAuth) return '/';
         return null;
       },
     );
