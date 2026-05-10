@@ -23,6 +23,7 @@ class MobileGeneratePage extends StatefulWidget {
 
 class _MobileGeneratePageState extends State<MobileGeneratePage> {
   late List<Spell> _selectedSpells;
+  late Set<String> _lastSpellIds;
   int _count = 1;
   late double _temperature;
   bool _generating = false;
@@ -31,6 +32,7 @@ class _MobileGeneratePageState extends State<MobileGeneratePage> {
   void initState() {
     super.initState();
     _selectedSpells = List.of(widget.ctrl.spells);
+    _lastSpellIds = widget.ctrl.spells.map((s) => s.id).toSet();
     _temperature = temperatureRangeFor(widget.ctrl.provider).defaultValue;
     widget.ctrl.addListener(_onCtrlChanged);
   }
@@ -42,9 +44,14 @@ class _MobileGeneratePageState extends State<MobileGeneratePage> {
   }
 
   void _onCtrlChanged() {
-    final ids = widget.ctrl.spells.map((s) => s.id).toSet();
+    final newIds = widget.ctrl.spells.map((s) => s.id).toSet();
+    if (newIds.length == _lastSpellIds.length &&
+        _lastSpellIds.containsAll(newIds)) {
+      return;
+    }
+    _lastSpellIds = newIds;
     final updated =
-        _selectedSpells.where((s) => ids.contains(s.id)).toList();
+        _selectedSpells.where((s) => newIds.contains(s.id)).toList();
     for (final s in widget.ctrl.spells) {
       if (!updated.any((sel) => sel.id == s.id)) updated.add(s);
     }

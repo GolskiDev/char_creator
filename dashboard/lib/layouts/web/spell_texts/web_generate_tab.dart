@@ -26,6 +26,7 @@ class WebGenerateTab extends StatefulWidget {
 
 class _WebGenerateTabState extends State<WebGenerateTab> {
   late List<Spell> _selectedSpells;
+  late Set<String> _lastSpellIds;
   int _count = 1;
   late double _temperature;
   bool _generating = false;
@@ -34,6 +35,7 @@ class _WebGenerateTabState extends State<WebGenerateTab> {
   void initState() {
     super.initState();
     _selectedSpells = List.of(widget.ctrl.spells);
+    _lastSpellIds = widget.ctrl.spells.map((s) => s.id).toSet();
     _temperature = temperatureRangeFor(widget.ctrl.provider).defaultValue;
     widget.ctrl.addListener(_onCtrlChanged);
   }
@@ -45,9 +47,13 @@ class _WebGenerateTabState extends State<WebGenerateTab> {
   }
 
   void _onCtrlChanged() {
-    // Keep selection in sync when spell list changes.
-    final ids = widget.ctrl.spells.map((s) => s.id).toSet();
-    final updated = _selectedSpells.where((s) => ids.contains(s.id)).toList();
+    final newIds = widget.ctrl.spells.map((s) => s.id).toSet();
+    if (newIds.length == _lastSpellIds.length &&
+        _lastSpellIds.containsAll(newIds)) {
+      return;
+    }
+    _lastSpellIds = newIds;
+    final updated = _selectedSpells.where((s) => newIds.contains(s.id)).toList();
     for (final s in widget.ctrl.spells) {
       if (!updated.any((sel) => sel.id == s.id)) updated.add(s);
     }

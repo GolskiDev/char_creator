@@ -120,7 +120,8 @@ class _PromptEditorPanelState extends State<PromptEditorPanel> {
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             hintText:
-                'e.g. Write a joke about {{title}}.\nDescription: {{description}}',
+                'e.g. Write a {{title}} spell description in up to {{rand:[60,90,110,130]}} characters.\n'
+                'Vars: {{title}} {{description}} {{id}} — Random: {{rand:[a,b,c]}} {{rand:min-max}}',
           ),
         ),
         const SizedBox(height: 8),

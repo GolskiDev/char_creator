@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'spell.dart';
 
 class PromptTemplate {
@@ -21,10 +23,36 @@ class PromptTemplate {
   /// contain `{{title}}` / `{{description}}` / `{{id}}` placeholders.
   /// Unknown snippet references are left as-is.
   String resolve(Spell spell, {Map<String, String> snippets = const {}}) {
+    final rng = Random();
     var result = text;
+
+    // {{snippet:name}} → snippet content (expanded first so snippets can contain spell vars)
     for (final entry in snippets.entries) {
       result = result.replaceAll('{{snippet:${entry.key}}}', entry.value);
     }
+
+    // {{rand:[v1, v2, v3]}} → one random value from the list
+    result = result.replaceAllMapped(
+      RegExp(r'\{\{rand:\[([^\]]+)\]\}\}'),
+      (m) {
+        final raw = m.group(1) ?? '';
+        final values = raw.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+        if (values.isEmpty) return '';
+        return values[rng.nextInt(values.length)];
+      },
+    );
+
+    // {{rand:min-max}} → random integer in [min, max]
+    result = result.replaceAllMapped(
+      RegExp(r'\{\{rand:(\d+)-(\d+)\}\}'),
+      (m) {
+        final min = int.tryParse(m.group(1) ?? '') ?? 0;
+        final max = int.tryParse(m.group(2) ?? '') ?? min;
+        if (max <= min) return '$min';
+        return '${min + rng.nextInt(max - min + 1)}';
+      },
+    );
+
     return result
         .replaceAll('{{title}}', spell.title)
         .replaceAll('{{description}}', spell.description)

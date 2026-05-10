@@ -27,25 +27,35 @@ class MobileStagingPage extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
+    final results = parent.service?.results ?? [];
+    final statusCounts = {
+      for (final s in SpellTextStatus.values)
+        s: results.where((r) => r.status == s).length,
+    };
     final filtered = staging.filteredResults;
     final pendingCount = filtered
         .where((r) => r.status == SpellTextStatus.pending)
         .length;
+    final hasActiveStatusFilter =
+        staging.visibleStatuses.length < SpellTextStatus.values.length;
 
     return Column(
       children: [
-        // Sort + filter toolbar
+        // Toolbar
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           child: Row(
             children: [
-              Expanded(
-                child: SpellSortDropdown(
-                  value: staging.sort,
-                  onChanged: staging.setSortBy,
+              Badge(
+                isLabelVisible: hasActiveStatusFilter,
+                smallSize: 8,
+                child: IconButton(
+                  icon: const Icon(Icons.tune),
+                  tooltip: 'Filter & sort',
+                  onPressed: () => _openFilterSheet(context, statusCounts),
                 ),
               ),
-              const SizedBox(width: 8),
+              const Spacer(),
               TextButton.icon(
                 onPressed: pendingCount > 0
                     ? () => _openReview(context, filtered
@@ -107,6 +117,72 @@ class MobileStagingPage extends StatelessWidget {
                 ),
         ),
       ],
+    );
+  }
+
+  void _openFilterSheet(
+      BuildContext context, Map<SpellTextStatus, int> statusCounts) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (_) => ListenableBuilder(
+        listenable: staging,
+        builder: (context, _) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Status',
+                      style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: SpellTextStatus.values.map((s) {
+                      final label = switch (s) {
+                        SpellTextStatus.pending => 'New',
+                        SpellTextStatus.accepted => 'Accepted',
+                        SpellTextStatus.dismissed => 'Dismissed',
+                      };
+                      final count = statusCounts[s] ?? 0;
+                      return FilterChip(
+                        label: Text('$label ($count)'),
+                        selected: staging.visibleStatuses.contains(s),
+                        onSelected: (_) => staging.toggleStatus(s),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  Text('Sort by',
+                      style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: SpellSortBy.values.map((opt) {
+                      final label = switch (opt) {
+                        SpellSortBy.levelThenName => 'Level → Name',
+                        SpellSortBy.name => 'Name',
+                        SpellSortBy.schoolThenName => 'School → Name',
+                      };
+                      return ChoiceChip(
+                        label: Text(label),
+                        selected: staging.sort == opt,
+                        onSelected: (v) {
+                          if (v) staging.setSortBy(opt);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
